@@ -9,7 +9,7 @@
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
   
-      const response = await fetch('/kick.wav');
+      const response = await fetch('./kick.wav');
       const arrayBuffer = await response.arrayBuffer();
       audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
     }
