@@ -49,6 +49,10 @@
 
 	function onBeat(bar: number, beat: number) {
 		console.log(`Bar ${bar}, Beat ${beat}`);
+        let shouldPlaySound = grid[0][beat]
+        if (shouldPlaySound){
+            playSound()
+        }
 	}
 
 	async function onTapGridCell(row: number, col: number): Promise<void> {
