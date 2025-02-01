@@ -6,7 +6,9 @@
 	let grid: Array<Array<boolean>> = Array.from({ length: 8 }, () => Array(8).fill(0));
 	let playing = false;
 	let bpm: number = 120;
-	let beat: number = 0;
+	let nextBeat: number = 0;
+	let gridBeat: number = 0;
+    let bar = 0;
 	let playingIntervalId: number | undefined = undefined;
 
 	async function loadSound(): Promise<void> {
@@ -34,25 +36,30 @@
 			clearInterval(playingIntervalId); // Stop after printing the whole string
 			playingIntervalId = undefined;
 			playing = false;
+            nextBeat = 0
+            bar = 0
+            gridBeat = 0
 		} else {
 			// Every beat takes this number of ms
 			const bpmIntervalMs = 60000 / bpm;
 
-			onBeat(0, beat++);
+            playing = true;
+			onBeat();
 			playingIntervalId = setInterval(() => {
-				let newBeat = beat++;
-				onBeat(Math.floor(newBeat / 8), newBeat % 8);
+				onBeat();
 			}, bpmIntervalMs);
-			playing = true;
 		}
 	}
 
-	function onBeat(bar: number, beat: number) {
-		console.log(`Bar ${bar}, Beat ${beat}`);
-        let shouldPlaySound = grid[0][beat]
+	function onBeat() {
+        bar = Math.floor(nextBeat / 8)
+        gridBeat = nextBeat % 8
+		console.log(`Bar ${bar}, Beat ${gridBeat}`);
+        let shouldPlaySound = grid[0][gridBeat]
         if (shouldPlaySound){
             playSound()
         }
+        nextBeat++
 	}
 
 	async function onTapGridCell(row: number, col: number): Promise<void> {
@@ -66,6 +73,13 @@
 
 <button on:click={togglePlaying}>{playing ? 'Stop' : 'Play'}</button>
 <input type="number" bind:value={bpm} min="20" max="200" />
+
+<div class="grid w-64 grid-cols-8 gap-1">
+    {#each Array(8) as _, currentBeat}
+    <div class="w-8 h-2 {currentBeat == gridBeat ? "bg-green-300" : "bg-gray-300"} flex items-center justify-center border border-gray-400">
+    </div>
+    {/each}
+</div>
 
 <div class="grid w-64 grid-cols-8 gap-1">
 	{#each Array(1) as _, row}
