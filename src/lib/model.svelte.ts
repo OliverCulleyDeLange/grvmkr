@@ -41,8 +41,8 @@ export class GridModel {
         let cell = count % this.gridCols
         let repetition = Math.floor(count / this.gridCols);
         let bar = Math.floor(count / (this.beatsPerBar * this.beatNoteFraction)) % this.bars;
-        let beat = Math.floor(count / this.beatsPerBar) % this.beatNoteFraction;
-        let beatDivision = count % this.beatsPerBar;
+        let beat = Math.floor(count / this.beatNoteFraction) % this.beatsPerBar;
+        let beatDivision = count % this.beatNoteFraction;
         
         console.log(`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${this.gridCols})`);
 
