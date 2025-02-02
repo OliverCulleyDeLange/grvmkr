@@ -16,7 +16,7 @@
 	let bpm = $state(120);
 	let cellsPerBeat = $state(4);
 	let beatsPerBar = $state(4);
-	let bars = $state(2);
+	let bars = $state(1);
 	let beatNote = $state(4);
 	let msPerBeatDivision = $derived(60000 / bpm / cellsPerBeat);
 	let gridCells = $derived(cellsPerBeat * beatsPerBar * bars);
