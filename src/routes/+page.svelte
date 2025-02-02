@@ -5,7 +5,7 @@
 
 	let bpm = $state(120);
     let grid: GridModel = $state(new GridModel());
-	let msPerBeatDivision = $derived(60000 / bpm / grid.cellsPerBeat);
+	let msPerBeatDivision = $derived(60000 / bpm / grid.beatNoteFraction);
 
 	// Playing state
 	let playing = $state(false);
@@ -62,21 +62,15 @@
 		<div>
 			<span>Bars:</span>
 			<input type="number" bind:value={grid.bars} min="1" max="16" />
-			<!-- <input type="range" bind:value={bars} min="1" max="16" /> -->
-		</div>
-		<div>
-			<span>Beat Divide:</span>
-			<input type="number" bind:value={grid.cellsPerBeat} min="2" max="32" />
-			<!-- <input type="range" bind:value={grid.cellsPerBeat} min="2" max="32" /> -->
 		</div>
 		<div>
 			<span>Time Signature:</span>
 			<input type="number" bind:value={grid.beatsPerBar} min="2" max="16" />
-			<!-- / -->
-			<!-- <input type="number" bind:value={grid.beatNote} min="2" max="16" /> -->
+			/
+			<input type="number" bind:value={grid.beatNoteFraction} min="2" max="16" />
 		</div>
-		<!-- <p>Ms per division: {msPerBeatDivision}</p> -->
-		<!-- <p>Grid columns: {grid.gridCols}</p> -->
+		<p>Ms per division: {msPerBeatDivision}</p>
+		<p>Grid columns: {grid.gridCols}</p>
 	</div>
 
 	<button

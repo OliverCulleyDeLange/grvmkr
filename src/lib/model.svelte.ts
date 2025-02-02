@@ -10,13 +10,12 @@ export class GridModel {
     public currentColumn = $state(0);
 
     // Configurable grid state
-    public bars = $state(2);
+    public bars = $state(1);
     public beatsPerBar = $state(4);
-    public cellsPerBeat = $state(4);
-    // public beatNote = $state(4);
+    public beatNoteFraction = $state(4);
 
     // Total number of grid cells, derives from configurable grid state
-    public gridCols = $derived(this.cellsPerBeat * this.beatsPerBar * this.bars);
+    public gridCols = $derived(this.beatNoteFraction * this.beatsPerBar * this.bars);
 
     // Main grid state
     public rows: Array<GridRow> = $state(this.buildGrid(defaultInstruments));
@@ -41,9 +40,10 @@ export class GridModel {
     playBeat(count: number) {
         let cell = count % this.gridCols
         let repetition = Math.floor(count / this.gridCols);
-        let beatDivision = count % this.cellsPerBeat;
-        let beat = Math.floor(count / this.beatsPerBar) % this.beatsPerBar;
-        let bar = Math.floor(count / (this.beatsPerBar * this.cellsPerBeat)) % this.bars;
+        let bar = Math.floor(count / (this.beatsPerBar * this.beatNoteFraction)) % this.bars;
+        let beat = Math.floor(count / this.beatsPerBar) % this.beatNoteFraction;
+        let beatDivision = count % this.beatsPerBar;
+        
         console.log(`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${this.gridCols})`);
 
         for (let row of this.rows) {
@@ -74,17 +74,19 @@ export class GridModel {
                 row.notation.bars.push(...newBars)
             }
             row.notation.bars.forEach((bar) => {
-                if (this.beatsPerBar < bar.beats.length) {
+                let noteFraction = this.beatNoteFraction
+                if (noteFraction < bar.beats.length) {
                     bar.beats.length = this.beatsPerBar
                 } else {
-                    let newBeats = Array.from({ length: this.beatsPerBar - bar.beats.length }, () => this.defaultBeat())
+                    let newBeats = Array.from({ length: noteFraction - bar.beats.length }, () => this.defaultBeat())
                     bar.beats.push(...newBeats)
                 }
                 bar.beats.forEach((beat) => {
-                    if (this.cellsPerBeat < beat.divisions.length) {
-                        beat.divisions.length = this.cellsPerBeat
+                    let beatsPerBar = this.beatsPerBar
+                    if (beatsPerBar < beat.divisions.length) {
+                        beat.divisions.length = this.beatNoteFraction
                     } else {
-                        let newDivisions = Array.from({ length: this.cellsPerBeat - beat.divisions.length }, () => this.defaultBeatDivision())
+                        let newDivisions = Array.from({ length: beatsPerBar - beat.divisions.length }, () => this.defaultBeatDivision())
                         beat.divisions.push(...newDivisions)
                     }
                 })
