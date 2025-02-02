@@ -39,7 +39,7 @@
     <div class="beat-indicator">
         {#each Array(cells) as _, currentCell}
             <div
-                class="h-6 flex items-center justify-center border border-gray-400"
+                class="h-6 flex items-center justify-center border border-gray-400 {currentCell % grid.beatsPerBar == 0 ? "brightness-[0.8]" : ""}"
                     class:bg-green-300={currentCell == currentColumn}
                     class:bg-gray-300={currentCell != currentColumn}
             >
