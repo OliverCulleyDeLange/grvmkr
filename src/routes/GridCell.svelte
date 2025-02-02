@@ -1,10 +1,7 @@
 <script lang='ts'>
-    let { text, selected, onTap} = $props();
+    let { text, beat, selected, onTap} = $props();
 </script>
 
-<button onclick={onTap} class="h-8 flex items-center justify-center border border-gray-400"
-    class:bg-green-300={selected}
-    class:bg-gray-300={!selected}
->
+<button onclick={onTap} class="h-8 bg-gray-300 flex items-center justify-center border border-gray-400 {beat ? "brightness-[0.8]" : ""}">
    {text}
 </button>

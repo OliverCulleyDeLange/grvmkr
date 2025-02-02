@@ -60,7 +60,12 @@
         {#each row.notation.bars as bar, barI}
             {#each bar.beats as beat, beatI}
                 {#each beat.divisions as division, divisionI}
-                    <GridCell text={division.hitType} selected={division.hitType != undefined} onTap={() => onTapGridCell({ row: rowI, notationLocator: { bar: barI, beat: beatI, division: divisionI} })} />
+                    <GridCell 
+                    text={division.hitType} 
+                    beat={divisionI == 0} 
+                    selected={division.hitType != undefined}
+                    onTap={() => onTapGridCell({ row: rowI, notationLocator: { bar: barI, beat: beatI, division: divisionI} })} 
+                    />
                 {/each}
             {/each}
         {/each}
