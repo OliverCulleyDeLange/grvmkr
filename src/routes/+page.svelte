@@ -53,11 +53,11 @@
 <div class="m-2 rounded-lg border-2 border-gray-600 p-4">
 	<h1>GrvMkr</h1>
 
-	<div class="rounded-lg border-2 border-gray-600 p-1">
+	<div class="my-2 rounded-lg border-2 border-gray-600 p-1">
 		<div>
 			<span>BPM:</span>
 			<input type="number" bind:value={bpm} min="20" max="200" />
-			<input type="range" bind:value={bpm} min="20" max="200" />
+			<input type="range" bind:value={bpm} min="20" max="200" class="print:hidden"/>
 		</div>
 		<div>
 			<span>Bars:</span>
@@ -75,13 +75,13 @@
 			<!-- / -->
 			<!-- <input type="number" bind:value={grid.beatNote} min="2" max="16" /> -->
 		</div>
-		<p>Ms per division: {msPerBeatDivision}</p>
-		<p>Grid columns: {grid.gridCols}</p>
+		<!-- <p>Ms per division: {msPerBeatDivision}</p> -->
+		<!-- <p>Grid columns: {grid.gridCols}</p> -->
 	</div>
 
 	<button
 		on:click={togglePlaying}
-		class="my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+		class="print:hidden my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
 	>
 		{playing ? 'Stop' : 'Play'}
 	</button>
