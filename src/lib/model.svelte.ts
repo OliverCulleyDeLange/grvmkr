@@ -1,37 +1,26 @@
 import { AudioManager } from "./audio_manager";
 import { defaultInstruments } from "./default";
-import type { BeatDivision, CellLocator, GridRow, HitTypeKey, InstrumentConfig, InstrumentHit, NotationLocator } from "./types";
+import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitTypeKey, InstrumentConfig, InstrumentHit, NotationLocator } from "./types";
 
 export class GridModel {
 
     private audioManager = new AudioManager()
 
-    public currentCell = $state(0);
+    // Currently playing column in the grid
+    public currentColumn = $state(0);
 
-    public cellsPerBeat = $state(4);
-    public beatsPerBar = $state(4);
+    // Configurable grid state
     public bars = $state(2);
-    public beatNote = $state(4);
-    public gridCells = $derived(this.cellsPerBeat * this.beatsPerBar * this.bars);
+    public beatsPerBar = $state(4);
+    public cellsPerBeat = $state(4);
+    // public beatNote = $state(4);
 
-    public rows: Array<GridRow> = $state(defaultInstruments.map(
-        (config: InstrumentConfig) => {
-            let notation = {
-                bars: Array.from({ length: this.bars }, () => {
-                    return {
-                        beats: Array.from({ length: this.beatsPerBar }, () => {
-                            return {
-                                divisions: Array.from({ length: this.cellsPerBeat }, () => {
-                                    return { hitType: undefined }
-                                })
-                            }
-                        })
-                    }
-                })
-            }
-            return { config, notation }
-        }
-    ));
+    // Total number of grid cells, derives from configurable grid state
+    public gridCols = $derived(this.cellsPerBeat * this.beatsPerBar * this.bars);
+
+    // Main grid state
+    public rows: Array<GridRow> = $state(this.buildGrid(defaultInstruments));
+
 
     constructor() {
         this.audioManager.addInstruments(defaultInstruments)
@@ -47,16 +36,15 @@ export class GridModel {
         let newValue = this.nextHitType(row, currentValue.hitKey);
         console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newValue}`);
         this.update(locator, newValue)
-        // console.log(JSON.stringify(this.rows))
     }
 
     playBeat(count: number) {
-        let cell = count % this.gridCells
-        let repetition = Math.floor(count / this.gridCells);
+        let cell = count % this.gridCols
+        let repetition = Math.floor(count / this.gridCols);
         let beatDivision = count % this.cellsPerBeat;
         let beat = Math.floor(count / this.beatsPerBar) % this.beatsPerBar;
-        let bar = Math.floor(count / this.beatsPerBar) % this.bars;
-        console.log(`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${this.gridCells})`);
+        let bar = Math.floor(count / (this.beatsPerBar * this.cellsPerBeat)) % this.bars;
+        console.log(`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${this.gridCols})`);
 
         for (let row of this.rows) {
             let locator: CellLocator = {
@@ -65,10 +53,73 @@ export class GridModel {
             }
             this.audioManager.playHit(this.currentHit(locator));
         }
-        this.currentCell = cell
+        this.currentColumn = cell
     }
 
-    nextHitType(row: GridRow, hitTypeKey: HitTypeKey | undefined): HitTypeKey | undefined {
+    notationColumns(): number {
+        let notation = this.rows[0].notation
+        let bars = notation.bars
+        let beats = bars[0].beats
+        let beatDivisions = beats[0].divisions
+        return bars.length * (beats.length * beatDivisions.length)
+    }
+
+    resizeGrid() {
+        // TODO Tidy this deeply nested fucktion up
+        this.rows.forEach((row) => {
+            if (this.bars < row.notation.bars.length) {
+                row.notation.bars.length = this.bars
+            } else {
+                let newBars = Array.from({ length: this.bars - row.notation.bars.length }, () => this.defaultBar())
+                row.notation.bars.push(...newBars)
+            }
+            row.notation.bars.forEach((bar) => {
+                if (this.beatsPerBar < bar.beats.length) {
+                    bar.beats.length = this.beatsPerBar
+                } else {
+                    let newBeats = Array.from({ length: this.beatsPerBar - bar.beats.length }, () => this.defaultBeat())
+                    bar.beats.push(...newBeats)
+                }
+                bar.beats.forEach((beat) => {
+                    if (this.cellsPerBeat < beat.divisions.length) {
+                        beat.divisions.length = this.cellsPerBeat
+                    } else {
+                        let newDivisions = Array.from({ length: this.cellsPerBeat - beat.divisions.length }, () => this.defaultBeatDivision())
+                        beat.divisions.push(...newDivisions)
+                    }
+                })
+            })
+        });
+    }
+
+    private buildGrid(instruments: InstrumentConfig[]): Array<GridRow> {
+        return instruments.map(
+            (config: InstrumentConfig) => {
+                let notation = {
+                    bars: Array.from({ length: this.bars }, () => this.defaultBar())
+                }
+                return { config, notation }
+            }
+        )
+    }
+
+    private defaultBar(): Bar {
+        return {
+            beats: Array.from({ length: this.beatsPerBar }, () => this.defaultBeat())
+        }
+    }
+
+    private defaultBeat(): Beat {
+        return {
+            divisions: Array.from({ length: this.cellsPerBeat }, () => this.defaultBeatDivision())
+        }
+    }
+
+    private defaultBeatDivision(): BeatDivision {
+        return { hitType: undefined }
+    }
+
+    private nextHitType(row: GridRow, hitTypeKey: HitTypeKey | undefined): HitTypeKey | undefined {
         if (hitTypeKey == undefined) return row.config.hitTypes[0].key
         let currentIndex = row.config.hitTypes.findIndex((ht) => {
             // console.log(`ht.key ${ht.key} == hitTypeKey ${hitTypeKey}`)
@@ -82,7 +133,7 @@ export class GridModel {
         }
     }
 
-    currentHit(locator: CellLocator): InstrumentHit {
+    private currentHit(locator: CellLocator): InstrumentHit {
         let row = this.rows[locator.row]
         let hitTypeKey = this.getCell(locator).hitType
         return {
@@ -91,7 +142,7 @@ export class GridModel {
         }
     }
 
-    update(locator: CellLocator, newHitTypeKey: HitTypeKey | undefined) {
+    private update(locator: CellLocator, newHitTypeKey: HitTypeKey | undefined) {
         let division = this.getCell(locator)
         division.hitType = newHitTypeKey
     }
@@ -104,3 +155,4 @@ export class GridModel {
             .divisions[locator.notationLocator.division]
     }
 }
+

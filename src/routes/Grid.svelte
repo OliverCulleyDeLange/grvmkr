@@ -1,12 +1,21 @@
 <script lang='ts'>
 	import type { GridModel } from "$lib";
-	import type { CellLocator } from "$lib/types";
+	import type { CellLocator} from "$lib/types";
 	import GridCell from "./GridCell.svelte";
 
     type OnTapGridCell = (locator: CellLocator) => void
     let { grid, onTapGridCell }: { grid: GridModel, onTapGridCell: OnTapGridCell } = $props();
-    let cells = $derived(grid.gridCells)
-    let gridCell = $derived(grid.currentCell)
+    let cells = $derived(grid.gridCols)
+    let currentColumn = $derived(grid.currentColumn)
+
+    $effect(() => {
+        // This is jank, but i dunno how to do it better yet
+        let requiredGridCols = grid.gridCols;
+        let actualGridCols = grid.notationColumns();
+        if (requiredGridCols != actualGridCols){
+               grid.resizeGrid()
+        }
+    })
 </script>
 
 <style>
@@ -34,8 +43,8 @@
         {#each Array(cells) as _, currentCell}
             <div
                 class="h-6 flex items-center justify-center border border-gray-400"
-                    class:bg-green-300={currentCell == gridCell}
-                    class:bg-gray-300={currentCell != gridCell}
+                    class:bg-green-300={currentCell == currentColumn}
+                    class:bg-gray-300={currentCell != currentColumn}
             >
             <!-- {currentCell.text} -->
         </div>

@@ -3,11 +3,9 @@
 	import type { CellLocator } from '$lib/types';
 	import Grid from './Grid.svelte';
 
-
 	let bpm = $state(120);
     let grid: GridModel = $state(new GridModel());
 	let msPerBeatDivision = $derived(60000 / bpm / grid.cellsPerBeat);
-
 
 	// Playing state
 	let playing = $state(false);
@@ -74,11 +72,11 @@
 		<div>
 			<span>Time Signature:</span>
 			<input type="number" bind:value={grid.beatsPerBar} min="2" max="16" />
-			/
-			<input type="number" bind:value={grid.beatNote} min="2" max="16" />
+			<!-- / -->
+			<!-- <input type="number" bind:value={grid.beatNote} min="2" max="16" /> -->
 		</div>
 		<p>Ms per division: {msPerBeatDivision}</p>
-		<p>Grid cells: {grid.gridCells}</p>
+		<p>Grid columns: {grid.gridCols}</p>
 	</div>
 
 	<button
