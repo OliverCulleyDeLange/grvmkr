@@ -21,7 +21,7 @@
 <style>
     .grid {
       display: grid;
-      grid-template-columns: repeat(calc(var(--cells) + 1), 1fr);
+      grid-template-columns: auto repeat(var(--cells), 1fr);
       gap: 2px;
     }
 
@@ -31,10 +31,7 @@
         grid-column-start: 2;
         grid-template-columns: subgrid;
     }
-
-    .instrument-name {
-        grid-template-columns: max-content 1fr;
-    }
+    
   </style>
 
 <div class="grid" style="--cells: {cells};">
@@ -53,7 +50,7 @@
     <!-- Note grid -->
     {#each grid.rows as row, rowI}
         <!-- Name -->
-        <div class="instrument-name">
+        <div class="px-2">
             <div>{row.config.name}</div>
         </div>
 
