@@ -1,31 +1,21 @@
-export class InstrumentConfig {
-    public audioPath: string
-    public gridIndex: number
+export class AudioPlayer {
 
-    constructor(audioPath: string, gridIndex: number){
-        this.audioPath = audioPath
-        this.gridIndex = gridIndex
-    }
-}
-
-export class Instrument {
-
-    public config: InstrumentConfig;
+    public path: string;
     private audioBuffer: AudioBuffer | null = null;
     private sourceNode: AudioBufferSourceNode | null = null;
     private audioContext: AudioContext | null = null;
 
-    constructor(config: InstrumentConfig) {
-        this.config = config
+    constructor(path: string) {
+        this.path = path
     }
-    
+
     async loadAudio(audioContext: AudioContext): Promise<void> {
         this.audioContext = audioContext;
         try {
-            const response = await fetch(`./${this.config.audioPath}`);
+            const response = await fetch(`./${this.path}`);
             const arrayBuffer = await response.arrayBuffer();
             this.audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            console.log(`Audio loaded successfully for ${this.config.audioPath}`);
+            console.log(`Audio loaded successfully for ${this.path}`);
         } catch (error) {
             console.error("Error loading audio:", error);
         }
@@ -42,7 +32,7 @@ export class Instrument {
             this.sourceNode.connect(this.audioContext.destination);
             this.sourceNode.start();
         } else {
-            console.error(`Audio not loaded yet for ${this.config.audioPath}`);
+            console.error(`Audio not loaded yet for ${this.path}`);
         }
     }
 

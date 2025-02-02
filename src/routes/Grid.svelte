@@ -1,8 +1,12 @@
 <script lang='ts'>
+	import type { GridModel } from "$lib";
+	import type { CellLocator } from "$lib/types";
 	import GridCell from "./GridCell.svelte";
 
-    let { grid = Array<Array<Boolean>>, beatsPerBar, beatDivision, gridCell, instruments, onTapGridCell } = $props();
-    let cells = $derived(grid[0].length)
+    type OnTapGridCell = (locator: CellLocator) => void
+    let { grid, onTapGridCell }: { grid: GridModel, onTapGridCell: OnTapGridCell } = $props();
+    let cells = $derived(grid.gridCells)
+    let gridCell = $derived(grid.currentCell)
 </script>
 
 <style>
@@ -29,22 +33,27 @@
     <div class="beat-indicator">
         {#each Array(cells) as _, currentCell}
             <div
-                class="h-2 flex items-center justify-center border border-gray-400"
+                class="h-6 flex items-center justify-center border border-gray-400"
                     class:bg-green-300={currentCell == gridCell}
                     class:bg-gray-300={currentCell != gridCell}
             >
+            <!-- {currentCell.text} -->
         </div>
         {/each}
     </div>
     <!-- Note grid -->
-    {#each Array(instruments.length) as _, row}
+    {#each grid.rows as row, rowI}
         <!-- Name -->
         <div class="instrument-name">
-            <div>{instruments[row].config.audioPath}</div>
+            <div>{row.config.name}</div>
         </div>
 
-        {#each Array(cells) as _, col}
-            <GridCell text={col + 1} selected={grid[row][col]} onTap={() => onTapGridCell(row, col)} />
+        {#each row.notation.bars as bar, barI}
+            {#each bar.beats as beat, beatI}
+                {#each beat.divisions as division, divisionI}
+                    <GridCell text={division.hitType} selected={division.hitType != undefined} onTap={() => onTapGridCell({ row: rowI, notationLocator: { bar: barI, beat: beatI, division: divisionI} })} />
+                {/each}
+            {/each}
         {/each}
     {/each}
 </div>
