@@ -74,19 +74,19 @@ export class GridModel {
                 row.notation.bars.push(...newBars)
             }
             row.notation.bars.forEach((bar) => {
-                let noteFraction = this.beatNoteFraction
-                if (noteFraction < bar.beats.length) {
-                    bar.beats.length = noteFraction
+                let beatsPerBar = this.beatsPerBar
+                if (beatsPerBar < bar.beats.length) {
+                    bar.beats.length = beatsPerBar
                 } else {
-                    let newBeats = Array.from({ length: noteFraction - bar.beats.length }, () => this.defaultBeat())
+                    let newBeats = Array.from({ length: beatsPerBar - bar.beats.length }, () => this.defaultBeat())
                     bar.beats.push(...newBeats)
                 }
                 bar.beats.forEach((beat) => {
-                    let beatsPerBar = this.beatsPerBar
-                    if (beatsPerBar < beat.divisions.length) {
-                        beat.divisions.length = beatsPerBar
+                    let beatNoteFraction = this.beatNoteFraction
+                    if (beatNoteFraction < beat.divisions.length) {
+                        beat.divisions.length = beatNoteFraction
                     } else {
-                        let newDivisions = Array.from({ length: beatsPerBar - beat.divisions.length }, () => this.defaultBeatDivision())
+                        let newDivisions = Array.from({ length: beatNoteFraction - beat.divisions.length }, () => this.defaultBeatDivision())
                         beat.divisions.push(...newDivisions)
                     }
                 })
