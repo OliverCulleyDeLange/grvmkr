@@ -1,6 +1,5 @@
 import { AudioPlayer } from "$lib";
-import type { HitId, InstrumentHit, InstrumentId, InstrumentWithId } from "./types";
-
+import type { HitId, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
 export class AudioManager {
 
     private audioContext: AudioContext | null = null;
@@ -14,7 +13,6 @@ export class AudioManager {
                     hit.hitId,
                     new AudioPlayer(hitType.audioPath)
                 )
-                console.log(`Added player for ${hit.instrumentId} ${hit.hitId}`)
             })
         })
         // console.log(`Players: ${JSON.stringify(Array.from(this.hits))}`)

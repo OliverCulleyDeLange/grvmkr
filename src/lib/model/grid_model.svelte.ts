@@ -7,7 +7,6 @@ export class GridModel {
     constructor(instrumentManager: InstrumentManager) {
         this.instrumentManager = instrumentManager
         this.rows = this.buildGrid(instrumentManager.instruments)
-        console.log(this.instrumentManager)
     }
 
     private instrumentManager: InstrumentManager | undefined = $state()
