@@ -1,13 +1,24 @@
+import type GridCell from "../routes/GridCell.svelte";
 import { AudioManager } from "./audio_manager";
 import { defaultInstruments } from "./default";
-import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitTypeKey, InstrumentConfig, InstrumentHit, NotationLocator } from "./types";
+import type { InstrumentManager } from "./instrument_manager.svelte";
+import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitTypeKey, InstrumentConfig, InstrumentHit, InstrumentId, NotationLocator } from "./types";
+import type { NotationGridRowUi, GridCellUi } from "./types_ui";
 
 export class GridModel {
 
+    constructor(instrumentManager: InstrumentManager) {
+        // this.audioManager.addInstruments(instrumentManager.instruments)
+        this.instrumentManager = instrumentManager
+        this.rows = this.buildGrid(instrumentManager.instruments)
+        console.log(this.instrumentManager)
+    }
+
     private audioManager = new AudioManager()
+    private instrumentManager: InstrumentManager | undefined = $state()
 
     public playing = $state(false);
-	public bpm = $state(120);
+    public bpm = $state(120);
     // Currently playing column in the grid
     public currentColumn = $state(0);
 
@@ -16,17 +27,42 @@ export class GridModel {
     public beatsPerBar = $state(4);
     public beatNoteFraction = $state(4);
 
-	public msPerBeatDivision = $derived(60000 / this.bpm / this.beatNoteFraction);
+    public msPerBeatDivision = $derived(60000 / this.bpm / this.beatNoteFraction);
 
     // Total number of grid cells, derives from configurable grid state
     public gridCols = $derived(this.beatNoteFraction * this.beatsPerBar * this.bars);
 
     // Main grid state
-    public rows: Array<GridRow> = $state(this.buildGrid(defaultInstruments));
+    public rows: Array<GridRow> = $state([]);
 
+    // Testing
+    public uiModel: NotationGridRowUi[] = $derived(this.buildUi(this.rows, this.instrumentManager?.instruments));
 
-    constructor() {
-        this.audioManager.addInstruments(defaultInstruments)
+    buildUi(rows: GridRow[], instruments: any | undefined): NotationGridRowUi[] {
+        let ui = rows.map((row, rowI) => {
+            let gridCells: GridCellUi[] = row.notation.bars.flatMap((bar, barI) => {
+                return bar.beats.flatMap((beat, beatI) => {
+                    let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
+                        return {
+                            darken: false,
+                            content: division.hitType ?? "",
+                            locator: {
+                                row: rowI,
+                                notationLocator: {bar: barI, beat: beatI, division: divisionI }
+                            }
+                        }
+                    })
+                    return cells
+                })
+            })
+            return {
+                instrumentName: instruments.get(row.instrumentId)?.name ?? row.instrumentId,
+                gridCells
+            }
+        })
+        console.log(`built ui`)
+        console.log(instruments)
+        return ui
     }
 
     async initInstruments() {
@@ -47,7 +83,7 @@ export class GridModel {
         let bar = Math.floor(count / (this.beatsPerBar * this.beatNoteFraction)) % this.bars;
         let beat = Math.floor(count / this.beatNoteFraction) % this.beatsPerBar;
         let beatDivision = count % this.beatNoteFraction;
-        
+
         console.log(`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${this.gridCols})`);
 
         for (let row of this.rows) {
@@ -61,6 +97,7 @@ export class GridModel {
     }
 
     notationColumns(): number {
+        if (this.rows.length == 0) return 0
         let notation = this.rows[0].notation
         let bars = notation.bars
         let beats = bars[0].beats
@@ -98,13 +135,13 @@ export class GridModel {
         });
     }
 
-    private buildGrid(instruments: InstrumentConfig[]): Array<GridRow> {
-        return instruments.map(
-            (config: InstrumentConfig) => {
+    private buildGrid(instruments: Map<InstrumentId, InstrumentConfig>): Array<GridRow> {
+        return Array.from(instruments.entries()).map(
+            ([id, config]) => {
                 let notation = {
                     bars: Array.from({ length: this.bars }, () => this.defaultBar())
                 }
-                return { config, notation }
+                return { config, notation, instrumentId: id }
             }
         )
     }

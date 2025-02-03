@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { GridModel } from '$lib';
+	import type { InstrumentManager } from '$lib/instrument_manager.svelte';
 	import type { CellLocator } from '$lib/types';
 	import Grid from './Grid.svelte';
 	import GridConfig from './GridConfig.svelte';
 
-	let grids: GridModel[] = $state([new GridModel()]);
+	let { instrumentManager }: { instrumentManager: InstrumentManager } = $props();
+
+	let grids: GridModel[] = $state([new GridModel(instrumentManager)]);
 	let activeGrid = $state(grids[0]);
 	let msPerBeatDivision = $derived(activeGrid.msPerBeatDivision);
 
@@ -59,7 +62,7 @@
 	}
 
     function addGrid() {
-        grids.push(new GridModel())
+        grids.push(new GridModel(instrumentManager))
     }
 </script>
 

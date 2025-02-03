@@ -1,9 +1,10 @@
 
+export type InstrumentId = string
+
 export type InstrumentConfig = {
     hitTypes: Array<HitType>
     gridIndex: number
     name: string
-
 };
 
 export type HitType = {
@@ -20,6 +21,7 @@ export type InstrumentHit = {
 export type GridRow = {
     config: InstrumentConfig
     notation: Notation
+    instrumentId: InstrumentId
 };
 
 export type CellLocator = {
