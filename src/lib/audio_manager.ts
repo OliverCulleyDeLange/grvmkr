@@ -15,10 +15,10 @@ export class AudioManager {
                     this.getInstrumentHitKey(hit),
                     new AudioPlayer(hitType.audioPath)
                 )
-                console.log(`Added player for ${JSON.stringify(hit)}`)
+                console.log(`Added player for ${hit.instrumentName} ${hit.hitKey}`)
             })
         })
-        console.log(`Players: ${JSON.stringify(Array.from(this.hits))}`)
+        // console.log(`Players: ${JSON.stringify(Array.from(this.hits))}`)
     }
 
     playHit(hit: InstrumentHit) {
