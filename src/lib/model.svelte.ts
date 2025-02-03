@@ -6,6 +6,8 @@ export class GridModel {
 
     private audioManager = new AudioManager()
 
+    public playing = $state(false);
+	public bpm = $state(120);
     // Currently playing column in the grid
     public currentColumn = $state(0);
 
@@ -13,6 +15,8 @@ export class GridModel {
     public bars = $state(1);
     public beatsPerBar = $state(4);
     public beatNoteFraction = $state(4);
+
+	public msPerBeatDivision = $derived(60000 / this.bpm / this.beatNoteFraction);
 
     // Total number of grid cells, derives from configurable grid state
     public gridCols = $derived(this.beatNoteFraction * this.beatsPerBar * this.bars);
@@ -113,7 +117,7 @@ export class GridModel {
 
     private defaultBeat(): Beat {
         return {
-            divisions: Array.from({ length: this.cellsPerBeat }, () => this.defaultBeatDivision())
+            divisions: Array.from({ length: this.beatNoteFraction }, () => this.defaultBeatDivision())
         }
     }
 

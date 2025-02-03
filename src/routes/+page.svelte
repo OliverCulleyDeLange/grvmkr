@@ -2,10 +2,11 @@
 	import { GridModel } from '$lib';
 	import type { CellLocator } from '$lib/types';
 	import Grid from './Grid.svelte';
+	import GridConfig from './GridConfig.svelte';
 
-	let bpm = $state(120);
-    let grid: GridModel = $state(new GridModel());
-	let msPerBeatDivision = $derived(60000 / bpm / grid.beatNoteFraction);
+	let grids: GridModel[] = $state([new GridModel()]);
+	let activeGrid = $state(grids[0]);
+	let msPerBeatDivision = $derived(activeGrid.msPerBeatDivision);
 
 	// Playing state
 	let playing = $state(false);
@@ -15,70 +16,65 @@
 	$effect(() => {
 		if (playing) {
 			onBeat();
-			console.log('Setting interval');
 			playingIntervalId = setInterval(() => {
 				onBeat();
 			}, msPerBeatDivision);
 		} else {
-            stop()
-        }
+			stop();
+		}
 		return () => {
-			console.log('Clearing interval');
 			clearInterval(playingIntervalId);
 		};
 	});
 
-	async function togglePlaying(): Promise<void> {
-		await grid.initInstruments()
-		playing = !playing;
+	async function togglePlaying(grid: GridModel, newPlaying: boolean): Promise<void> {
+        grids.forEach((grid) => {grid.playing = false})
+        if (newPlaying){
+            await initInstruments();
+            activeGrid = grid
+            grid.playing = newPlaying
+        }
+        playing = newPlaying;
 	}
-
+    
+    async function initInstruments() {
+        for (let grid of grids){
+            await grid.initInstruments()
+        }
+    }
 
 	function stop() {
-		clearInterval(playingIntervalId); 
+		clearInterval(playingIntervalId);
 		playingIntervalId = undefined;
 		playing = false;
 		nextCount = 0;
 	}
 
 	async function onBeat() {
-		grid.playBeat(nextCount++)
+		activeGrid.playBeat(nextCount++);
 	}
 
-	async function onTapGridCell(locator: CellLocator): Promise<void> {
-        grid.toggleLocation(locator)
+	async function onTapGridCell(locator: CellLocator, grid: GridModel): Promise<void> {
+		grid.toggleLocation(locator);
 	}
+
+    function addGrid() {
+        grids.push(new GridModel())
+    }
 </script>
 
 <div class="m-2 rounded-lg border-2 border-gray-600 p-4">
 	<h1>GrvMkr</h1>
 
-	<div class="my-2 rounded-lg border-2 border-gray-600 p-1">
-		<div>
-			<span>BPM:</span>
-			<input type="number" bind:value={bpm} min="20" max="200" />
-			<input type="range" bind:value={bpm} min="20" max="200" class="print:hidden"/>
-		</div>
-		<div>
-			<span>Bars:</span>
-			<input type="number" bind:value={grid.bars} min="1" max="16" />
-		</div>
-		<div>
-			<span>Time Signature:</span>
-			<input type="number" bind:value={grid.beatsPerBar} min="2" max="16" />
-			/
-			<input type="number" bind:value={grid.beatNoteFraction} min="2" max="16" />
-		</div>
-		<p>Ms per division: {msPerBeatDivision}</p>
-		<p>Grid columns: {grid.gridCols}</p>
-	</div>
+	{#each grids as grid}
+		<GridConfig {grid} togglePlaying={(playing) => {togglePlaying(grid, playing)}} />
+		<Grid {grid} onTapGridCell={(locator) => {onTapGridCell(locator, grid)}} />
+	{/each}
 
 	<button
-		on:click={togglePlaying}
-		class="print:hidden my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+		onclick={addGrid}
+		class="my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 print:hidden"
 	>
-		{playing ? 'Stop' : 'Play'}
+		Add Grid
 	</button>
-
-	<Grid {grid} {onTapGridCell} />
 </div>
