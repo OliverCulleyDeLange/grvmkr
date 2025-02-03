@@ -1,27 +1,27 @@
 export class AudioPlayer {
 
-    public path: string;
+    public url: string;
     private audioBuffer: AudioBuffer | null = null;
     private sourceNode: AudioBufferSourceNode | null = null;
     private audioContext: AudioContext | null = null;
 
-    constructor(path: string) {
-        this.path = path
+    constructor(url: string) {
+        this.url = url
     }
 
     async loadAudio(audioContext: AudioContext): Promise<void> {
         this.audioContext = audioContext;
         try {
-            const response = await fetch(`./${this.path}`);
+            const response = await fetch(this.url);
             const arrayBuffer = await response.arrayBuffer();
             this.audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            console.log(`Audio loaded successfully for ${this.path}`);
+            console.log(`Audio loaded successfully for ${this.url}`);
         } catch (error) {
             console.error("Error loading audio:", error);
         }
     }
 
-    isLoaded(): Boolean {
+    isLoaded(): boolean {
         return this.audioBuffer != null && this.audioContext != null
     }
 
@@ -32,7 +32,7 @@ export class AudioPlayer {
             this.sourceNode.connect(this.audioContext.destination);
             this.sourceNode.start();
         } else {
-            console.error(`Audio not loaded yet for ${this.path}`);
+            console.error(`Audio not loaded yet for ${this.url}`);
         }
     }
 

@@ -1,14 +1,18 @@
 import { SvelteMap } from "svelte/reactivity";
 import type { HitId, HitType, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
 import { AudioManager } from "$lib";
+import { AudioDb } from "$lib/db/audio_db";
 
 // Responsible for modifying and playing instruments
 export class InstrumentManager {
 
     private audioManager = new AudioManager()
+    private audioDb: AudioDb = new AudioDb();
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = $state(new SvelteMap())
 
+    // Populate instruments state with given config
+    // Save audio files into indexedDB
     constructor(instrumentConfigs: Array<InstrumentConfig>) {
         instrumentConfigs.forEach((instrument) => {
             let instrumentId = `${instrument.name}_${crypto.randomUUID()}`
@@ -18,7 +22,7 @@ export class InstrumentManager {
                     id: hitId,
                     key: hit.key,
                     description: hit.description,
-                    audioPath: hit.audioPath
+                    audioFileName: hit.audioFileName
                 }
                 return [hitId, hitWithId]
             }))
@@ -29,15 +33,50 @@ export class InstrumentManager {
                 name: instrument.name
             })
         })
-        this.audioManager.addInstruments(this.instruments)
+
+        this.instruments.forEach((instrument) => {
+            instrument.hitTypes.forEach((hit) => {
+                fetch(`./${hit.audioFileName}`)
+                    .then((res) => {
+                        console.log(res)
+                        res.blob()
+                            .then((blob) => {
+                                const file = new File([blob], hit.audioFileName, { type: blob.type });
+                                this.audioDb.storeAudio(file)
+                            })
+                    })
+            })
+        })
     }
 
-    playHit(hit: InstrumentHit | undefined) {
-        if (hit) this.audioManager.playHit(hit)
+    async playHit(hit: InstrumentHit | undefined) {
+        if (hit) {
+            if (!this.audioManager.hitInitialised(hit)) {
+                let instrument = this.instruments.get(hit.instrumentId)
+                let hitType = instrument?.hitTypes.get(hit.hitId)
+                if (hitType) {
+                    try {
+                        await this.audioManager.setupHitAudioPlayer(hitType)
+                        await this.audioManager.loadHitAudio(hit.hitId)
+                        this.audioManager.playHit(hit)
+                    } catch (e) {
+                        console.error("Can't setup uninitialised instrument hit. Error:", e)
+                    }
+                } else {
+                    console.error(`Can't play hit as audio not initialised and instrument with id ${hit.instrumentId} with hit with id ${hit.hitId} doesn't exist in instrument manager`)
+                }
+            } else {
+                this.audioManager.playHit(hit)
+            }
+        }
+    }
+
+    play(instrumentId: InstrumentId, hitId: HitId) {
+        this.playHit({ instrumentId, hitId })
     }
 
     initInstruments() {
-        this.audioManager.initInstruments()
+        this.audioManager.loadAllHitAudio()
     }
 
     onChangeName(name: string, id: InstrumentId): any {
@@ -55,6 +94,13 @@ export class InstrumentManager {
     onChangeHitDescription(value: string, instrumentId: InstrumentId, hitId: HitId) {
         this.updateInstrumentHit(instrumentId, hitId, (hit) => {
             hit.description = value
+        })
+    }
+
+    async onChangeSample(file: File, instrumentId: InstrumentId, hitId: HitId) {
+        let storedFilename = await this.audioDb.storeAudio(file);
+        this.updateInstrumentHit(instrumentId, hitId, (hit) => {
+            hit.audioFileName = storedFilename
         })
     }
 

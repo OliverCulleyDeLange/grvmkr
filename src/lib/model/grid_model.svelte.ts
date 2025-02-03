@@ -66,9 +66,10 @@ export class GridModel {
     toggleLocation(locator: CellLocator) {
         let row = this.rows[locator.row]
         let currentValue = this.currentHit(locator);
-        let newInstrumentHit = this.nextHitType(row, currentValue?.hitId);
+        let newInstrumentHit: InstrumentHit | undefined = this.nextHitType(row, currentValue?.hitId);
         console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
         this.update(locator, newInstrumentHit)
+        this.instrumentManager?.playHit(newInstrumentHit)
     }
 
     notationColumns(): number {

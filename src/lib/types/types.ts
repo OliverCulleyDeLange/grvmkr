@@ -21,7 +21,7 @@ export type HitTypeWithId = HitType & { id: HitId };
 export type HitType = {
     key: HitTypeKey
     description: string | undefined
-    audioPath: string
+    audioFileName: string
 }
 
 export type InstrumentHit = {
