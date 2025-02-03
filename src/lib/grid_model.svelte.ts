@@ -9,12 +9,10 @@ export class GridModel {
 
     constructor(instrumentManager: InstrumentManager) {
         this.instrumentManager = instrumentManager
-        this.audioManager.addInstruments(instrumentManager.instruments)
         this.rows = this.buildGrid(instrumentManager.instruments)
         console.log(this.instrumentManager)
     }
 
-    private audioManager = new AudioManager()
     private instrumentManager: InstrumentManager | undefined = $state()
 
     public playing = $state(false);
@@ -63,35 +61,12 @@ export class GridModel {
         return ui
     }
 
-    async initInstruments() {
-        await this.audioManager.initInstruments()
-    }
-
     toggleLocation(locator: CellLocator) {
         let row = this.rows[locator.row]
         let currentValue = this.currentHit(locator);
         let newValue = this.nextHitType(row, currentValue.hitKey);
         console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newValue}`);
         this.update(locator, newValue)
-    }
-
-    playBeat(count: number) {
-        let cell = count % this.gridCols
-        let repetition = Math.floor(count / this.gridCols);
-        let bar = Math.floor(count / (this.beatsPerBar * this.beatNoteFraction)) % this.bars;
-        let beat = Math.floor(count / this.beatNoteFraction) % this.beatsPerBar;
-        let beatDivision = count % this.beatNoteFraction;
-
-        console.log(`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${this.gridCols})`);
-
-        for (let row of this.rows) {
-            let locator: CellLocator = {
-                row: row.config.gridIndex,
-                notationLocator: { bar: bar, beat: beat, division: beatDivision }
-            }
-            this.audioManager.playHit(this.currentHit(locator));
-        }
-        this.currentColumn = cell
     }
 
     notationColumns(): number {
@@ -174,7 +149,7 @@ export class GridModel {
         }
     }
 
-    private currentHit(locator: CellLocator): InstrumentHit {
+    currentHit(locator: CellLocator): InstrumentHit {
         let row = this.rows[locator.row]
         let hitTypeKey = this.getCell(locator).hitType
         return {

@@ -31,20 +31,16 @@
 	});
 
 	async function togglePlaying(grid: GridModel, newPlaying: boolean): Promise<void> {
-        grids.forEach((grid) => {grid.playing = false})
-        if (newPlaying){
-            await initInstruments();
-            activeGrid = grid
-            grid.playing = newPlaying
-        }
-        playing = newPlaying;
+		grids.forEach((grid) => {
+			grid.playing = false;
+		});
+		if (newPlaying) {
+			await instrumentManager.initInstruments();
+			activeGrid = grid;
+			grid.playing = newPlaying;
+		}
+		playing = newPlaying;
 	}
-    
-    async function initInstruments() {
-        for (let grid of grids){
-            await grid.initInstruments()
-        }
-    }
 
 	function stop() {
 		clearInterval(playingIntervalId);
@@ -54,27 +50,54 @@
 	}
 
 	async function onBeat() {
-		activeGrid.playBeat(nextCount++);
+		let count = nextCount++;
+		let cell = count % activeGrid.gridCols;
+		let repetition = Math.floor(count / activeGrid.gridCols);
+		let bar = Math.floor(count / (activeGrid.beatsPerBar * activeGrid.beatNoteFraction)) % activeGrid.bars;
+		let beat = Math.floor(count / activeGrid.beatNoteFraction) % activeGrid.beatsPerBar;
+		let beatDivision = count % activeGrid.beatNoteFraction;
+
+		console.log(
+			`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${activeGrid.gridCols})`
+		);
+
+		for (let row of activeGrid.rows) {
+			let locator: CellLocator = {
+				row: row.config.gridIndex,
+				notationLocator: { bar: bar, beat: beat, division: beatDivision }
+			};
+			instrumentManager.playHit(activeGrid.currentHit(locator));
+		}
+		activeGrid.currentColumn = cell;
 	}
 
 	async function onTapGridCell(locator: CellLocator, grid: GridModel): Promise<void> {
 		grid.toggleLocation(locator);
 	}
 
-    function addGrid() {
-        grids.push(new GridModel(instrumentManager))
-    }
+	function addGrid() {
+		grids.push(new GridModel(instrumentManager));
+	}
 </script>
 
+{#each grids as grid}
+	<GridConfig
+		{grid}
+		togglePlaying={(playing) => {
+			togglePlaying(grid, playing);
+		}}
+	/>
+	<Grid
+		{grid}
+		onTapGridCell={(locator) => {
+			onTapGridCell(locator, grid);
+		}}
+	/>
+{/each}
 
-	{#each grids as grid}
-		<GridConfig {grid} togglePlaying={(playing) => {togglePlaying(grid, playing)}} />
-		<Grid {grid} onTapGridCell={(locator) => {onTapGridCell(locator, grid)}} />
-	{/each}
-
-	<button
-		onclick={addGrid}
-		class="my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 print:hidden"
-	>
-		Add Grid
-	</button>
+<button
+	onclick={addGrid}
+	class="my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 print:hidden"
+>
+	Add Grid
+</button>
