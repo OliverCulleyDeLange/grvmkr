@@ -1,21 +1,20 @@
 import { AudioPlayer } from "./audio_player";
-import type { InstrumentConfig, InstrumentHit } from "./types";
+import type { InstrumentConfig, InstrumentHit, InstrumentId } from "./types";
 
 export class AudioManager {
 
     private audioContext: AudioContext | null = null;
-    private hits: Map<string, AudioPlayer> = new Map();
+    private hits: Map<InstrumentId, AudioPlayer> = new Map();
 
-    addInstruments(instruments: InstrumentConfig[]) {
-        instruments.forEach((instrument) => {
-            instrument.hitTypes.forEach((hitType) => {
-                let hit: InstrumentHit = { instrumentName: instrument.name, hitKey: hitType.key }
-                
+    addInstruments(instruments: Map<InstrumentId, InstrumentConfig>) {
+        instruments.forEach((config, id) => {
+            config.hitTypes.forEach((hitType) => {
+                let hit: InstrumentHit = { instrumentId: id, hitKey: hitType.key }
                 this.hits.set(
                     this.getInstrumentHitKey(hit),
                     new AudioPlayer(hitType.audioPath)
                 )
-                console.log(`Added player for ${hit.instrumentName} ${hit.hitKey}`)
+                console.log(`Added player for ${hit.instrumentId} ${hit.hitKey}`)
             })
         })
         // console.log(`Players: ${JSON.stringify(Array.from(this.hits))}`)
@@ -28,7 +27,7 @@ export class AudioManager {
         if (player){
             player.play()
         } else {
-            console.error(`Can't play ${hit.instrumentName}_${hit.hitKey}, as no player. ExistingPlayers: ${JSON.stringify(this.hits.keys())}`)
+            console.error(`Can't play ${hit.instrumentId}_${hit.hitKey}, as no player. ExistingPlayers: ${JSON.stringify(this.hits.keys())}`)
         }
     }
 
@@ -43,6 +42,6 @@ export class AudioManager {
     }
 
     private getInstrumentHitKey(hit: InstrumentHit) {
-        return `${hit.instrumentName}_${hit.hitKey}`
+        return `${hit.instrumentId}_${hit.hitKey}`
     }
 }

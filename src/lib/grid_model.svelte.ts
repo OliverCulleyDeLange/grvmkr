@@ -8,8 +8,8 @@ import type { NotationGridRowUi, GridCellUi } from "./types_ui";
 export class GridModel {
 
     constructor(instrumentManager: InstrumentManager) {
-        // this.audioManager.addInstruments(instrumentManager.instruments)
         this.instrumentManager = instrumentManager
+        this.audioManager.addInstruments(instrumentManager.instruments)
         this.rows = this.buildGrid(instrumentManager.instruments)
         console.log(this.instrumentManager)
     }
@@ -44,7 +44,7 @@ export class GridModel {
                 return bar.beats.flatMap((beat, beatI) => {
                     let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
                         return {
-                            darken: false,
+                            darken: divisionI == 0,
                             content: division.hitType ?? "",
                             locator: {
                                 row: rowI,
@@ -60,8 +60,6 @@ export class GridModel {
                 gridCells
             }
         })
-        console.log(`built ui`)
-        console.log(instruments)
         return ui
     }
 
@@ -180,7 +178,7 @@ export class GridModel {
         let row = this.rows[locator.row]
         let hitTypeKey = this.getCell(locator).hitType
         return {
-            instrumentName: row.config.name,
+            instrumentId: row.instrumentId,
             hitKey: hitTypeKey
         }
     }

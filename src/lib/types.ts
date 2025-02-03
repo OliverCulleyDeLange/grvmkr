@@ -14,7 +14,7 @@ export type HitType = {
 }
 
 export type InstrumentHit = {
-    instrumentName: string,
+    instrumentId: InstrumentId,
     hitKey: HitTypeKey
 }
 

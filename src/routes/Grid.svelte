@@ -32,31 +32,7 @@
 			</div>
 		{/each}
 	</div>
-	<!-- Note grid -->
-	{#each grid.rows as row, rowI}
-		<!-- Name -->
-		<div class="px-2">
-			<div>{row.config.name}</div>
-		</div>
 
-		{#each row.notation.bars as bar, barI}
-			{#each bar.beats as beat, beatI}
-				{#each beat.divisions as division, divisionI}
-					<GridCell
-						text={division.hitType}
-						darken={divisionI == 0}
-						onTap={() =>
-							onTapGridCell({
-								row: rowI,
-								notationLocator: { bar: barI, beat: beatI, division: divisionI }
-							})}
-					/>
-				{/each}
-			{/each}
-		{/each}
-	{/each}
-
-	<!-- TESTING UI MODEL -->
 	{#each grid.uiModel as row}
 		<!-- Name -->
 		<div class="px-2">
