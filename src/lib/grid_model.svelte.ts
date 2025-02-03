@@ -2,7 +2,7 @@ import type GridCell from "../routes/GridCell.svelte";
 import { AudioManager } from "./audio_manager";
 import { defaultInstruments } from "./default";
 import type { InstrumentManager } from "./instrument_manager.svelte";
-import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitTypeKey, InstrumentConfig, InstrumentHit, InstrumentId, NotationLocator } from "./types";
+import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitId, HitType, HitTypeKey, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, NotationLocator } from "./types";
 import type { NotationGridRowUi, GridCellUi } from "./types_ui";
 
 export class GridModel {
@@ -41,12 +41,18 @@ export class GridModel {
             let gridCells: GridCellUi[] = row.notation.bars.flatMap((bar, barI) => {
                 return bar.beats.flatMap((beat, beatI) => {
                     let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
+                        let cellContent
+                        if (division.hit) {
+                            let instrument: InstrumentWithId = instruments.get(division.hit.instrumentId)
+                            let hit = instrument.hitTypes.get(division.hit.hitId)
+                            cellContent = hit?.key ?? ""
+                        }
                         return {
                             darken: divisionI == 0,
-                            content: division.hitType ?? "",
+                            content: cellContent ?? "",
                             locator: {
                                 row: rowI,
-                                notationLocator: {bar: barI, beat: beatI, division: divisionI }
+                                notationLocator: { bar: barI, beat: beatI, division: divisionI }
                             }
                         }
                     })
@@ -54,7 +60,7 @@ export class GridModel {
                 })
             })
             return {
-                instrumentName: instruments.get(row.instrumentId)?.name ?? row.instrumentId,
+                instrumentName: instruments.get(row.instrument.id)?.name ?? row.instrument.id,
                 gridCells
             }
         })
@@ -64,9 +70,9 @@ export class GridModel {
     toggleLocation(locator: CellLocator) {
         let row = this.rows[locator.row]
         let currentValue = this.currentHit(locator);
-        let newValue = this.nextHitType(row, currentValue.hitKey);
-        console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newValue}`);
-        this.update(locator, newValue)
+        let newInstrumentHit = this.nextHitType(row, currentValue?.hitId);
+        console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
+        this.update(locator, newInstrumentHit)
     }
 
     notationColumns(): number {
@@ -108,13 +114,13 @@ export class GridModel {
         });
     }
 
-    private buildGrid(instruments: Map<InstrumentId, InstrumentConfig>): Array<GridRow> {
+    private buildGrid(instruments: Map<InstrumentId, InstrumentWithId>): Array<GridRow> {
         return Array.from(instruments.entries()).map(
-            ([id, config]) => {
+            ([id, instrument]) => {
                 let notation = {
                     bars: Array.from({ length: this.bars }, () => this.defaultBar())
                 }
-                return { config, notation, instrumentId: id }
+                return { instrument, notation }
             }
         )
     }
@@ -132,35 +138,34 @@ export class GridModel {
     }
 
     private defaultBeatDivision(): BeatDivision {
-        return { hitType: undefined }
+        return { hit: undefined }
     }
 
-    private nextHitType(row: GridRow, hitTypeKey: HitTypeKey | undefined): HitTypeKey | undefined {
-        if (hitTypeKey == undefined) return row.config.hitTypes[0].key
-        let currentIndex = row.config.hitTypes.findIndex((ht) => {
-            // console.log(`ht.key ${ht.key} == hitTypeKey ${hitTypeKey}`)
-            return ht.key == hitTypeKey
+    private nextHitType(row: GridRow, hitId: HitId | undefined): InstrumentHit | undefined {
+        let hits = Array.from(row.instrument.hitTypes.values());
+        let instrumentHit = {
+            instrumentId: row.instrument.id,
+            hitId: hits[0].id
+        }
+        if (hitId == undefined) return instrumentHit
+        let currentIndex = hits.findIndex((ht) => {
+            return ht.id == hitId
         })
-        // console.log(`curr idx ${currentIndex}`)
-        if (currentIndex + 1 >= row.config.hitTypes.length) {
+        if (currentIndex + 1 >= hits.length) {
             return undefined
         } else {
-            return row.config.hitTypes[currentIndex + 1].key
+            instrumentHit.hitId = hits[currentIndex + 1].id
+            return instrumentHit
         }
     }
 
-    currentHit(locator: CellLocator): InstrumentHit {
-        let row = this.rows[locator.row]
-        let hitTypeKey = this.getCell(locator).hitType
-        return {
-            instrumentId: row.instrumentId,
-            hitKey: hitTypeKey
-        }
+    currentHit(locator: CellLocator): InstrumentHit | undefined {
+        return this.getCell(locator).hit
     }
 
-    private update(locator: CellLocator, newHitTypeKey: HitTypeKey | undefined) {
+    private update(locator: CellLocator, hit: InstrumentHit | undefined) {
         let division = this.getCell(locator)
-        division.hitType = newHitTypeKey
+        division.hit = hit
     }
 
     private getCell(locator: CellLocator): BeatDivision {

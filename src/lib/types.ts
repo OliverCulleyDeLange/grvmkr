@@ -1,12 +1,23 @@
 
 export type InstrumentId = string
+export type HitId = string
 
+// Uninitialised instrument config. 
 export type InstrumentConfig = {
     hitTypes: Array<HitType>
     gridIndex: number
     name: string
 };
 
+// InstrumentConfig creates these when they're initialised and given an ID
+export type InstrumentWithId = {
+    id: InstrumentId
+    hitTypes: Map<HitId, HitTypeWithId>
+    gridIndex: number
+    name: string
+};
+
+export type HitTypeWithId = HitType & { id: HitId }; 
 export type HitType = {
     key: HitTypeKey
     description: string | undefined
@@ -15,13 +26,12 @@ export type HitType = {
 
 export type InstrumentHit = {
     instrumentId: InstrumentId,
-    hitKey: HitTypeKey
+    hitId: HitId
 }
 
 export type GridRow = {
-    config: InstrumentConfig
+    instrument: InstrumentWithId
     notation: Notation
-    instrumentId: InstrumentId
 };
 
 export type CellLocator = {
@@ -48,7 +58,7 @@ export type Beat = {
 };
 
 export type BeatDivision = {
-    hitType: HitTypeKey
+    hit: InstrumentHit | undefined
 };
 
 

@@ -1,33 +1,33 @@
 import { AudioPlayer } from "./audio_player";
-import type { InstrumentConfig, InstrumentHit, InstrumentId } from "./types";
+import type { HitId, InstrumentHit, InstrumentId, InstrumentWithId } from "./types";
 
 export class AudioManager {
 
     private audioContext: AudioContext | null = null;
-    private hits: Map<InstrumentId, AudioPlayer> = new Map();
+    private hits: Map<HitId, AudioPlayer> = new Map();
 
-    addInstruments(instruments: Map<InstrumentId, InstrumentConfig>) {
-        instruments.forEach((config, id) => {
-            config.hitTypes.forEach((hitType) => {
-                let hit: InstrumentHit = { instrumentId: id, hitKey: hitType.key }
+    addInstruments(instruments: Map<InstrumentId, InstrumentWithId>) {
+        instruments.forEach((config, instrumentId) => {
+            config.hitTypes.forEach((hitType, hitId) => {
+                let hit: InstrumentHit = { instrumentId, hitId }
                 this.hits.set(
-                    this.getInstrumentHitKey(hit),
+                    hit.hitId,
                     new AudioPlayer(hitType.audioPath)
                 )
-                console.log(`Added player for ${hit.instrumentId} ${hit.hitKey}`)
+                console.log(`Added player for ${hit.instrumentId} ${hit.hitId}`)
             })
         })
         // console.log(`Players: ${JSON.stringify(Array.from(this.hits))}`)
     }
 
     playHit(hit: InstrumentHit) {
-        if (hit.hitKey == undefined) return
-        let key = this.getInstrumentHitKey(hit)
-        let player = this.hits.get(key)
+        if (hit.hitId == undefined) return
+        let player = this.hits.get(hit.hitId)
         if (player){
             player.play()
         } else {
-            console.error(`Can't play ${hit.instrumentId}_${hit.hitKey}, as no player. ExistingPlayers: ${JSON.stringify(this.hits.keys())}`)
+            console.error(`Can't play ${hit.hitId}, as no player. ExistingPlayers: `)
+            console.error(this.hits)
         }
     }
 
@@ -39,9 +39,5 @@ export class AudioManager {
             if (!player.isLoaded()) await player.loadAudio(this.audioContext);
         }
         console.log("Instruments initialised")
-    }
-
-    private getInstrumentHitKey(hit: InstrumentHit) {
-        return `${hit.instrumentId}_${hit.hitKey}`
     }
 }

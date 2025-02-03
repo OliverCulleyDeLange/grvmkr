@@ -63,7 +63,7 @@
 
 		for (let row of activeGrid.rows) {
 			let locator: CellLocator = {
-				row: row.config.gridIndex,
+				row: row.instrument.gridIndex,
 				notationLocator: { bar: bar, beat: beat, division: beatDivision }
 			};
 			instrumentManager.playHit(activeGrid.currentHit(locator));
