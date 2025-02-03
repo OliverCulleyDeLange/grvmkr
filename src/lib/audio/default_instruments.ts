@@ -1,4 +1,4 @@
-import type { InstrumentConfig } from "./types";
+import type { InstrumentConfig } from "$lib";
 
 export const defaultInstruments: Array<InstrumentConfig> = [
     { 

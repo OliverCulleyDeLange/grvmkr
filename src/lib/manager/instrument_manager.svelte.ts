@@ -1,6 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
-import type { HitId, HitType, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId } from "./types";
-import { AudioManager } from "./audio_manager";
+import type { HitId, HitType, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
+import { AudioManager } from "$lib";
 
 // Responsible for modifying and playing instruments
 export class InstrumentManager {

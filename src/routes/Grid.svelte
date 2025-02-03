@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { GridModel } from '$lib';
-	import type { CellLocator } from '$lib/types';
+	import type { CellLocator } from '$lib';
 	import GridCell from './GridCell.svelte';
 
 	type OnTapGridCell = (locator: CellLocator) => void;

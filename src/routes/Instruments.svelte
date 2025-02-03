@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { InstrumentManager } from "$lib/instrument_manager.svelte";
+	import type { InstrumentManager } from "$lib";
 
 	let { instrumentManager }: {  instrumentManager: InstrumentManager} = $props();
 </script>

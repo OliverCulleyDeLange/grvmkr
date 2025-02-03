@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { GridModel } from '$lib';
-	import type { InstrumentManager } from '$lib/instrument_manager.svelte';
-	import type { CellLocator } from '$lib/types';
+	import type { InstrumentManager } from '$lib';
+	import type { CellLocator } from '$lib';
 	import Grid from './Grid.svelte';
 	import GridConfig from './GridConfig.svelte';
 

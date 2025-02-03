@@ -1,4 +1,4 @@
-import { AudioPlayer } from "./audio_player";
+import { AudioPlayer } from "$lib";
 import type { HitId, InstrumentHit, InstrumentId, InstrumentWithId } from "./types";
 
 export class AudioManager {

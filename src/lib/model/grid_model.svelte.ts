@@ -1,9 +1,6 @@
-import type GridCell from "../routes/GridCell.svelte";
-import { AudioManager } from "./audio_manager";
-import { defaultInstruments } from "./default";
-import type { InstrumentManager } from "./instrument_manager.svelte";
-import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitId, HitType, HitTypeKey, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, NotationLocator } from "./types";
-import type { NotationGridRowUi, GridCellUi } from "./types_ui";
+import type { InstrumentManager } from "../manager/instrument_manager.svelte";
+import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitId, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
+import type { NotationGridRowUi, GridCellUi } from "$lib";
 
 export class GridModel {
 

@@ -1,4 +1,4 @@
-import type { CellLocator } from "./types";
+import type { CellLocator } from "$lib";
 
 export type NotationGridRowUi = {
     instrumentName: string

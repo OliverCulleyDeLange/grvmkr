@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { defaultInstruments } from '$lib/default';
-	import { InstrumentManager } from '$lib/instrument_manager.svelte';
+	import { defaultInstruments } from '$lib/audio/default_instruments';
+	import { InstrumentManager } from '$lib/manager/instrument_manager.svelte';
 	import Grids from './Grids.svelte';
 	import Instruments from './Instruments.svelte';
 

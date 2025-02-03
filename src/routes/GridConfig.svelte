@@ -31,6 +31,4 @@
 		/
 		<input type="number" bind:value={grid.beatNoteFraction} min="2" max="16" />
 	</div>
-	<!-- <p>Ms per division: {msPerBeatDivision}</p> -->
-	<!-- <p>Grid columns: {grid.gridCols}</p> -->
 </div>
