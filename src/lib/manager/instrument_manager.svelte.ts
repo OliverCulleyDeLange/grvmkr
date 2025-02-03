@@ -102,6 +102,7 @@ export class InstrumentManager {
         this.updateInstrumentHit(instrumentId, hitId, (hit) => {
             hit.audioFileName = storedFilename
         })
+        this.audioManager.removeHit(hitId)
     }
 
     private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void) {
