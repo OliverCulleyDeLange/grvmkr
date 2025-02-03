@@ -26,7 +26,7 @@
 		<input type="number" bind:value={grid.bars} min="1" max="16" />
 	</div>
 	<div class="mx-4">
-		<span>Time Signature:</span>
+		<span>Grid size:</span>
 		<input type="number" bind:value={grid.beatsPerBar} min="2" max="16" />
 		/
 		<input type="number" bind:value={grid.beatNoteFraction} min="2" max="16" />
