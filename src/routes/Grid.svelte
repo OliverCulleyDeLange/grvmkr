@@ -2,6 +2,7 @@
 	import type { GridModel, InstrumentManager } from '$lib';
 	import type { CellLocator } from '$lib';
 	import GridCell from './GridCell.svelte';
+	import Legend from './Legend.svelte';
 
 	type OnTapGridCell = (locator: CellLocator) => void;
 	type OnRemoveGrid = () => void;
@@ -41,7 +42,7 @@
 
 <div class="grid" style="--cells: {cells};">
 	<button
-		class="btn btn-outline btn-xs"
+		class="btn btn-outline btn-xs print:hidden"
 		onclick={onRemoveGrid}
 	>
 		❌
@@ -76,8 +77,9 @@
 				onTap={() => onTapGridCell(cell.locator)}
 			/>
 		{/each}
-	{/each}
+	{/each}	
 </div>
+<Legend {instrumentManager}/>
 
 <style>
 	.grid {

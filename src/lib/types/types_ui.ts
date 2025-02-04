@@ -10,3 +10,4 @@ export type GridCellUi = {
     content: string
     locator: CellLocator
 }
+

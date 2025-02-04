@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import Grids from './Grids.svelte';
 	import Instruments from './Instruments.svelte';
+	import Legend from './Legend.svelte';
 
 	let instrumentManager: InstrumentManager;
 
