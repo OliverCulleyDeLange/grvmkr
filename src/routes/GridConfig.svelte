@@ -18,19 +18,19 @@
 	let beatNoteFraction = $state(4);
 
 	function onBpmChange() {
-		bpm = Math.min(maxBpm, Math.max(minBpm, bpm));
+		bpm = Math.round(Math.min(maxBpm, Math.max(minBpm, bpm)));
 		grid.bpm = bpm;
 	}
 	function onBarsChange() {
-		bars = Math.min(maxBars, Math.max(minBars, bars));
+		bars =  Math.round(Math.min(maxBars, Math.max(minBars, bars)));
 		grid.bars = bars;
 	}
 	function onBeatsPerBarChange() {
-		beatsPerBar = Math.min(maxGridSize, Math.max(minGridSize, beatsPerBar));
+		beatsPerBar =  Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatsPerBar)));
 		grid.beatsPerBar = beatsPerBar;
 	}
 	function onBeatNoteFractionChange() {
-		beatNoteFraction = Math.min(maxGridSize, Math.max(minGridSize, beatNoteFraction));
+		beatNoteFraction =  Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatNoteFraction)));
 		grid.beatNoteFraction = beatNoteFraction;
 	}
 </script>
