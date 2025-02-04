@@ -41,11 +41,11 @@
 				<!-- This button is a proxy for the input below it to hide the un-needed file input UI -->
 				<button 
 					class="btn btn-xs btn-outline text-center text-sm font-semibold"
-					onclick={() => document.getElementById('hidden-file-input')?.click()}
+					onclick={() => document.getElementById(`hidden-file-input-${hitId}`)?.click()}
 				>
 					{hit.audioFileName}
 				</button>
-				<input id="hidden-file-input" type="file" onchange={(e) => handleFile(e, instrumentId, hitId)} accept="audio/*" hidden/>
+				<input id="hidden-file-input-{hitId}" type="file" onchange={(e) => handleFile(e, instrumentId, hitId)} accept="audio/*" hidden/>
 				
 				<!-- Play button -->
 				<button class="btn btn-xs btn-outline" onclick={() => instrumentManager.play(instrumentId, hitId)}>▶︎</button>
