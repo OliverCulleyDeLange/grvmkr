@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { defaultInstruments, GridModel, serialiseToJsonV1 } from '$lib';
+	import { defaultInstruments, GridModel, serialiseToJsonV1, type SaveFileV1 } from '$lib';
 	import { InstrumentManager } from '$lib/manager/instrument_manager.svelte';
 	import { onMount } from 'svelte';
 	import Grids from './Grids.svelte';
@@ -34,12 +34,29 @@
 		URL.revokeObjectURL(a.href);
 	}
 
+	async function loadFile(event: Event) {
+		const fileInput = event.target as HTMLInputElement;
+		if (fileInput.files && fileInput.files[0]) {
+			let file = fileInput.files[0];
+			let saveFile: SaveFileV1 = JSON.parse(await file.text())
+			console.log(saveFile)
+		}
+	}
+
 </script>
 
 <div class="m-2 p-4">
 	<div class="flex gap-8 print:hidden">
 		<h1 class="text-3xl">GrvMkr</h1>
 		<button class="btn btn-outline btn-sm" onclick={save}>Save</button>
+		<button class="btn btn-outline btn-sm" onclick={() => document.getElementById('hidden-file-input-for-load')?.click()} >Load</button>
+		<input
+			id="hidden-file-input-for-load"
+			type="file"
+			onchange={loadFile}
+			accept="application/json"
+			hidden
+		/>
 		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
 	</div>
 	{#if instrumentManager != undefined}
