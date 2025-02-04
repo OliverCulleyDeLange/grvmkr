@@ -1,19 +1,34 @@
-# sv
+# GrvMkr
+Groove Maker is a percussion grid notation tool and modern replacement for the now obsolete [Mango Drum](http://mangodrum.com/) which only runs on Windows.
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## Features
+Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful. 
 
-## Creating a project
+- ✅ Live editing
+  - Modify the grid and hear the results immediately, even when playing.
+- ✅ Choose the BPM for your composition (obviously)
+- ✅ Create your own instruments
+  - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
+- ✅ Built in instruments
+  - There are currently 3 built ins - HiHat (open&closed), snare and kick. I may or may not add more. Probably not. 
+- ✅ Save your composition grid as a PDF file for sharing with others
+  -  Technically possible by 'Printing to PDF'. I've made sure the grids aren't split between pages. 
+- ❓ Create a 'Playlist' which brings all the sections of your composition together
+  -  Er, kinda - You can create multiple grids, and play them seperately, but you can't create a playlist per se. If this is a useful feature, let me know, but the main purpose of this tool isn't to create songs, its to create grid notation.
+- ❌ ~~Change the volume and balance of each instrument~~: This didn't seem that important to me.
+- ❌ ~~Metronome~~: As above, didn't seem that useful. Just create an instrument with a beep sound file and fill in some squares?
+- ❌ ~~Undo and Redo~~: Seems unnecessary for such a simple app.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
+### Coming soon (maybe)
+- Removing grids, instruments and hits
+- Legend
+  - Currently the descriptions of the hits don't do anything. It'd be nice if there was a legend somewhere explaining what all your hits mean. eg S = Slap, O = Open. 
+- Better layout for longer patterns
+  - Currently anything over a 2 bar phrase is pretty impossible to work with / print. Bars should ideally wra[p nicely like test does. 
+- Saving your work and re-opening it:
+  - This seems pretty useful to me, say you want to edit something in the future.
+- Saving progress automatically so you don't lose everything if you refresh the page
+  
 ## Developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
