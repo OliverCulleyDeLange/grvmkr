@@ -14,7 +14,10 @@
 </script>
 
 <div class="m-2 p-4">
-	<h1 class="text-3xl print:hidden">GrvMkr</h1>
+	<div class="flex gap-8">
+		<h1 class="text-3xl print:hidden">GrvMkr</h1>
+		<button class="btn btn-sm btn-outline" onclick={() => window.print()}>Print / Save PDF</button>
+	</div>
 	{#if instrumentManager}
 		<Grids {instrumentManager} />
 		<div class="print:hidden">
