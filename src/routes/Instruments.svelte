@@ -15,13 +15,19 @@
 
 <h1 class="text-xl">Instruments</h1>
 {#each [...instrumentManager.instruments] as [instrumentId, instrument]}
-	<div class="flex flex-right gap-2">
+	<div class="flex-right flex gap-2">
 		<input
 			value={instrument.name}
 			oninput={(e) => instrumentManager.onChangeName(e.target.value, instrumentId)}
 			type="text"
 			class="input input-xs input-bordered"
 		/>
+		<button
+			class="btn btn-outline btn-xs"
+			onclick={() => instrumentManager.removeInstrument(instrumentId)}
+		>
+			❌
+		</button>
 		<button
 			class="btn btn-outline btn-xs"
 			onclick={() => instrumentManager.addHit(defaultHitConfig, instrumentId)}
@@ -75,6 +81,14 @@
 						onclick={() => instrumentManager.play(instrumentId, hitId)}>▶︎</button
 					>
 				{/if}
+
+				<!-- Delete Button -->
+				<button
+					class="btn btn-outline btn-xs"
+					onclick={() => instrumentManager.removeHit(instrumentId, hitId)}
+				>
+					❌
+				</button>
 			</li>
 		</ul>
 	{/each}

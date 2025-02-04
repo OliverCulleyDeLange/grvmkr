@@ -10,6 +10,8 @@ export class InstrumentManager {
     private audioDb: AudioDb = new AudioDb();
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
+    public numberOfHits: number = $derived([...this.instruments.values()]
+        .reduce((acc, instrument) => acc + instrument.hitTypes.size, 0))
 
     // Populate instruments state with given config
     // Save audio files into indexedDB
@@ -104,7 +106,24 @@ export class InstrumentManager {
         this.instruments.set(instrumentId, reactiveInstrument)
     }
 
-    buildHit(hit: HitType): HitTypeWithId {
+
+    removeInstrument(id: InstrumentId) {
+        this.instruments.delete(id)
+    }
+
+    addHit(hit: HitType, instrumentId: InstrumentId) {
+        let hitWithId = this.buildHit(hit)
+        this.instruments.get(instrumentId)?.hitTypes.set(hitWithId.id, hitWithId)
+    }
+
+    removeHit(instrumentId: InstrumentId, hitId: HitId) {
+        this.updateInstrument(instrumentId, (instrument) => {
+            instrument.hitTypes.delete(hitId)
+        })
+        this.audioManager.removeHit(hitId)
+    }
+
+    private buildHit(hit: HitType): HitTypeWithId {
         let hitId = crypto.randomUUID()
         let hitWithId = {
             id: hitId,
@@ -114,11 +133,6 @@ export class InstrumentManager {
         }
         let reactiveHit = $state(hitWithId)
         return reactiveHit
-    }
-
-    addHit(hit: HitType, instrumentId: InstrumentId) {
-        let hitWithId = this.buildHit(hit)
-        this.instruments.get(instrumentId)?.hitTypes.set(hitWithId.id, hitWithId)
     }
 
     private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void) {

@@ -10,8 +10,10 @@
 	let cells = $derived(grid.gridCols);
 	let currentColumn = $derived(grid.currentColumn);
 
+	// TODO These effects are side effects of state changes, 
+	// i feel like there's a better way of handling these, 
+	// where they're not tied to the UI
 	$effect(() => {
-		// This is jank, but i dunno how to do it better yet
 		let requiredGridCols = grid.gridCols;
 		let actualGridCols = grid.notationColumns();
 		if (requiredGridCols != actualGridCols) {
@@ -20,14 +22,13 @@
 	});
 	
 	$effect(() => {
-		// This is jank, but i dunno how to do it better yet
 		let requiredGridRows = instrumentManager.instruments.size;
 		let actualRows = grid.rows.length;
-		if (actualRows < requiredGridRows) {
-			let instrument = [...instrumentManager.instruments.values()].pop()
-			if (instrument) grid.addGridRow(instrument);
-		}
+		if (actualRows != requiredGridRows) {
+			grid.syncInstruments();
+		} 
 	});
+
 </script>
 
 <div class="grid" style="--cells: {cells};">

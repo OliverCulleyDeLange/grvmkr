@@ -23,7 +23,7 @@ export class GridModel {
 
     public msPerBeatDivision = $derived(60000 / this.bpm / this.beatNoteFraction);
 
-    // Total number of grid cells, derives from configurable grid state
+    // Total number of grid cells, derived from configurable grid state
     public gridCols = $derived(this.beatNoteFraction * this.beatsPerBar * this.bars);
 
     // Main grid state
@@ -112,9 +112,40 @@ export class GridModel {
         });
     }
 
-    addGridRow(instrument: InstrumentWithId) {
-        this.rows.push(this.defaultGridRow(instrument))
+    syncInstruments() {
+        // First remove all rows where the instrument is removed
+        let filteredRows = this.rows.filter((row) => {
+            return this.instrumentManager.instruments.has(row.instrument.id)
+        })
+        // console.log("Filtered rows -", filteredRows)
+        // Now add any new instruments
+        if (filteredRows.length < this.instrumentManager.instruments.size) {
+            let instrument = [...this.instrumentManager.instruments.values()].pop()
+            if (instrument) { 
+                filteredRows.push(this.defaultGridRow(instrument)) 
+            }
+        }
+        // console.log("Filtered rows +", filteredRows)
+        this.rows = filteredRows
     }
+
+
+    // When we remove a hit, we need to remove all the cells which contain that hit
+    removeHits(removedHit: InstrumentHit) {
+        console.log("removeHits")
+        this.rows.forEach((row) => {
+            row.notation.bars.forEach((bar) => {
+                bar.beats.forEach((beat) => {
+                    beat.divisions.forEach((division) => {
+                        if (division.hit == removedHit){
+                            division.hit == undefined
+                        }
+                    })
+                })
+            })
+        })
+    }
+
 
     private buildGrid(instruments: Map<InstrumentId, InstrumentWithId>): Array<GridRow> {
         return Array.from(instruments.entries())
