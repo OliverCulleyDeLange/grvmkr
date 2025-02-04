@@ -14,31 +14,14 @@ export class InstrumentManager {
     // Populate instruments state with given config
     // Save audio files into indexedDB
     constructor(instrumentConfigs: Array<InstrumentConfig>) {
-        instrumentConfigs.forEach((instrument) => {
-            let instrumentId = `${instrument.name}_${crypto.randomUUID()}`
-            let hitMap = new Map(instrument.hitTypes.map((hit) => {
-                let hitId = `${hit.key}_${instrument.name}_${crypto.randomUUID()}`
-                let hitWithId = {
-                    id: hitId,
-                    key: hit.key,
-                    description: hit.description,
-                    audioFileName: hit.audioFileName
-                }
-                return [hitId, hitWithId]
-            }))
-            this.instruments.set(instrumentId, {
-                id: instrumentId,
-                hitTypes: hitMap,
-                gridIndex: instrument.gridIndex,
-                name: instrument.name
-            })
-        })
+        instrumentConfigs.forEach((instrument) => this.addInstrument(instrument))
 
+        // Get the default sound files
+        // TODO Check if they exist before doing this
         this.instruments.forEach((instrument) => {
             instrument.hitTypes.forEach((hit) => {
                 fetch(`./${hit.audioFileName}`)
                     .then((res) => {
-                        console.log(res)
                         res.blob()
                             .then((blob) => {
                                 const file = new File([blob], hit.audioFileName, { type: blob.type });
@@ -105,6 +88,33 @@ export class InstrumentManager {
         this.audioManager.removeHit(hitId)
     }
 
+    addInstrument(instrument: InstrumentConfig) {
+        let instrumentId = `${instrument.name}_${crypto.randomUUID()}`
+        let hitMap = new Map(instrument.hitTypes.map((hit) => {
+            let hitId = `${hit.key}_${instrument.name}_${crypto.randomUUID()}`
+            let hitWithId = {
+                id: hitId,
+                key: hit.key,
+                description: hit.description,
+                audioFileName: hit.audioFileName
+            }
+            return [hitId, hitWithId]
+        }))
+        this.instruments.set(instrumentId, {
+            id: instrumentId,
+            hitTypes: hitMap,
+            gridIndex: instrument.gridIndex,
+            name: instrument.name
+        })
+        this.superHackyWorkaroundForReactivityFixmePlz()
+    }
+
+    private superHackyWorkaroundForReactivityFixmePlz() {
+        // FIXME Super hacky workaround to make the map changes reactive. 
+        let newMap = new SvelteMap(this.instruments)
+        this.instruments = newMap
+    }
+
     private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void) {
         let instrument = this.instruments.get(id)
         if (instrument) {
@@ -112,9 +122,7 @@ export class InstrumentManager {
         } else {
             console.error(`Couldn't update instrument ${id} as it doesn't exist`)
         }
-        // FIXME Super hacky workaround to make the map changes reactive. 
-        let newMap = new SvelteMap(this.instruments)
-        this.instruments = newMap
+        this.superHackyWorkaroundForReactivityFixmePlz()
     }
 
     private updateInstrumentHit(instrumentId: InstrumentId, hitId: HitId, callback: (config: HitType) => void) {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HitId, InstrumentId, InstrumentManager } from '$lib';
+	import { defaultInstrumentConfig } from '$lib/audio/default_instruments';
 
 	let { instrumentManager }: { instrumentManager: InstrumentManager } = $props();
 
@@ -53,3 +54,7 @@
 		</ul>
 	{/each}
 {/each}
+
+<button class="btn btn-xs btn-outline" onclick={() => instrumentManager.addInstrument(defaultInstrumentConfig)}>
+	Add Instrument
+</button>

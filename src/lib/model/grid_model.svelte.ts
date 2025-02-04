@@ -9,7 +9,7 @@ export class GridModel {
         this.rows = this.buildGrid(instrumentManager.instruments)
     }
 
-    private instrumentManager: InstrumentManager | undefined = $state()
+    private instrumentManager: InstrumentManager = $state() as InstrumentManager
 
     public playing = $state(false);
     public bpm = $state(120);
@@ -30,17 +30,18 @@ export class GridModel {
     public rows: Array<GridRow> = $state([]);
 
     // Testing
-    public uiModel: NotationGridRowUi[] = $derived(this.buildUi(this.rows, this.instrumentManager?.instruments));
+    public uiModel: NotationGridRowUi[] = $derived(this.buildUi(this.rows, this.instrumentManager));
 
-    buildUi(rows: GridRow[], instruments: any | undefined): NotationGridRowUi[] {
+    buildUi(rows: GridRow[], instrumentManager: InstrumentManager): NotationGridRowUi[] {
+        let instruments = instrumentManager.instruments
         let ui = rows.map((row, rowI) => {
             let gridCells: GridCellUi[] = row.notation.bars.flatMap((bar, barI) => {
                 return bar.beats.flatMap((beat, beatI) => {
                     let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
                         let cellContent
                         if (division.hit) {
-                            let instrument: InstrumentWithId = instruments.get(division.hit.instrumentId)
-                            let hit = instrument.hitTypes.get(division.hit.hitId)
+                            let instrument: InstrumentWithId | undefined = instruments.get(division.hit.instrumentId)
+                            let hit = instrument?.hitTypes.get(division.hit.hitId)
                             cellContent = hit?.key ?? ""
                         }
                         return {
@@ -111,15 +112,20 @@ export class GridModel {
         });
     }
 
+    addGridRow(instrument: InstrumentWithId) {
+        this.rows.push(this.defaultGridRow(instrument))
+    }
+
     private buildGrid(instruments: Map<InstrumentId, InstrumentWithId>): Array<GridRow> {
-        return Array.from(instruments.entries()).map(
-            ([id, instrument]) => {
-                let notation = {
-                    bars: Array.from({ length: this.bars }, () => this.defaultBar())
-                }
-                return { instrument, notation }
-            }
-        )
+        return Array.from(instruments.entries())
+            .map(([_, instrument]) => this.defaultGridRow(instrument))
+    }
+
+    private defaultGridRow(instrument: InstrumentWithId): GridRow {
+        let notation = {
+            bars: Array.from({ length: this.bars }, () => this.defaultBar())
+        }
+        return { instrument, notation }
     }
 
     private defaultBar(): Bar {

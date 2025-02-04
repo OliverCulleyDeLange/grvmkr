@@ -1,10 +1,12 @@
 <script lang="ts">
-	import type { GridModel } from '$lib';
+	import type { GridModel, InstrumentManager } from '$lib';
 	import type { CellLocator } from '$lib';
 	import GridCell from './GridCell.svelte';
 
 	type OnTapGridCell = (locator: CellLocator) => void;
-	let { grid, onTapGridCell }: { grid: GridModel; onTapGridCell: OnTapGridCell } = $props();
+	let { grid, instrumentManager, onTapGridCell }:{ 
+		grid: GridModel; instrumentManager: InstrumentManager; onTapGridCell: OnTapGridCell
+	  } = $props();
 	let cells = $derived(grid.gridCols);
 	let currentColumn = $derived(grid.currentColumn);
 
@@ -14,6 +16,16 @@
 		let actualGridCols = grid.notationColumns();
 		if (requiredGridCols != actualGridCols) {
 			grid.resizeGrid();
+		}
+	});
+	
+	$effect(() => {
+		// This is jank, but i dunno how to do it better yet
+		let requiredGridRows = instrumentManager.instruments.size;
+		let actualRows = grid.rows.length;
+		if (actualRows < requiredGridRows) {
+			let instrument = [...instrumentManager.instruments.values()].pop()
+			if (instrument) grid.addGridRow(instrument);
 		}
 	});
 </script>

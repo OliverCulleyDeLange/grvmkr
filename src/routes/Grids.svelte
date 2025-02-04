@@ -61,13 +61,13 @@
 			`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${activeGrid.gridCols})`
 		);
 
-		for (let row of activeGrid.rows) {
+		activeGrid.rows.forEach((row, rowI) => {
 			let locator: CellLocator = {
-				row: row.instrument.gridIndex,
+				row: rowI,
 				notationLocator: { bar: bar, beat: beat, division: beatDivision }
 			};
 			instrumentManager.playHit(activeGrid.currentHit(locator));
-		}
+		})
 		activeGrid.currentColumn = cell;
 	}
 
@@ -88,7 +88,7 @@
 			}}
 		/>
 		<Grid
-			{grid}
+			{grid} {instrumentManager}
 			onTapGridCell={(locator) => {
 				onTapGridCell(locator, grid);
 			}}
