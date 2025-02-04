@@ -5,6 +5,10 @@ export { AudioManager } from "./manager/audio_manager"
 export { AudioDb } from "./db/audio_db"
 export { InstrumentManager } from "./manager/instrument_manager.svelte"
 export { GridModel } from "./model/grid_model.svelte"
+
 export * from "./types/types"
 export * from "./types/types_ui"
 export * from "./types/ui/legend_ui"
+export * from "./types/serialisation/savefile_v1"
+
+export { serialiseToJsonV1 } from "./serialisation/json"

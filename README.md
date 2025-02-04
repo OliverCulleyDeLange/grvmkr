@@ -20,13 +20,12 @@ Some features from MangoDrum are still missing, i may or may not add them depend
 - ❌ ~~Undo and Redo~~: Seems unnecessary for such a simple app.
 
 ### Coming soon (maybe)
-- Legend
-  - Currently the descriptions of the hits don't do anything. It'd be nice if there was a legend somewhere explaining what all your hits mean. eg S = Slap, O = Open. 
-- Better layout for longer patterns
-  - Currently anything over a 2 bar phrase is pretty impossible to work with / print. Bars should ideally wra[p nicely like test does. 
 - Saving your work and re-opening it:
   - This seems pretty useful to me, say you want to edit something in the future.
 - Saving progress automatically so you don't lose everything if you refresh the page
+- Better layout for longer patterns
+  - Currently anything over a 2 bar phrase is pretty impossible to work with / print. Bars should ideally wrap nicely like test does. 
+
   
 ## Developing
 

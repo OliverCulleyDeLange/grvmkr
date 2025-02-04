@@ -6,15 +6,23 @@
 	import Grid from './Grid.svelte';
 	import GridConfig from './GridConfig.svelte';
 
-	let { instrumentManager }: { instrumentManager: InstrumentManager } = $props();
+	let { 
+		instrumentManager, grids, activeGrid, nextCount, playing, 
+	}: { 
+		instrumentManager: InstrumentManager;
+		grids: Map<number, GridModel>;
+		activeGrid: GridModel | undefined;
+		nextCount: number;
+		playing: boolean;
+	 } = $props();
 
-	let grids: SvelteMap<number,GridModel> = new SvelteMap([[0, new GridModel(instrumentManager)]]);
-	let activeGrid: GridModel | undefined = $state(grids.get(0));
+	// let grids: SvelteMap<number,GridModel> = new SvelteMap([[0, new GridModel(instrumentManager)]]);
+	// let activeGrid: GridModel | undefined = $state(grids.get(0));
 	let msPerBeatDivision = $derived(activeGrid?.msPerBeatDivision);
 
-	// Playing state
-	let playing = $state(false);
-	let nextCount: number = 0;
+	// // Playing state
+	// let playing = $state(false);
+	// let nextCount: number = 0;
 	let playingIntervalId: number | undefined = undefined;
 
 	$effect(() => {

@@ -1,25 +1,55 @@
 <script lang="ts">
-	import { defaultInstruments } from '$lib';
+	import { defaultInstruments, GridModel, serialiseToJsonV1 } from '$lib';
 	import { InstrumentManager } from '$lib/manager/instrument_manager.svelte';
 	import { onMount } from 'svelte';
 	import Grids from './Grids.svelte';
 	import Instruments from './Instruments.svelte';
-	import Legend from './Legend.svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
-	let instrumentManager: InstrumentManager;
+	let instrumentManager: InstrumentManager = $state() as InstrumentManager;
+	
+	let grids: SvelteMap<number, GridModel> = new SvelteMap();
+	let activeGrid: GridModel | undefined = $state();
+
+	// Playing state
+	let playing = $state(false);
+	let nextCount: number = 0;
 
 	onMount(() => {
 		instrumentManager = new InstrumentManager(defaultInstruments);
+		// Add initial grid, and set active
+		grids.set(0, new GridModel(instrumentManager))
+		activeGrid = grids.get(0)
 	});
+
+	function save() {
+		let saveFile = serialiseToJsonV1([...grids.values()], [...instrumentManager.instruments.values()])
+		const text = JSON.stringify(saveFile)
+		console.log("Saved", text)
+		const blob = new Blob([text], { type: 'application/json' });
+		const a = document.createElement('a');
+		a.href = URL.createObjectURL(blob);
+		a.download = `GrvMkr_v${saveFile.version}-${new Date().toISOString()}.json`;
+		a.click();
+		URL.revokeObjectURL(a.href);
+	}
+
 </script>
 
 <div class="m-2 p-4">
-	<div class="print:hidden flex gap-8">
+	<div class="flex gap-8 print:hidden">
 		<h1 class="text-3xl">GrvMkr</h1>
-		<button class="btn btn-sm btn-outline" onclick={() => window.print()}>Print / Save PDF</button>
+		<button class="btn btn-outline btn-sm" onclick={save}>Save</button>
+		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
 	</div>
-	{#if instrumentManager}
-		<Grids {instrumentManager} />
+	{#if instrumentManager != undefined}
+		<Grids 
+			{instrumentManager}
+			{grids}
+			{activeGrid}
+			{nextCount}
+			{playing}
+		 />
 		<div class="print:hidden">
 			<Instruments {instrumentManager} />
 		</div>

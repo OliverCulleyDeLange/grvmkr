@@ -91,7 +91,7 @@ export class InstrumentManager {
     }
 
     addInstrument(instrument: InstrumentConfig) {
-        let instrumentId = `${instrument.name}_${crypto.randomUUID()}`
+        let instrumentId = `instrument_${crypto.randomUUID()}`
 
         let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
             let hitWithId: HitTypeWithId = this.buildHit(hit)
@@ -124,7 +124,7 @@ export class InstrumentManager {
     }
 
     private buildHit(hit: HitType): HitTypeWithId {
-        let hitId = crypto.randomUUID()
+        let hitId = `hit_${crypto.randomUUID()}`
         let hitWithId = {
             id: hitId,
             key: hit.key,
