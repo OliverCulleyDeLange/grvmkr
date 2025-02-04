@@ -7,7 +7,7 @@ export class AudioManager {
     private hits: Map<HitId, AudioPlayer> = new Map();
     private audioDb = new AudioDb()
 
-    hitInitialised(hit: InstrumentHit): boolean {
+    isHitInitialised(hit: InstrumentHit): boolean {
         let player = this.hits.get(hit.hitId)
         return player != undefined && player.isLoaded()
     }

@@ -9,7 +9,7 @@ export class InstrumentManager {
     private audioManager = new AudioManager()
     private audioDb: AudioDb = new AudioDb();
 
-    public instruments: SvelteMap<InstrumentId, InstrumentWithId> = $state(new SvelteMap())
+    public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
 
     // Populate instruments state with given config
     // Save audio files into indexedDB
@@ -34,7 +34,7 @@ export class InstrumentManager {
 
     async playHit(hit: InstrumentHit | undefined) {
         if (hit) {
-            if (!this.audioManager.hitInitialised(hit)) {
+            if (!this.audioManager.isHitInitialised(hit)) {
                 let instrument = this.instruments.get(hit.instrumentId)
                 let hitType = instrument?.hitTypes.get(hit.hitId)
                 if (hitType) {
@@ -91,17 +91,17 @@ export class InstrumentManager {
     addInstrument(instrument: InstrumentConfig) {
         let instrumentId = `${instrument.name}_${crypto.randomUUID()}`
 
-        let hitMap = new Map(instrument.hitTypes.map((hit) => {
+        let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
             let hitWithId: HitTypeWithId = this.buildHit(hit)
             return [hitWithId.id, hitWithId]
         }))
-        this.instruments.set(instrumentId, {
+        let reactiveInstrument = $state({
             id: instrumentId,
             hitTypes: hitMap,
             gridIndex: instrument.gridIndex,
             name: instrument.name
         })
-        this.superHackyWorkaroundForReactivityFixmePlz()
+        this.instruments.set(instrumentId, reactiveInstrument)
     }
 
     buildHit(hit: HitType): HitTypeWithId {
@@ -112,19 +112,13 @@ export class InstrumentManager {
             description: hit.description,
             audioFileName: hit.audioFileName
         }
-        return hitWithId
+        let reactiveHit = $state(hitWithId)
+        return reactiveHit
     }
 
     addHit(hit: HitType, instrumentId: InstrumentId) {
         let hitWithId = this.buildHit(hit)
         this.instruments.get(instrumentId)?.hitTypes.set(hitWithId.id, hitWithId)
-        this.superHackyWorkaroundForReactivityFixmePlz()
-    }
-
-    private superHackyWorkaroundForReactivityFixmePlz() {
-        // FIXME Super hacky workaround to make the map changes reactive. 
-        let newMap = new SvelteMap(this.instruments)
-        this.instruments = newMap
     }
 
     private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void) {
@@ -134,7 +128,6 @@ export class InstrumentManager {
         } else {
             console.error(`Couldn't update instrument ${id} as it doesn't exist`)
         }
-        this.superHackyWorkaroundForReactivityFixmePlz()
     }
 
     private updateInstrumentHit(instrumentId: InstrumentId, hitId: HitId, callback: (config: HitType) => void) {
