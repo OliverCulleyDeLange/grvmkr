@@ -19,16 +19,16 @@
 		value={instrument.name}
 		oninput={(e) => instrumentManager.onChangeName(e.target.value, instrumentId)}
 		type="text"
-		class="input input-bordered input-xs"
+		class="input input-xs input-bordered"
 	/>
 	{#each [...instrument.hitTypes] as [hitId, hit]}
 		<ul class="text-sm text-gray-600">
-			<li class="flex-right flex p-1 gap-2">
+			<li class="flex-right flex gap-2 p-1">
 				<input
 					value={hit.key}
 					oninput={(e) => instrumentManager.onChangeHitKey(e.target.value, instrumentId, hitId)}
 					type="text"
-					class="input input-bordered input-xs w-8"
+					class="input input-xs input-bordered w-8"
 				/>
 				➜
 				<input
@@ -36,25 +36,44 @@
 					oninput={(e) =>
 						instrumentManager.onChangeHitDescription(e.target.value, instrumentId, hitId)}
 					type="text"
-					class="input input-bordered input-xs"
+					class="input input-xs input-bordered"
 				/>
 
 				<!-- This button is a proxy for the input below it to hide the un-needed file input UI -->
-				<button 
-					class="btn btn-xs btn-outline text-center text-sm font-semibold"
+				<button
+					class="btn btn-outline btn-xs text-center text-sm font-semibold"
+					class:btn-warning={!hit.audioFileName}
 					onclick={() => document.getElementById(`hidden-file-input-${hitId}`)?.click()}
 				>
-					{hit.audioFileName}
+					{#if hit.audioFileName != ''}
+						{hit.audioFileName}
+					{:else}
+						Upload sample
+					{/if}
 				</button>
-				<input id="hidden-file-input-{hitId}" type="file" onchange={(e) => handleFile(e, instrumentId, hitId)} accept="audio/*" hidden/>
-				
+				<input
+					id="hidden-file-input-{hitId}"
+					type="file"
+					onchange={(e) => handleFile(e, instrumentId, hitId)}
+					accept="audio/*"
+					hidden
+				/>
+
 				<!-- Play button -->
-				<button class="btn btn-xs btn-outline" onclick={() => instrumentManager.play(instrumentId, hitId)}>▶︎</button>
+				{#if hit.audioFileName != ''}
+					<button
+						class="btn btn-outline btn-xs"
+						onclick={() => instrumentManager.play(instrumentId, hitId)}>▶︎</button
+					>
+				{/if}
 			</li>
 		</ul>
 	{/each}
 {/each}
 
-<button class="btn btn-xs btn-outline" onclick={() => instrumentManager.addInstrument(defaultInstrumentConfig)}>
+<button
+	class="btn btn-outline btn-xs"
+	onclick={() => instrumentManager.addInstrument(defaultInstrumentConfig)}
+>
 	Add Instrument
 </button>
