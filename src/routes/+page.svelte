@@ -13,7 +13,7 @@
 </script>
 
 <div class="m-2 p-4">
-	<h1 class="text-3xl">GrvMkr</h1>
+	<h1 class="text-3xl print:hidden">GrvMkr</h1>
 	{#if instrumentManager}
 		<Grids {instrumentManager} />
 		<div class="print:hidden">

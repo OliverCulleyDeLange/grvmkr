@@ -2,33 +2,78 @@
 	import type { GridModel } from '$lib';
 
 	type TogglePlaying = (playing: boolean) => void;
-	let {
-		grid,
-		togglePlaying
-	}: { grid: GridModel; togglePlaying: TogglePlaying } = $props();
+	let { grid, togglePlaying }: { grid: GridModel; togglePlaying: TogglePlaying } = $props();
+
+	const minBpm = 20;
+	const maxBpm = 200;
+	let bpm = $state(120);
+
+	const minBars = 1;
+	const maxBars = 4;
+	let bars = $state(1);
+
+	const minGridSize = 1;
+	const maxGridSize = 8;
+	let beatsPerBar = $state(4);
+	let beatNoteFraction = $state(4);
+
+	function onBpmChange() {
+		bpm = Math.min(maxBpm, Math.max(minBpm, bpm));
+		grid.bpm = bpm;
+	}
+	function onBarsChange() {
+		bars = Math.min(maxBars, Math.max(minBars, bars));
+		grid.bars = bars;
+	}
+	function onBeatsPerBarChange() {
+		beatsPerBar = Math.min(maxGridSize, Math.max(minGridSize, beatsPerBar));
+		grid.beatsPerBar = beatsPerBar;
+	}
+	function onBeatNoteFractionChange() {
+		beatNoteFraction = Math.min(maxGridSize, Math.max(minGridSize, beatNoteFraction));
+		grid.beatNoteFraction = beatNoteFraction;
+	}
 </script>
 
-<div class="flex flex-left items-center flex-end break-after-avoid">
-	<button
-		onclick={() => togglePlaying(!grid.playing)}
-		class="my-2 btn btn-outline print:invisible"
-	>
+<div class="flex-left flex-end flex break-after-avoid items-center">
+	<button onclick={() => togglePlaying(!grid.playing)} class="btn btn-outline my-2 print:invisible">
 		{grid.playing ? 'Stop' : 'Play'}
 	</button>
 
 	<div class="mx-4">
 		<span>BPM:</span>
-		<input type="number" bind:value={grid.bpm} min="20" max="200" />
-		<input type="range" bind:value={grid.bpm} min="20" max="200" class="print:hidden" />
+		<input type="number" step="1" bind:value={bpm} onchange={onBpmChange} min={minBpm} max={maxBpm} />
+		<input
+			type="range"
+			step="1"
+			bind:value={bpm}
+			oninput={onBpmChange}
+			min={minBpm} max={maxBpm}
+			class="print:hidden"
+		/>
 	</div>
 	<div class="mx-4">
 		<span>Bars:</span>
-		<input type="number" bind:value={grid.bars} min="1" max="16" />
+		<input type="number" step="1" bind:value={bars} onchange={onBarsChange} min={minBars} max={maxBars} />
 	</div>
 	<div class="mx-4">
 		<span>Grid size:</span>
-		<input type="number" bind:value={grid.beatsPerBar} min="2" max="16" />
+		<input
+			type="number"
+			step="1"
+			bind:value={beatsPerBar}
+			onchange={onBeatsPerBarChange}
+			min={minGridSize}
+			max={maxGridSize}
+		/>
 		/
-		<input type="number" bind:value={grid.beatNoteFraction} min="2" max="16" />
+		<input
+			type="number"
+			step="1"
+			bind:value={beatNoteFraction}
+			onchange={onBeatNoteFractionChange}
+			min={minGridSize}
+			max={maxGridSize}
+		/>
 	</div>
 </div>
