@@ -81,23 +81,22 @@
 </script>
 
 {#each grids as grid}
-	<GridConfig
-		{grid}
-		togglePlaying={(playing) => {
-			togglePlaying(grid, playing);
-		}}
-	/>
-	<Grid
-		{grid}
-		onTapGridCell={(locator) => {
-			onTapGridCell(locator, grid);
-		}}
-	/>
+		<GridConfig
+			{grid}
+			togglePlaying={(playing) => {
+				togglePlaying(grid, playing);
+			}}
+		/>
+		<Grid
+			{grid}
+			onTapGridCell={(locator) => {
+				onTapGridCell(locator, grid);
+			}}
+		/>
 {/each}
 
-<button
-	onclick={addGrid}
-	class="my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 print:hidden"
->
-	Add Grid
-</button>
+<div class="flex">
+	<button onclick={addGrid} class="btn btn-outline btn-xs m-2 ml-auto print:hidden">
+		Add Grid
+	</button>
+</div>

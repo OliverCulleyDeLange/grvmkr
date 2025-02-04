@@ -8,10 +8,10 @@
 	}: { grid: GridModel; togglePlaying: TogglePlaying } = $props();
 </script>
 
-<div class="flex flex-left items-center flex-end">
+<div class="flex flex-left items-center flex-end break-after-avoid">
 	<button
 		onclick={() => togglePlaying(!grid.playing)}
-		class="my-2 rounded-lg border-2 border-gray-800 px-2 py-1 font-semibold text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 print:invisible"
+		class="my-2 btn btn-outline print:invisible"
 	>
 		{grid.playing ? 'Stop' : 'Play'}
 	</button>

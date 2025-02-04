@@ -1,7 +1,8 @@
 @layer base {
-    @media print {
-      @page {
-        size: landscape;
-      }
+  @media print {
+    @page {
+      size: landscape;
     }
+
   }
+}

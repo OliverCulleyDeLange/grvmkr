@@ -16,6 +16,8 @@
 	<h1 class="text-3xl">GrvMkr</h1>
 	{#if instrumentManager}
 		<Grids {instrumentManager} />
-		<Instruments {instrumentManager} />
+		<div class="print:hidden">
+			<Instruments {instrumentManager} />
+		</div>
 	{/if}
 </div>

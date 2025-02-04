@@ -18,13 +18,16 @@
 	});
 </script>
 
-<div class="grid break-after-page" style="--cells: {cells};">
+<div class="grid" style="--cells: {cells};">
 	<!-- Beat indicator -->
 	<div class="beat-indicator">
 		{#each Array(cells) as _, currentCell}
 			<div
 				class="flex h-6 items-center justify-center border border-gray-400 {currentCell %
-					grid.beatNoteFraction == 0 ? 'brightness-[0.8]' : ''}"
+					grid.beatNoteFraction ==
+				0
+					? 'brightness-[0.8]'
+					: ''}"
 				class:bg-green-300={currentCell == currentColumn}
 				class:bg-gray-300={currentCell != currentColumn}
 			>
@@ -47,7 +50,6 @@
 			/>
 		{/each}
 	{/each}
-
 </div>
 
 <style>
@@ -55,6 +57,8 @@
 		display: grid;
 		grid-template-columns: auto repeat(var(--cells), 1fr);
 		gap: 2px;
+		break-inside: avoid;
+		page-break-inside: avoid;
 	}
 
 	.beat-indicator {
