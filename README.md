@@ -1,5 +1,5 @@
 # GrvMkr
-Groove Maker is a percussion grid notation tool and modern replacement for the now obsolete [Mango Drum](http://mangodrum.com/) which only runs on Windows.
+[Groove Maker](https://oliverdelange.co.uk/grvmkr/) is a percussion grid notation tool and modern replacement for the now obsolete [Mango Drum](http://mangodrum.com/) which only runs on Windows.
 
 ## Features
 Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful. 
