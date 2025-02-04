@@ -1,9 +1,13 @@
 import type { InstrumentConfig } from "$lib";
 
+export const defaultHitConfig = { 
+    key: "X", description: "", audioFileName: ""
+}
+
 export const defaultInstrumentConfig = { 
     name: "Instrument", 
     hitTypes: [
-        { key: "X", description: "", audioFileName: "" },
+        defaultHitConfig
     ], 
     gridIndex: 0
 }

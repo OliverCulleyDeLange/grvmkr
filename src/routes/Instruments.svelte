@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HitId, InstrumentId, InstrumentManager } from '$lib';
-	import { defaultInstrumentConfig } from '$lib/audio/default_instruments';
+	import { defaultHitConfig, defaultInstrumentConfig } from '$lib/audio/default_instruments';
 
 	let { instrumentManager }: { instrumentManager: InstrumentManager } = $props();
 
@@ -15,12 +15,21 @@
 
 <h1 class="text-xl">Instruments</h1>
 {#each [...instrumentManager.instruments] as [instrumentId, instrument]}
-	<input
-		value={instrument.name}
-		oninput={(e) => instrumentManager.onChangeName(e.target.value, instrumentId)}
-		type="text"
-		class="input input-xs input-bordered"
-	/>
+	<div class="flex flex-right gap-2">
+		<input
+			value={instrument.name}
+			oninput={(e) => instrumentManager.onChangeName(e.target.value, instrumentId)}
+			type="text"
+			class="input input-xs input-bordered"
+		/>
+		<button
+			class="btn btn-outline btn-xs"
+			onclick={() => instrumentManager.addHit(defaultHitConfig, instrumentId)}
+		>
+			Add Hit
+		</button>
+	</div>
+
 	{#each [...instrument.hitTypes] as [hitId, hit]}
 		<ul class="text-sm text-gray-600">
 			<li class="flex-right flex gap-2 p-1">

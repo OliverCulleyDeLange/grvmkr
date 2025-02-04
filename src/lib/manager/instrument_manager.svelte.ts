@@ -1,5 +1,5 @@
 import { SvelteMap } from "svelte/reactivity";
-import type { HitId, HitType, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
+import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
 import { AudioManager } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 
@@ -90,15 +90,10 @@ export class InstrumentManager {
 
     addInstrument(instrument: InstrumentConfig) {
         let instrumentId = `${instrument.name}_${crypto.randomUUID()}`
+
         let hitMap = new Map(instrument.hitTypes.map((hit) => {
-            let hitId = `${hit.key}_${instrument.name}_${crypto.randomUUID()}`
-            let hitWithId = {
-                id: hitId,
-                key: hit.key,
-                description: hit.description,
-                audioFileName: hit.audioFileName
-            }
-            return [hitId, hitWithId]
+            let hitWithId: HitTypeWithId = this.buildHit(hit)
+            return [hitWithId.id, hitWithId]
         }))
         this.instruments.set(instrumentId, {
             id: instrumentId,
@@ -106,6 +101,23 @@ export class InstrumentManager {
             gridIndex: instrument.gridIndex,
             name: instrument.name
         })
+        this.superHackyWorkaroundForReactivityFixmePlz()
+    }
+
+    buildHit(hit: HitType): HitTypeWithId {
+        let hitId = crypto.randomUUID()
+        let hitWithId = {
+            id: hitId,
+            key: hit.key,
+            description: hit.description,
+            audioFileName: hit.audioFileName
+        }
+        return hitWithId
+    }
+
+    addHit(hit: HitType, instrumentId: InstrumentId) {
+        let hitWithId = this.buildHit(hit)
+        this.instruments.get(instrumentId)?.hitTypes.set(hitWithId.id, hitWithId)
         this.superHackyWorkaroundForReactivityFixmePlz()
     }
 
