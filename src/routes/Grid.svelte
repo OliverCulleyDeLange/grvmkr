@@ -4,14 +4,23 @@
 	import GridCell from './GridCell.svelte';
 
 	type OnTapGridCell = (locator: CellLocator) => void;
-	let { grid, instrumentManager, onTapGridCell }:{ 
-		grid: GridModel; instrumentManager: InstrumentManager; onTapGridCell: OnTapGridCell
-	  } = $props();
+	type OnRemoveGrid = () => void;
+	let {
+		grid,
+		instrumentManager,
+		onTapGridCell,
+		onRemoveGrid
+	}: {
+		grid: GridModel;
+		instrumentManager: InstrumentManager;
+		onTapGridCell: OnTapGridCell;
+		onRemoveGrid: OnRemoveGrid;
+	} = $props();
 	let cells = $derived(grid.gridCols);
 	let currentColumn = $derived(grid.currentColumn);
 
-	// TODO These effects are side effects of state changes, 
-	// i feel like there's a better way of handling these, 
+	// TODO These effects are side effects of state changes,
+	// i feel like there's a better way of handling these,
 	// where they're not tied to the UI
 	$effect(() => {
 		let requiredGridCols = grid.gridCols;
@@ -20,18 +29,23 @@
 			grid.resizeGrid();
 		}
 	});
-	
+
 	$effect(() => {
 		let requiredGridRows = instrumentManager.instruments.size;
 		let actualRows = grid.rows.length;
 		if (actualRows != requiredGridRows) {
 			grid.syncInstruments();
-		} 
+		}
 	});
-
 </script>
 
 <div class="grid" style="--cells: {cells};">
+	<button
+		class="btn btn-outline btn-xs"
+		onclick={onRemoveGrid}
+	>
+		❌
+	</button>
 	<!-- Beat indicator -->
 	<div class="beat-indicator">
 		{#each Array(cells) as _, currentCell}

@@ -2,14 +2,15 @@
 	import { GridModel } from '$lib';
 	import type { InstrumentManager } from '$lib';
 	import type { CellLocator } from '$lib';
+	import { SvelteMap } from 'svelte/reactivity';
 	import Grid from './Grid.svelte';
 	import GridConfig from './GridConfig.svelte';
 
 	let { instrumentManager }: { instrumentManager: InstrumentManager } = $props();
 
-	let grids: GridModel[] = $state([new GridModel(instrumentManager)]);
-	let activeGrid = $state(grids[0]);
-	let msPerBeatDivision = $derived(activeGrid.msPerBeatDivision);
+	let grids: SvelteMap<number,GridModel> = new SvelteMap([[0, new GridModel(instrumentManager)]]);
+	let activeGrid: GridModel | undefined = $state(grids.get(0));
+	let msPerBeatDivision = $derived(activeGrid?.msPerBeatDivision);
 
 	// Playing state
 	let playing = $state(false);
@@ -50,6 +51,7 @@
 	}
 
 	async function onBeat() {
+		if (!activeGrid) return
 		let count = nextCount++;
 		let cell = count % activeGrid.gridCols;
 		let repetition = Math.floor(count / activeGrid.gridCols);
@@ -66,7 +68,7 @@
 				row: rowI,
 				notationLocator: { bar: bar, beat: beat, division: beatDivision }
 			};
-			instrumentManager.playHit(activeGrid.currentHit(locator));
+			instrumentManager.playHit(activeGrid?.currentHit(locator));
 		})
 		activeGrid.currentColumn = cell;
 	}
@@ -76,11 +78,17 @@
 	}
 
 	function addGrid() {
-		grids.push(new GridModel(instrumentManager));
+		let maxKey = Math.max(...grids.keys())
+		let key = maxKey >=0 ? maxKey : 0
+		grids.set(key + 1, new GridModel(instrumentManager));
+	}
+
+	function removeGrid(key: number) {
+		grids.delete(key)
 	}
 </script>
 
-{#each grids as grid}
+{#each [...grids.entries()] as [gridKey, grid]}
 		<GridConfig
 			{grid}
 			togglePlaying={(playing) => {
@@ -92,6 +100,7 @@
 			onTapGridCell={(locator) => {
 				onTapGridCell(locator, grid);
 			}}
+			onRemoveGrid={() => removeGrid(gridKey)}
 		/>
 {/each}
 

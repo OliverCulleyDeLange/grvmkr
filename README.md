@@ -20,7 +20,6 @@ Some features from MangoDrum are still missing, i may or may not add them depend
 - ❌ ~~Undo and Redo~~: Seems unnecessary for such a simple app.
 
 ### Coming soon (maybe)
-- Removing grids, instruments and hits
 - Legend
   - Currently the descriptions of the hits don't do anything. It'd be nice if there was a legend somewhere explaining what all your hits mean. eg S = Slap, O = Open. 
 - Better layout for longer patterns
