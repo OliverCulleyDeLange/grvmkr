@@ -11,7 +11,6 @@ export class GridModel {
 
     private instrumentManager: InstrumentManager = $state() as InstrumentManager
 
-    public playing = $state(false);
     public bpm = $state(120);
     // Currently playing column in the grid
     public currentColumn = $state(0);

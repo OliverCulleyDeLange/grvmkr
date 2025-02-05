@@ -2,7 +2,13 @@
 	import type { GridModel } from '$lib';
 
 	type TogglePlaying = (playing: boolean) => void;
-	let { grid, togglePlaying }: { grid: GridModel; togglePlaying: TogglePlaying } = $props();
+	let { 
+		grid, playing,  togglePlaying
+	 }: { 
+		grid: GridModel; 
+		playing: boolean;
+		togglePlaying: TogglePlaying;
+	 } = $props();
 
 	const minBpm = 20;
 	const maxBpm = 200;
@@ -36,8 +42,8 @@
 </script>
 
 <div class="flex-left flex-end flex break-after-avoid items-center">
-	<button onclick={() => togglePlaying(!grid.playing)} class="btn btn-outline my-2 print:invisible">
-		{grid.playing ? 'Stop' : 'Play'}
+	<button onclick={() => togglePlaying(!playing)} class="btn btn-outline my-2 print:invisible">
+		{playing ? 'Stop' : 'Play'}
 	</button>
 
 	<div class="mx-4">

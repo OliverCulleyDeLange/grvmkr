@@ -2,84 +2,17 @@
 	import { GridModel } from '$lib';
 	import type { InstrumentManager } from '$lib';
 	import type { CellLocator } from '$lib';
-	import { SvelteMap } from 'svelte/reactivity';
 	import Grid from './Grid.svelte';
 	import GridConfig from './GridConfig.svelte';
 
 	let { 
-		instrumentManager, grids, activeGrid, nextCount, playing, 
+		instrumentManager, grids,currentlyPlayingGrid, onTogglePlaying
 	}: { 
 		instrumentManager: InstrumentManager;
 		grids: Map<number, GridModel>;
-		activeGrid: GridModel | undefined;
-		nextCount: number;
-		playing: boolean;
+		currentlyPlayingGrid: GridModel;
+		onTogglePlaying: (newPlaying: boolean, gridKey: number) => void
 	 } = $props();
-
-	// let grids: SvelteMap<number,GridModel> = new SvelteMap([[0, new GridModel(instrumentManager)]]);
-	// let activeGrid: GridModel | undefined = $state(grids.get(0));
-	let msPerBeatDivision = $derived(activeGrid?.msPerBeatDivision);
-
-	// // Playing state
-	// let playing = $state(false);
-	// let nextCount: number = 0;
-	let playingIntervalId: number | undefined = undefined;
-
-	$effect(() => {
-		if (playing) {
-			onBeat();
-			playingIntervalId = setInterval(() => {
-				onBeat();
-			}, msPerBeatDivision);
-		} else {
-			stop();
-		}
-		return () => {
-			clearInterval(playingIntervalId);
-		};
-	});
-
-	async function togglePlaying(grid: GridModel, newPlaying: boolean): Promise<void> {
-		grids.forEach((grid) => {
-			grid.playing = false;
-		});
-		if (newPlaying) {
-			await instrumentManager.initInstruments();
-			activeGrid = grid;
-			grid.playing = newPlaying;
-		}
-		playing = newPlaying;
-	}
-
-	function stop() {
-		clearInterval(playingIntervalId);
-		playingIntervalId = undefined;
-		playing = false;
-		nextCount = 0;
-	}
-
-	async function onBeat() {
-		if (!activeGrid) return
-		let count = nextCount++;
-		let cell = count % activeGrid.gridCols;
-		let repetition = Math.floor(count / activeGrid.gridCols);
-		let bar = Math.floor(count / (activeGrid.beatsPerBar * activeGrid.beatNoteFraction)) % activeGrid.bars;
-		let beat = Math.floor(count / activeGrid.beatNoteFraction) % activeGrid.beatsPerBar;
-		let beatDivision = count % activeGrid.beatNoteFraction;
-
-		console.log(
-			`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${activeGrid.gridCols})`
-		);
-
-		activeGrid.rows.forEach((row, rowI) => {
-			let locator: CellLocator = {
-				row: rowI,
-				notationLocator: { bar: bar, beat: beat, division: beatDivision }
-			};
-			instrumentManager.playHit(activeGrid?.currentHit(locator));
-		})
-		activeGrid.currentColumn = cell;
-	}
 
 	async function onTapGridCell(locator: CellLocator, grid: GridModel): Promise<void> {
 		grid.toggleLocation(locator);
@@ -99,9 +32,8 @@
 {#each [...grids.entries()] as [gridKey, grid]}
 		<GridConfig
 			{grid}
-			togglePlaying={(playing) => {
-				togglePlaying(grid, playing);
-			}}
+			playing={currentlyPlayingGrid == grid}
+			togglePlaying={(newPlaying) => onTogglePlaying(newPlaying, gridKey)}
 		/>
 		<Grid
 			{grid} {instrumentManager}
