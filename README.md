@@ -11,7 +11,8 @@ Some features from MangoDrum are still missing, i may or may not add them depend
   - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
 - ✅ Built in instruments
   - There are currently 3 built ins - HiHat (open&closed), snare and kick. I may or may not add more. Probably not. 
-- ✅ Save your composition grid as a PDF file for sharing with others
+- ✅ Save your composition grids as a json file, which can be re-loaded at a later date. 
+- ✅ Save your composition grids as a PDF file for sharing with others
   -  Technically possible by 'Printing to PDF'. I've made sure the grids aren't split between pages. 
 - ❓ Create a 'Playlist' which brings all the sections of your composition together
   -  Er, kinda - You can create multiple grids, and play them seperately, but you can't create a playlist per se. If this is a useful feature, let me know, but the main purpose of this tool isn't to create songs, its to create grid notation.
