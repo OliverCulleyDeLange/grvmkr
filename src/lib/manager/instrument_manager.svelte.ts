@@ -89,7 +89,7 @@ export class InstrumentManager {
     addInstrumentFromConfig(instrument: InstrumentConfig) {
         let instrumentId = `instrument_${crypto.randomUUID()}`
         let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
-            let hitWithId: HitTypeWithId = this.buildHitFromConfig(hit);
+            let hitWithId: HitTypeWithId = this.buildReactiveHitFromConfig(hit);
             return [hitWithId.id, hitWithId];
         }));
         this.addInstrument(instrumentId, hitMap, instrument.name, instrument.gridIndex);
@@ -121,10 +121,10 @@ export class InstrumentManager {
 
     // Adds a new hit to the instrument, generating a new id
     addHit(hit: HitType, instrumentId: InstrumentId) {
-        let hitWithId = this.buildHitFromConfig(hit)
+        let reactiveHitWithId = this.buildReactiveHitFromConfig(hit)
         let instrument = this.instruments.get(instrumentId)
         if (instrument) {
-            instrument.hitTypes.set(hitWithId.id, hitWithId)
+            instrument.hitTypes.set(reactiveHitWithId.id, reactiveHitWithId)
             this.instrumentService.saveInstrument(instrument)
         }
     }
@@ -167,7 +167,7 @@ export class InstrumentManager {
         this.instrumentService.deleteAllInstruments()
     }
 
-    private buildHitFromConfig(hit: HitType): HitTypeWithId {
+    private buildReactiveHitFromConfig(hit: HitType): HitTypeWithId {
         let hitId = `hit_${crypto.randomUUID()}`
         return this.createReactiveHitWithId(hitId, hit);
     }
@@ -187,6 +187,7 @@ export class InstrumentManager {
         let instrument = this.instruments.get(id)
         if (instrument) {
             callback(instrument)
+            this.instrumentService.saveInstrument(instrument)
         } else {
             console.error(`Couldn't update instrument ${id} as it doesn't exist`)
         }

@@ -8,7 +8,7 @@ export { InstrumentManager } from "./manager/instrument_manager.svelte"
 export { GridModel } from "./model/grid_model.svelte"
 
 // Service layer
-export { InstrumentService } from "./db/instrument_service"
+export { InstrumentService } from "./db/instrument_service.svelte"
 
 // Data layer
 export { AudioDb } from "./db/audio_db"

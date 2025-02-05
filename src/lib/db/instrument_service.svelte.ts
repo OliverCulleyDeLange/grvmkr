@@ -1,7 +1,8 @@
-import type { InstrumentWithId, HitTypeWithId } from "$lib"; 
+import type { InstrumentWithId, HitTypeWithId } from "$lib";
 import type { InstrumentDto, HitDto } from "$lib";
 import { InstrumentDb } from "$lib";
 import { HitDb } from "$lib";
+import { SvelteMap } from "svelte/reactivity";
 
 export class InstrumentService {
     private instrumentDb = new InstrumentDb();
@@ -78,20 +79,30 @@ export class InstrumentService {
                         return hitDto ? [hitId, hitDto] : null;
                     })
                 );
+                const removedNulls = hitTypeEntries.filter((entry): entry is [string, HitDto] => entry !== null)
+                const hitTypes = new SvelteMap(removedNulls);
 
-                const hitTypes = new Map(hitTypeEntries.filter((entry): entry is [string, HitDto] => entry !== null));
-
-                return {
+                let reactiveHitTypes = new SvelteMap(
+                    Array.from(hitTypes.entries()).map(([hitId, hit]) => {
+                        let hitWithId: HitTypeWithId = {
+                            id: hitId,
+                            key: hit.key,
+                            description: hit.description,
+                            audioFileName: hit.audioFileName
+                        };
+                        // TODO FIXME Move all mapping to reactive state out
+                        // Rename this not.svelte - services shouldn't need to be reactive 
+                        let reactiveHit = $state(hitWithId);
+                        return [hitId, reactiveHit]
+                    })
+                )
+                let instrumentWithId: InstrumentWithId = {
                     id: instrumentDto.id,
                     gridIndex: instrumentDto.gridIndex,
                     name: instrumentDto.name,
-                    hitTypes: new Map(
-                        Array.from(hitTypes.entries()).map(([hitId, hit]) => [
-                            hitId,
-                            { id: hitId, key: hit.key, description: hit.description, audioFileName: hit.audioFileName }
-                        ])
-                    )
+                    hitTypes: reactiveHitTypes
                 };
+                return instrumentWithId
             })
         );
     }
