@@ -24,8 +24,3 @@ export type HitType = {
     description: string | undefined
     audioFileName: string
 }
-
-export type InstrumentHit = {
-    instrumentId: InstrumentId,
-    hitId: HitId
-}

@@ -1,4 +1,4 @@
-import { dataDbName, instrumentStoreName, instrumentHitStoreName } from "./db_config";
+import { dataDbName, instrumentStoreName, instrumentHitStoreName, gridStoreName } from "./db_config";
 
 export function getDataDb(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
@@ -14,6 +14,10 @@ export function getDataDb(): Promise<IDBDatabase> {
             if (!db.objectStoreNames.contains(instrumentHitStoreName)) {
                 db.createObjectStore(instrumentHitStoreName, { keyPath: "id" });
                 console.log(`Upgrading: created object store [${instrumentHitStoreName}]`);
+            }
+            if (!db.objectStoreNames.contains(gridStoreName)) {
+                db.createObjectStore(gridStoreName, { keyPath: "id" });
+                console.log(`Upgrading: created object store [${gridStoreName}]`);
             }
         };
 

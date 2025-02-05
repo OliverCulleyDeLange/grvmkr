@@ -1,14 +1,18 @@
 import type { InstrumentManager } from "../manager/instrument_manager.svelte";
 import { mapRowsToGridUi, type Bar, type Beat, type BeatDivision, type CellLocator, type GridRow, type HitId, type InstrumentHit, type InstrumentId, type InstrumentWithId } from "$lib";
-import type { NotationGridRowUi } from "$lib";
+import type { Grid, NotationGridRowUi } from "$lib";
+import { GridService } from "$lib/service/grid_service";
 
 export class GridModel {
 
     constructor(instrumentManager: InstrumentManager) {
         this.instrumentManager = instrumentManager
-        this.rows = this.buildGrid(instrumentManager.instruments)
+        this.rows = this.buildGridRows(instrumentManager.instruments)
+        this.grid = this.buildGrid(instrumentManager.instruments)
+        this.gridService.saveGrid(this.grid)
     }
 
+    private gridService: GridService = new GridService()
     private instrumentManager: InstrumentManager = $state() as InstrumentManager
 
     public bpm = $state(120);
@@ -27,6 +31,7 @@ export class GridModel {
 
     // Grid domain state
     public rows: Array<GridRow> = $state([]);
+    public grid: Grid | undefined = $state();
 
     // Grid UI state
     public uiModel: NotationGridRowUi[] = $derived(mapRowsToGridUi(this.rows, this.instrumentManager));
@@ -122,7 +127,21 @@ export class GridModel {
         })
     }
 
-    private buildGrid(instruments: Map<InstrumentId, InstrumentWithId>): Array<GridRow> {
+    private buildGrid(instruments: Map<InstrumentId, InstrumentWithId>): Grid {
+        let grid: Grid = {
+            id: `grid_${crypto.randomUUID()}`,
+            config: {
+                bpm: this.bpm,
+                bars: this.bars,
+                beatsPerBar: this.beatsPerBar,
+                beatDivisions: this.beatNoteFraction
+            },
+            rows: this.buildGridRows(instruments)
+        }
+        return grid
+    }
+    
+    private buildGridRows(instruments: Map<InstrumentId, InstrumentWithId>): GridRow[] {
         return Array.from(instruments.values())
             .map((instrument) => this.defaultGridRow(instrument))
     }
