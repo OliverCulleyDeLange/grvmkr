@@ -19,16 +19,21 @@ export class InstrumentManager {
         instrumentConfigs.forEach((instrument) => this.addInstrumentFromConfig(instrument))
 
         // Get the default sound files
-        // TODO Check if they exist before doing this
         this.instruments.forEach((instrument) => {
             instrument.hitTypes.forEach((hit) => {
-                fetch(`./${hit.audioFileName}`)
-                    .then((res) => {
-                        res.blob()
-                            .then((blob) => {
-                                const file = new File([blob], hit.audioFileName, { type: blob.type });
-                                this.audioDb.storeAudio(file)
-                            })
+                this.audioDb.audioExists(hit.audioFileName)
+                    .then((exists) => {
+                        if (!exists) {
+                            console.log("Downloading default audio file", hit.audioFileName)
+                            fetch(`./${hit.audioFileName}`)
+                                .then((res) => {
+                                    res.blob()
+                                        .then((blob) => {
+                                            const file = new File([blob], hit.audioFileName, { type: blob.type });
+                                            this.audioDb.storeAudio(file)
+                                        })
+                                })
+                        }
                     })
             })
         })
@@ -46,7 +51,7 @@ export class InstrumentManager {
                         await this.audioManager.loadHitAudio(hit.hitId)
                         this.audioManager.playHit(hit)
                     } catch (e) {
-                        if (e == "loadAudio: onsuccess but no result"){
+                        if (e == "loadAudio: onsuccess but no result") {
                             console.error("Sound file not present in database. Removing existing sample", e)
                             hitType.audioFileName = ""
                         } else {

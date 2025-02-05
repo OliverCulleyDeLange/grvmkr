@@ -3,6 +3,21 @@ const audioDbName = "audioDb"
 const sampleStoreName = "samples"
 
 export class AudioDb {
+    async audioExists(fileName: string): Promise<boolean> {
+        return this.onDb((db, resolve) => {
+            const transaction = db.transaction(sampleStoreName, 'readonly');
+            const store = transaction.objectStore(sampleStoreName);
+            const request = store.get(fileName);
+            request.onsuccess = () => {
+                if (request.result) {
+                    resolve(true)
+                } else {
+                    resolve(false)
+                }
+            };
+            request.onerror = () => resolve(false);
+        })
+    }
 
     storeAudio(file: File): Promise<string> {
         return this.onDb((db, resolve, reject) => {
