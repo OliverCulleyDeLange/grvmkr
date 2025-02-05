@@ -43,6 +43,7 @@ function mapRowToSavedGridRow(row: GridRow): SavedGridRowV1 {
         return mapBarToSavedInstrumentHits(bar);
     });
     let savedGridRow: SavedGridRowV1 = {
+        instrument_id: row.instrument.id,
         hits: hits
     };
     return savedGridRow;

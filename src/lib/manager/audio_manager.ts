@@ -67,6 +67,10 @@ export class AudioManager {
         this.hits.delete(hitId)
     }
 
+    reset() {
+        this.hits.clear()
+    }
+
     private ensureAudioContext() {
         if (!this.audioContext) {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();

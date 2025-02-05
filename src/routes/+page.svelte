@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { defaultInstruments, GridModel, serialiseToJsonV1, type SaveFileV1 } from '$lib';
+	import { defaultInstruments, GridModel, mapSavedGridToGridModel, serialiseToJsonV1, 
+
+	type SavedGridV1, type SaveFileV1 } from '$lib';
 	import { InstrumentManager } from '$lib/manager/instrument_manager.svelte';
 	import { onMount } from 'svelte';
 	import Grids from './Grids.svelte';
@@ -39,10 +41,19 @@
 		if (fileInput.files && fileInput.files[0]) {
 			let file = fileInput.files[0];
 			let saveFile: SaveFileV1 = JSON.parse(await file.text())
-			console.log(saveFile)
+			instrumentManager.replaceInstruments(saveFile.instruments)
+
+			// console.log("Loaded instruments", instrumentManager.instruments)
+			// TODO EXTRACT GRID LOGIC SOMEWHERE BETTER
+			grids.clear()
+			saveFile.grids.forEach((grid, index) => {
+				let gridModel: GridModel = mapSavedGridToGridModel(grid, instrumentManager)
+				grids.set(index, gridModel)
+			})
+			// console.log("Loaded grids", grids)
+			// console.log("Loaded grids", grids.get(0)?.rows[0])
 		}
 	}
-
 </script>
 
 <div class="m-2 p-4">

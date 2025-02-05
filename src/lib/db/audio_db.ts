@@ -14,7 +14,7 @@ export class AudioDb {
                 const store = transaction.objectStore(sampleStoreName);
 
                 store.put({ name: file.name, data: reader.result });
-                console.log(`Stored file ${file.name}`);
+                // console.log(`Stored file ${file.name}`);
                 resolve(file.name)
             };
 

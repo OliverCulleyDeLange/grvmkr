@@ -96,7 +96,7 @@
 
 <button
 	class="btn btn-outline btn-xs"
-	onclick={() => instrumentManager.addInstrument(defaultInstrumentConfig)}
+	onclick={() => instrumentManager.addInstrumentFromConfig(defaultInstrumentConfig)}
 >
 	Add Instrument
 </button>

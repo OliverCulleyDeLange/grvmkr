@@ -1,6 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
-import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
-import { AudioManager } from "$lib";
+import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1 } from "$lib";
+import { AudioManager, mapSavedInstrumentToInstrumentConfig } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 
 // Responsible for modifying and playing instruments
@@ -16,7 +16,7 @@ export class InstrumentManager {
     // Populate instruments state with given config
     // Save audio files into indexedDB
     constructor(instrumentConfigs: Array<InstrumentConfig>) {
-        instrumentConfigs.forEach((instrument) => this.addInstrument(instrument))
+        instrumentConfigs.forEach((instrument) => this.addInstrumentFromConfig(instrument))
 
         // Get the default sound files
         // TODO Check if they exist before doing this
@@ -90,22 +90,34 @@ export class InstrumentManager {
         this.audioManager.removeHit(hitId)
     }
 
-    addInstrument(instrument: InstrumentConfig) {
+    addInstrumentFromConfig(instrument: InstrumentConfig) {
         let instrumentId = `instrument_${crypto.randomUUID()}`
-
-        let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
-            let hitWithId: HitTypeWithId = this.buildHit(hit)
-            return [hitWithId.id, hitWithId]
-        }))
-        let reactiveInstrument = $state({
-            id: instrumentId,
-            hitTypes: hitMap,
-            gridIndex: instrument.gridIndex,
-            name: instrument.name
-        })
-        this.instruments.set(instrumentId, reactiveInstrument)
+        this.addInstrument(instrument, instrumentId);
     }
 
+
+    addInstrument(instrument: InstrumentConfig, instrumentId: string) {
+        let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
+            let hitWithId: HitTypeWithId = this.buildHit(hit);
+            return [hitWithId.id, hitWithId];
+        }));
+        this.addReactiveInstrument(instrumentId, hitMap, instrument.name, instrument.gridIndex);
+    }
+
+    addReactiveInstrument(
+        instrumentId: string,
+        hitMap: SvelteMap<string, HitTypeWithId>,
+        name: string,
+        index: number
+    ) {
+        let reactiveInstrument: InstrumentWithId = $state({
+            id: instrumentId,
+            hitTypes: hitMap,
+            gridIndex: index,
+            name: name
+        });
+        this.instruments.set(instrumentId, reactiveInstrument);
+    }
 
     removeInstrument(id: InstrumentId) {
         this.instruments.delete(id)
@@ -123,16 +135,45 @@ export class InstrumentManager {
         this.audioManager.removeHit(hitId)
     }
 
+    // When loading from file, replace all instruments
+    replaceInstruments(instruments: SavedInstrumentV1[]) {
+        this.reset()
+        instruments.forEach((instrument, index) => {
+            // let config: InstrumentConfig = mapSavedInstrumentToInstrumentConfig(instrument, index)
+            // this.addInstrument(config, instrument.id)
+
+            let hitMap = new SvelteMap(instrument.hits.map((hit) => {
+                let hitType: HitType = {
+                    key: hit.key,
+                    description: hit.description,
+                    audioFileName: hit.audio_file_name
+                }
+                let hitWithId: HitTypeWithId = this.createReactiveHitWithId(hit.id, hitType);
+                return [hitWithId.id, hitWithId];
+            }));
+            this.addReactiveInstrument(instrument.id, hitMap, instrument.name, index);
+        })
+    }
+
+    private reset() {
+        this.instruments.clear()
+        this.audioManager.reset()
+    }
+
     private buildHit(hit: HitType): HitTypeWithId {
         let hitId = `hit_${crypto.randomUUID()}`
-        let hitWithId = {
+        return this.createReactiveHitWithId(hitId, hit);
+    }
+
+    private createReactiveHitWithId(hitId: string, hit: HitType): HitTypeWithId {
+        let hitWithId: HitTypeWithId = {
             id: hitId,
             key: hit.key,
             description: hit.description,
             audioFileName: hit.audioFileName
-        }
-        let reactiveHit = $state(hitWithId)
-        return reactiveHit
+        };
+        let reactiveHit = $state(hitWithId);
+        return reactiveHit;
     }
 
     private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void) {

@@ -43,6 +43,7 @@ export type SavedGridConfigV1 = {
 }
 
 export type SavedGridRowV1 = {
+    instrument_id: string
     hits: SavedInstrumentHitV1[]
 }
 

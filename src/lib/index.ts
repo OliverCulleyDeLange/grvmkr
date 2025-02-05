@@ -12,3 +12,5 @@ export * from "./types/ui/legend_ui"
 export * from "./types/serialisation/savefile_v1"
 
 export { serialiseToJsonV1 } from "./serialisation/json"
+export { mapSavedInstrumentToInstrumentConfig } from "./mapper/instrument_mapper"
+export { mapSavedGridToGridModel } from "./mapper/grid_mapper"
