@@ -1,6 +1,4 @@
-
-const audioDbName = "audioDb"
-const sampleStoreName = "samples"
+import { audioDbName, sampleStoreName } from "./db_config";
 
 // Wraps indexedDB - giving access to the audio sample files
 export class AudioDb {

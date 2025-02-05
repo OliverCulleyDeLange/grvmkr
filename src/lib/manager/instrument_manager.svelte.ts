@@ -2,12 +2,14 @@ import { SvelteMap } from "svelte/reactivity";
 import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1 } from "$lib";
 import { AudioManager, mapSavedInstrumentToInstrumentConfig } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
+import { InstrumentDb } from "$lib/db/instrument_db";
 
 // Responsible for modifying and playing instruments
 export class InstrumentManager {
 
     private audioManager = new AudioManager()
     private audioDb: AudioDb = new AudioDb();
+    private instrumentDb: InstrumentDb = new InstrumentDb();
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
 
@@ -84,40 +86,56 @@ export class InstrumentManager {
             let hitWithId: HitTypeWithId = this.buildHitFromConfig(hit);
             return [hitWithId.id, hitWithId];
         }));
-        this.addReactiveInstrument(instrumentId, hitMap, instrument.name, instrument.gridIndex);
+        this.addInstrument(instrumentId, hitMap, instrument.name, instrument.gridIndex);
     }
 
-    // Saves a reactive instrument in state
-    addReactiveInstrument(
+    // Saves a reactive instrument in state and db
+    addInstrument(
         instrumentId: string,
         hitMap: SvelteMap<string, HitTypeWithId>,
         name: string,
         index: number
     ) {
-        let reactiveInstrument: InstrumentWithId = $state({
+        let instrument: InstrumentWithId = {
             id: instrumentId,
             hitTypes: hitMap,
             gridIndex: index,
             name: name
-        });
-        this.instruments.set(instrumentId, reactiveInstrument);
+        };
+        this.saveInstrumentToStateAndDb(instrument);
+    }
+
+    private saveInstrumentToStateAndDb(instrument: InstrumentWithId) {
+        // Save a reactive version to state
+        let reactiveInstrument = $state(instrument)
+        this.instruments.set(instrument.id, reactiveInstrument);
+        // Persist non reactive version in DB
+        this.instrumentDb.saveInstrument(instrument)
     }
 
     // Adds a new hit to the instrument, generating a new id
     addHit(hit: HitType, instrumentId: InstrumentId) {
         let hitWithId = this.buildHitFromConfig(hit)
-        this.instruments.get(instrumentId)?.hitTypes.set(hitWithId.id, hitWithId)
+        let instrument = this.instruments.get(instrumentId)
+        if (instrument) {
+            instrument.hitTypes.set(hitWithId.id, hitWithId)
+            this.instrumentDb.saveInstrument(instrument)
+        }
     }
 
     removeInstrument(id: InstrumentId) {
         this.instruments.delete(id)
+        this.instrumentDb.deleteInstrument(id)
     }
 
     removeHit(instrumentId: InstrumentId, hitId: HitId) {
-        this.updateInstrument(instrumentId, (instrument) => {
+        let updatedInstrument = this.updateInstrument(instrumentId, (instrument) => {
             instrument.hitTypes.delete(hitId)
         })
         this.audioManager.removeHit(hitId)
+        if (updatedInstrument){
+            this.instrumentDb.saveInstrument(updatedInstrument)
+        }
     }
 
     // When loading from file, replace all instruments
@@ -133,13 +151,14 @@ export class InstrumentManager {
                 let hitWithId: HitTypeWithId = this.createReactiveHitWithId(hit.id, hitType);
                 return [hitWithId.id, hitWithId];
             }));
-            this.addReactiveInstrument(instrument.id, hitMap, instrument.name, index);
+            this.addInstrument(instrument.id, hitMap, instrument.name, index);
         })
     }
 
     private reset() {
         this.instruments.clear()
         this.audioManager.reset()
+        this.instrumentDb.deleteAllInstruments()
     }
 
     private buildHitFromConfig(hit: HitType): HitTypeWithId {
@@ -158,13 +177,14 @@ export class InstrumentManager {
         return reactiveHit;
     }
 
-    private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void) {
+    private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void): InstrumentWithId | undefined {
         let instrument = this.instruments.get(id)
         if (instrument) {
             callback(instrument)
         } else {
             console.error(`Couldn't update instrument ${id} as it doesn't exist`)
         }
+        return instrument
     }
 
     private updateInstrumentHit(instrumentId: InstrumentId, hitId: HitId, callback: (config: HitType) => void) {
