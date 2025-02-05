@@ -1,26 +1,25 @@
 <script lang="ts">
-	import { GridModel } from '$lib';
-	import type { InstrumentManager } from '$lib';
+	import { mapRowsToGridUi, type GridId, type InstrumentManager, type OnTapGridCell } from '$lib';
+	import type { SvelteMap } from 'svelte/reactivity';
 	import Grid from './Grid.svelte';
+	import type { Grid as GridType } from '$lib/types/domain/grid_domain';
 	import GridConfig from './GridConfig.svelte';
 
 	let {
 		instrumentManager,
 		grids,
 		currentlyPlayingGrid,
-		onTogglePlaying
+		currentColumn,
+		onTogglePlaying,
+		onTapGridCell
 	}: {
 		instrumentManager: InstrumentManager;
-		grids: Map<number, GridModel>;
-		currentlyPlayingGrid: GridModel | undefined;
-		onTogglePlaying: (newPlaying: boolean, gridKey: number) => void;
+		grids: SvelteMap<GridId, GridType>;
+		currentlyPlayingGrid: GridType | undefined;
+		currentColumn: number;
+		onTogglePlaying: (newPlaying: boolean, gridKey: GridId) => void;
+		onTapGridCell: OnTapGridCell;
 	} = $props();
-
-	function addGrid() {
-		let maxKey = Math.max(...grids.keys());
-		let key = maxKey >= 0 ? maxKey : 0;
-		grids.set(key + 1, new GridModel(instrumentManager));
-	}
 </script>
 
 {#each [...grids.entries()] as [gridKey, grid]}
@@ -31,14 +30,10 @@
 	/>
 	<Grid
 		{grid}
+		gridUi={mapRowsToGridUi(grid, instrumentManager)}
+		{currentColumn}
 		{instrumentManager}
-		onTapGridCell={(locator) => grid.toggleLocation(locator)}
+		{onTapGridCell}
 		onRemoveGrid={() => grids.delete(gridKey)}
 	/>
 {/each}
-
-<div class="flex">
-	<button onclick={addGrid} class="btn btn-outline btn-xs m-2 ml-auto print:hidden">
-		Add Grid
-	</button>
-</div>

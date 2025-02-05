@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GridModel } from '$lib';
+	import type { Grid } from '$lib';
 	import { onMount } from 'svelte';
 
 	type TogglePlaying = (playing: boolean) => void;
@@ -8,16 +8,16 @@
 		playing,
 		togglePlaying
 	}: {
-		grid: GridModel;
+		grid: Grid;
 		playing: boolean;
 		togglePlaying: TogglePlaying;
 	} = $props();
 
 	onMount(() => {
-		bpm = grid.bpm
-		bars = grid.bars
-		beatsPerBar = grid.beatsPerBar
-		beatNoteFraction = grid.beatNoteFraction
+		bpm = grid.config.bpm
+		bars = grid.config.bars
+		beatsPerBar = grid.config.beatsPerBar
+		beatNoteFraction = grid.config.beatDivisions
 	});
 
 	const minBpm = 20;
@@ -35,19 +35,19 @@
 
 	function onBpmChange() {
 		bpm = Math.round(Math.min(maxBpm, Math.max(minBpm, bpm)));
-		grid.bpm = bpm;
+		grid.config.bpm = bpm;
 	}
 	function onBarsChange() {
 		bars = Math.round(Math.min(maxBars, Math.max(minBars, bars)));
-		grid.bars = bars;
+		grid.config.bars = bars;
 	}
 	function onBeatsPerBarChange() {
 		beatsPerBar = Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatsPerBar)));
-		grid.beatsPerBar = beatsPerBar;
+		grid.config.beatsPerBar = beatsPerBar;
 	}
 	function onBeatNoteFractionChange() {
 		beatNoteFraction = Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatNoteFraction)));
-		grid.beatNoteFraction = beatNoteFraction;
+		grid.config.beatDivisions = beatNoteFraction;
 	}
 </script>
 

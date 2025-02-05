@@ -32,6 +32,7 @@ export type SavedGridV1 = {
     type: 'grid'
     version: 1
 
+    id: string
     config: SavedGridConfigV1
     rows: SavedGridRowV1[]
 }

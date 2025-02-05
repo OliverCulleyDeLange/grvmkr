@@ -6,6 +6,8 @@ export type Grid = {
     id: GridId
     config: GridConfig
     rows: GridRow[]
+    msPerBeatDivision: number,
+    gridCols: number,
 };
 
 export type GridConfig = {
@@ -42,6 +44,7 @@ export type InstrumentHit = {
 }
 
 export type CellLocator = {
+    grid: GridId
     row: number
     notationLocator: NotationLocator
 };

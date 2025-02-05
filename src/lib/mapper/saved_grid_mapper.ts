@@ -1,22 +1,14 @@
-import { GridModel } from "$lib";
-import type { Bar, Beat, BeatDivision, GridRow, InstrumentManager, SavedGridConfigV1, SavedGridRowV1, SavedGridV1, SavedInstrumentHitV1 } from "$lib";
+import type { Bar, Beat, BeatDivision, Grid, GridRow, InstrumentManager, SavedGridConfigV1, SavedGridRowV1, SavedGridV1, SavedInstrumentHitV1 } from "$lib";
 
 // Maps a saved grid from a save file to grid models
-export function mapSavedGridToGridModel(grid: SavedGridV1, instrumentManager: InstrumentManager): GridModel {
-    let gridModel = new GridModel(instrumentManager)
-    // Configure
-    gridModel.bpm = grid.config.bpm
-    gridModel.bars = grid.config.bars
-    gridModel.beatsPerBar = grid.config.beats_per_bar
-    gridModel.beatNoteFraction = grid.config.beat_divisions
-    // Set notation
-    let newRows: GridRow[] = grid.rows.map((row, i) => {
+export function mapSavedGridToGrid(savedGrid: SavedGridV1, instrumentManager: InstrumentManager): Grid {
+    let newRows: GridRow[] = savedGrid.rows.map((row, i) => {
         let instrument = instrumentManager.instruments.get(row.instrument_id)
         if (instrument) {
             let gridRow: GridRow = {
                 instrument: instrument,
                 notation: {
-                    bars: mapSavedRowToBars(row, grid.config)
+                    bars: mapSavedRowToBars(row, savedGrid.config)
                 }
             }
             return gridRow
@@ -25,8 +17,19 @@ export function mapSavedGridToGridModel(grid: SavedGridV1, instrumentManager: In
             return null
         }
     }).filter((r) => r != null)
-    gridModel.rows = newRows
-    return gridModel
+    let grid: Grid = {
+        id: savedGrid.id,
+        config: {
+            bpm: savedGrid.config.bpm,
+            bars: savedGrid.config.bars,
+            beatsPerBar: savedGrid.config.beats_per_bar,
+            beatDivisions: savedGrid.config.beat_divisions
+        },
+        rows: newRows,
+        msPerBeatDivision: 60000 / savedGrid.config.bpm / savedGrid.config.beat_divisions,
+        gridCols: savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions)
+    }
+    return grid
 }
 
 function mapSavedRowToBars(row: SavedGridRowV1, config: SavedGridConfigV1): Bar[] {

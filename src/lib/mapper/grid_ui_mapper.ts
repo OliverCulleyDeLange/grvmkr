@@ -1,7 +1,8 @@
-import type { GridCellUi, GridRow, InstrumentManager, InstrumentWithId, NotationGridRowUi } from "$lib"
+import type { Grid, GridCellUi, GridRow, InstrumentManager, InstrumentWithId, NotationGridRowUi } from "$lib"
 
-export function mapRowsToGridUi(rows: GridRow[], instrumentManager: InstrumentManager): NotationGridRowUi[] {
+export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentManager): NotationGridRowUi[] {
     let instruments = instrumentManager.instruments
+    let rows = grid.rows
     let ui = rows.map((row, rowI) => {
         let gridCells: GridCellUi[] = row.notation.bars.flatMap((bar, barI) => {
             return bar.beats.flatMap((beat, beatI) => {
@@ -19,6 +20,7 @@ export function mapRowsToGridUi(rows: GridRow[], instrumentManager: InstrumentMa
                         darken: divisionI == 0,
                         content: cellContent,
                         locator: {
+                            grid: grid.id,
                             row: rowI,
                             notationLocator: { bar: barI, beat: beatI, division: divisionI }
                         }

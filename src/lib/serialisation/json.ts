@@ -1,7 +1,7 @@
-import type { GridModel, SaveFileV1, InstrumentWithId, SavedInstrumentV1, SavedHitV1, SavedGridV1, SavedGridRowV1, SavedInstrumentHitV1, GridRow, Bar, Beat, BeatDivision } from "$lib";
+import type { SaveFileV1, InstrumentWithId, SavedInstrumentV1, SavedHitV1, SavedGridV1, SavedGridRowV1, SavedInstrumentHitV1, GridRow, Bar, Beat, BeatDivision, Grid } from "$lib";
 
 // Serialises the grid model state into a SaveFileV1 for reloading later
-export function serialiseToJsonV1(grids: GridModel[], instruments: InstrumentWithId[]): SaveFileV1 {
+export function serialiseToJsonV1(grids: Grid[], instruments: InstrumentWithId[]): SaveFileV1 {
     let savedInstruments: SavedInstrumentV1[] = mapInstrumentsToSavedInstruments(instruments);
     let savedGrids: SavedGridV1[] = mapGrids(grids)
 
@@ -14,25 +14,26 @@ export function serialiseToJsonV1(grids: GridModel[], instruments: InstrumentWit
     return saveFile
 }
 
-function mapGrids(grids: GridModel[]): SavedGridV1[] {
+function mapGrids(grids: Grid[]): SavedGridV1[] {
     return grids.map((grid) => {
         let savedGridRows: SavedGridRowV1[] = mapRows(grid)
         let savedGrid: SavedGridV1 = {
             type: "grid",
             version: 1,
+            id: grid.id,
             config: {
-                bpm: grid.bpm,
-                bars: grid.bars,
-                beats_per_bar: grid.beatsPerBar,
-                beat_divisions: grid.beatNoteFraction
+                bpm: grid.config.bpm,
+                bars: grid.config.bars,
+                beats_per_bar: grid.config.beatsPerBar,
+                beat_divisions: grid.config.beatDivisions
             },
-            rows: savedGridRows
+            rows: savedGridRows,
         }
         return savedGrid
     })
 }
 
-function mapRows(grid: GridModel): SavedGridRowV1[] {
+function mapRows(grid: Grid): SavedGridRowV1[] {
     let savedGridRows: SavedGridRowV1[] = [...grid.rows.values()].map((row) => {
         return mapRowToSavedGridRow(row);
     })
