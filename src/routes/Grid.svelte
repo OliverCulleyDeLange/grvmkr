@@ -45,7 +45,7 @@
 		class="btn btn-outline btn-xs print:hidden"
 		onclick={onRemoveGrid}
 	>
-		❌
+		X
 	</button>
 	<!-- Beat indicator -->
 	<div class="beat-indicator">

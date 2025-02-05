@@ -26,7 +26,7 @@
 			class="btn btn-outline btn-xs"
 			onclick={() => instrumentManager.removeInstrument(instrumentId)}
 		>
-			❌
+			X
 		</button>
 		<button
 			class="btn btn-outline btn-xs"
@@ -87,7 +87,7 @@
 					class="btn btn-outline btn-xs"
 					onclick={() => instrumentManager.removeHit(instrumentId, hitId)}
 				>
-					❌
+					X
 				</button>
 			</li>
 		</ul>
