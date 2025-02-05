@@ -1,12 +1,22 @@
+import { InstrumentTable } from "./db/instrument_table"
+
 // place files you want to import through the `$lib` alias in this folder.
 export { defaultInstruments} from "./audio/default_instruments"
 export { AudioPlayer } from "./audio/audio_player"
 export { AudioManager } from "./manager/audio_manager"
-export { AudioDb } from "./db/audio_db"
 export { InstrumentManager } from "./manager/instrument_manager.svelte"
 export { GridModel } from "./model/grid_model.svelte"
 
-export * from "./types/types"
+// Service layer
+export { InstrumentService } from "./db/instrument_service"
+
+// Data layer
+export { AudioDb } from "./db/audio_db"
+export { InstrumentTable as InstrumentDb } from "./db/instrument_table"
+export { HitTable as HitDb } from "./db/hit_table"
+
+export * from "./types/data/instrument_data"
+export * from "./types/domain/types"
 export * from "./types/ui/grid_ui"
 export * from "./types/ui/legend_ui"
 export * from "./types/serialisation/savefile_v1"

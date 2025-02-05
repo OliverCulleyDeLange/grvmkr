@@ -25,7 +25,7 @@
 	let nextCount: number = 0;
 
 	onMount(() => {
-		instrumentManager = new InstrumentManager(defaultInstruments);
+		instrumentManager = new InstrumentManager();
 		// Add initial grid, and set active
 		grids.set(0, new GridModel(instrumentManager));
 	});

@@ -1,21 +1,28 @@
 import { SvelteMap } from "svelte/reactivity";
 import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1 } from "$lib";
-import { AudioManager, mapSavedInstrumentToInstrumentConfig } from "$lib";
+import { AudioManager, InstrumentService, mapSavedInstrumentToInstrumentConfig } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
-import { InstrumentDb } from "$lib/db/instrument_db";
+import { defaultInstruments } from "$lib/audio/default_instruments";
 
 // Responsible for modifying and playing instruments
 export class InstrumentManager {
 
     private audioManager = new AudioManager()
     private audioDb: AudioDb = new AudioDb();
-    private instrumentDb: InstrumentDb = new InstrumentDb();
+    private instrumentService: InstrumentService = new InstrumentService();
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
 
-    // Populate instruments state with given config and downloads default audio
-    constructor(instrumentConfigs: Array<InstrumentConfig>) {
-        instrumentConfigs.forEach((instrument) => this.addInstrumentFromConfig(instrument))
+    // Populate instruments state from db, defaulting to default config
+    // Also downloads default sound files
+    constructor() {
+        this.instrumentService.getAllInstruments().then((instruments) => {
+            if (instruments.length == 0) {
+                defaultInstruments.forEach((instrument) => this.addInstrumentFromConfig(instrument))
+            } else {
+                instruments.forEach((instrument) => this.saveInstrumentToStateAndDb(instrument))
+            }
+        })
         this.downloadDefaultAudioFiles();
     }
 
@@ -110,7 +117,7 @@ export class InstrumentManager {
         let reactiveInstrument = $state(instrument)
         this.instruments.set(instrument.id, reactiveInstrument);
         // Persist non reactive version in DB
-        this.instrumentDb.saveInstrument(instrument)
+        this.instrumentService.saveInstrument(instrument)
     }
 
     // Adds a new hit to the instrument, generating a new id
@@ -119,13 +126,13 @@ export class InstrumentManager {
         let instrument = this.instruments.get(instrumentId)
         if (instrument) {
             instrument.hitTypes.set(hitWithId.id, hitWithId)
-            this.instrumentDb.saveInstrument(instrument)
+            this.instrumentService.saveInstrument(instrument)
         }
     }
 
     removeInstrument(id: InstrumentId) {
         this.instruments.delete(id)
-        this.instrumentDb.deleteInstrument(id)
+        this.instrumentService.deleteInstrument(id)
     }
 
     removeHit(instrumentId: InstrumentId, hitId: HitId) {
@@ -133,8 +140,8 @@ export class InstrumentManager {
             instrument.hitTypes.delete(hitId)
         })
         this.audioManager.removeHit(hitId)
-        if (updatedInstrument){
-            this.instrumentDb.saveInstrument(updatedInstrument)
+        if (updatedInstrument) {
+            this.instrumentService.saveInstrument(updatedInstrument)
         }
     }
 
@@ -158,7 +165,7 @@ export class InstrumentManager {
     private reset() {
         this.instruments.clear()
         this.audioManager.reset()
-        this.instrumentDb.deleteAllInstruments()
+        this.instrumentService.deleteAllInstruments()
     }
 
     private buildHitFromConfig(hit: HitType): HitTypeWithId {
