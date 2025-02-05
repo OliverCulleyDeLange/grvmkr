@@ -28,9 +28,10 @@ export function mapRowsToGridUi(rows: GridRow[], instrumentManager: InstrumentMa
             })
         })
         return {
-            instrumentName: instruments.get(row.instrument.id)?.name ?? row.instrument.id,
+            index: row.instrument.gridIndex,
+            instrumentName: instruments.get(row.instrument.id)?.name ?? "error",
             gridCells
         }
-    })
+    }).sort((a, b) => a.index - b.index)
     return ui
 }

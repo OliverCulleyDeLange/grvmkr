@@ -1,6 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
 import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1 } from "$lib";
-import { AudioManager, InstrumentService, mapSavedInstrumentToInstrumentConfig } from "$lib";
+import { AudioManager, InstrumentService } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
 
@@ -15,15 +15,14 @@ export class InstrumentManager {
 
     // Populate instruments state from db, defaulting to default config
     // Also downloads default sound files
-    constructor() {
-        this.instrumentService.getAllInstruments().then((instruments) => {
-            if (instruments.length == 0) {
-                defaultInstruments.forEach((instrument) => this.addInstrumentFromConfig(instrument))
-            } else {
-                instruments.forEach((instrument) => this.saveInstrumentToStateAndDb(instrument))
-            }
-        })
-        this.downloadDefaultAudioFiles();
+    async initialise() {
+        let instruments = await this.instrumentService.getAllInstruments()
+        if (instruments.length == 0) {
+            defaultInstruments.forEach((instrument) => this.addInstrumentFromConfig(instrument))
+            this.downloadDefaultAudioFiles();
+        } else {
+            instruments.forEach((instrument) => this.saveInstrumentToStateAndDb(instrument))
+        }
     }
 
     async playHit(hit: InstrumentHit | undefined) {

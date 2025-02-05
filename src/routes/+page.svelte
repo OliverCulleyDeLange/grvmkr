@@ -13,7 +13,7 @@
 	import Instruments from './Instruments.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	let instrumentManager: InstrumentManager = $state() as InstrumentManager;
+	let instrumentManager: InstrumentManager = $state(new InstrumentManager());
 
 	let grids: SvelteMap<number, GridModel> = new SvelteMap();
 	let currentlyPlayingGrid: GridModel | undefined = $state();
@@ -25,9 +25,10 @@
 	let nextCount: number = 0;
 
 	onMount(() => {
-		instrumentManager = new InstrumentManager();
-		// Add initial grid, and set active
-		grids.set(0, new GridModel(instrumentManager));
+		instrumentManager.initialise().then(() => {
+			// Add initial grid, and set active
+			grids.set(0, new GridModel(instrumentManager));
+		});
 	});
 
 	$effect(() => {
@@ -117,7 +118,7 @@
 				let gridModel: GridModel = mapSavedGridToGridModel(grid, instrumentManager);
 				grids.set(index, gridModel);
 			});
-			fileInput.value = ''
+			fileInput.value = '';
 		}
 	}
 </script>

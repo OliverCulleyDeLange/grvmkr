@@ -123,8 +123,8 @@ export class GridModel {
     }
 
     private buildGrid(instruments: Map<InstrumentId, InstrumentWithId>): Array<GridRow> {
-        return Array.from(instruments.entries())
-            .map(([_, instrument]) => this.defaultGridRow(instrument))
+        return Array.from(instruments.values())
+            .map((instrument) => this.defaultGridRow(instrument))
     }
 
     private defaultGridRow(instrument: InstrumentWithId): GridRow {
