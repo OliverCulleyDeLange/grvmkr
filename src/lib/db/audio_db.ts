@@ -61,11 +61,11 @@ export class AudioDb {
             const request = indexedDB.open(audioDbName, 1);
 
             request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-                console.log('Upgrading indexedDB');
+                console.log(`Upgrading ${audioDbName}`);
                 const db = (event.target as IDBOpenDBRequest).result;
                 if (!db.objectStoreNames.contains(sampleStoreName)) {
                     db.createObjectStore(sampleStoreName, { keyPath: 'name' });
-                    console.log(`Upgrading: created object store ${sampleStoreName}`);
+                    console.log(`Upgrading: created object store [${sampleStoreName}]`);
                 }
             };
 
