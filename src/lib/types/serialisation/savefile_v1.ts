@@ -1,4 +1,5 @@
-// Don't change anything in here once pushed to prod!
+// Don't change anything in here.
+// If things change, create a V2 and confirm backwards compatibility with V1 files. 
 
 export type SaveFileV1 = {
     type: 'savefile'

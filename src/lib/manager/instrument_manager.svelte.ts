@@ -10,33 +10,11 @@ export class InstrumentManager {
     private audioDb: AudioDb = new AudioDb();
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
-    public numberOfHits: number = $derived([...this.instruments.values()]
-        .reduce((acc, instrument) => acc + instrument.hitTypes.size, 0))
 
-    // Populate instruments state with given config
-    // Save audio files into indexedDB
+    // Populate instruments state with given config and downloads default audio
     constructor(instrumentConfigs: Array<InstrumentConfig>) {
         instrumentConfigs.forEach((instrument) => this.addInstrumentFromConfig(instrument))
-
-        // Get the default sound files
-        this.instruments.forEach((instrument) => {
-            instrument.hitTypes.forEach((hit) => {
-                this.audioDb.audioExists(hit.audioFileName)
-                    .then((exists) => {
-                        if (!exists) {
-                            console.log("Downloading default audio file", hit.audioFileName)
-                            fetch(`./${hit.audioFileName}`)
-                                .then((res) => {
-                                    res.blob()
-                                        .then((blob) => {
-                                            const file = new File([blob], hit.audioFileName, { type: blob.type });
-                                            this.audioDb.storeAudio(file)
-                                        })
-                                })
-                        }
-                    })
-            })
-        })
+        this.downloadDefaultAudioFiles();
     }
 
     async playHit(hit: InstrumentHit | undefined) {
@@ -46,9 +24,7 @@ export class InstrumentManager {
                 let hitType = instrument?.hitTypes.get(hit.hitId)
                 if (hitType) {
                     try {
-                        // If this fails, the audio file isn't available for some reason
-                        await this.audioManager.loadSoundFromDbAndSetupHitAudioPlayer(hitType)
-                        await this.audioManager.loadHitAudio(hit.hitId)
+                        await this.audioManager.initialiseHit(hitType)
                         this.audioManager.playHit(hit)
                     } catch (e) {
                         if (e == "loadAudio: onsuccess but no result") {
@@ -67,12 +43,12 @@ export class InstrumentManager {
         }
     }
 
-    play(instrumentId: InstrumentId, hitId: HitId) {
-        this.playHit({ instrumentId, hitId })
+    async play(instrumentId: InstrumentId, hitId: HitId) {
+        await this.playHit({ instrumentId, hitId })
     }
 
-    initInstruments() {
-        this.audioManager.loadAllHitAudio()
+    ensureInstrumentsInitialised() {
+        this.audioManager.ensureAllAudioInitialised()
     }
 
     onChangeName(name: string, id: InstrumentId): any {
@@ -101,20 +77,17 @@ export class InstrumentManager {
         this.audioManager.removeHit(hitId)
     }
 
+    // Adds instruments from config, generating a new ID
     addInstrumentFromConfig(instrument: InstrumentConfig) {
         let instrumentId = `instrument_${crypto.randomUUID()}`
-        this.addInstrument(instrument, instrumentId);
-    }
-
-
-    addInstrument(instrument: InstrumentConfig, instrumentId: string) {
         let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
-            let hitWithId: HitTypeWithId = this.buildHit(hit);
+            let hitWithId: HitTypeWithId = this.buildHitFromConfig(hit);
             return [hitWithId.id, hitWithId];
         }));
         this.addReactiveInstrument(instrumentId, hitMap, instrument.name, instrument.gridIndex);
     }
 
+    // Saves a reactive instrument in state
     addReactiveInstrument(
         instrumentId: string,
         hitMap: SvelteMap<string, HitTypeWithId>,
@@ -130,13 +103,14 @@ export class InstrumentManager {
         this.instruments.set(instrumentId, reactiveInstrument);
     }
 
-    removeInstrument(id: InstrumentId) {
-        this.instruments.delete(id)
+    // Adds a new hit to the instrument, generating a new id
+    addHit(hit: HitType, instrumentId: InstrumentId) {
+        let hitWithId = this.buildHitFromConfig(hit)
+        this.instruments.get(instrumentId)?.hitTypes.set(hitWithId.id, hitWithId)
     }
 
-    addHit(hit: HitType, instrumentId: InstrumentId) {
-        let hitWithId = this.buildHit(hit)
-        this.instruments.get(instrumentId)?.hitTypes.set(hitWithId.id, hitWithId)
+    removeInstrument(id: InstrumentId) {
+        this.instruments.delete(id)
     }
 
     removeHit(instrumentId: InstrumentId, hitId: HitId) {
@@ -150,9 +124,6 @@ export class InstrumentManager {
     replaceInstruments(instruments: SavedInstrumentV1[]) {
         this.reset()
         instruments.forEach((instrument, index) => {
-            // let config: InstrumentConfig = mapSavedInstrumentToInstrumentConfig(instrument, index)
-            // this.addInstrument(config, instrument.id)
-
             let hitMap = new SvelteMap(instrument.hits.map((hit) => {
                 let hitType: HitType = {
                     key: hit.key,
@@ -171,7 +142,7 @@ export class InstrumentManager {
         this.audioManager.reset()
     }
 
-    private buildHit(hit: HitType): HitTypeWithId {
+    private buildHitFromConfig(hit: HitType): HitTypeWithId {
         let hitId = `hit_${crypto.randomUUID()}`
         return this.createReactiveHitWithId(hitId, hit);
     }
@@ -205,5 +176,27 @@ export class InstrumentManager {
                 console.error(`Couldn't update instrument hit ${hitId} as it doesn't exist`)
             }
         })
+    }
+
+    // Downloads default audio files if they don't exist in the db already
+    private downloadDefaultAudioFiles() {
+        this.instruments.forEach((instrument) => {
+            instrument.hitTypes.forEach((hit) => {
+                this.audioDb.audioExists(hit.audioFileName)
+                    .then((exists) => {
+                        if (!exists) {
+                            console.log("Downloading default audio file", hit.audioFileName);
+                            fetch(`./${hit.audioFileName}`)
+                                .then((res) => {
+                                    res.blob()
+                                        .then((blob) => {
+                                            const file = new File([blob], hit.audioFileName, { type: blob.type });
+                                            this.audioDb.storeAudio(file);
+                                        });
+                                });
+                        }
+                    });
+            });
+        });
     }
 }

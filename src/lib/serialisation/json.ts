@@ -1,5 +1,6 @@
 import type { GridModel, SaveFileV1, InstrumentWithId, SavedInstrumentV1, SavedHitV1, SavedGridV1, SavedGridRowV1, SavedInstrumentHitV1, GridRow, Bar, Beat, BeatDivision } from "$lib";
 
+// Serialises the grid model state into a SaveFileV1 for reloading later
 export function serialiseToJsonV1(grids: GridModel[], instruments: InstrumentWithId[]): SaveFileV1 {
     let savedInstruments: SavedInstrumentV1[] = mapInstrumentsToSavedInstruments(instruments);
     let savedGrids: SavedGridV1[] = mapGrids(grids)

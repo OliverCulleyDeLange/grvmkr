@@ -2,6 +2,7 @@
 const audioDbName = "audioDb"
 const sampleStoreName = "samples"
 
+// Wraps indexedDB - giving access to the audio sample files
 export class AudioDb {
     async audioExists(fileName: string): Promise<boolean> {
         return this.onDb((db, resolve) => {

@@ -9,13 +9,17 @@ export class AudioPlayer {
         this.url = url
     }
 
+    // Fetches the audio url, which should be a local blob URL created from
+    // the sound in the DB.
+    // Decodes this into an audio buffer to multiple playbacks.
+    // This shouldn't be done before a user interacts with the app as browsers
+    // block un-requested audio. 
     async loadAudio(audioContext: AudioContext): Promise<void> {
         this.audioContext = audioContext;
         try {
             const response = await fetch(this.url);
             const arrayBuffer = await response.arrayBuffer();
             this.audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            // console.log(`Audio loaded successfully for ${this.url}`);
         } catch (error) {
             console.error("Error loading audio:", error);
         }
@@ -39,7 +43,6 @@ export class AudioPlayer {
     stop(): void {
         if (this.sourceNode) {
             this.sourceNode.stop();
-            // console.log("Audio stopped.");
         }
     }
 }

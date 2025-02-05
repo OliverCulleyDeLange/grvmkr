@@ -7,10 +7,11 @@ export { InstrumentManager } from "./manager/instrument_manager.svelte"
 export { GridModel } from "./model/grid_model.svelte"
 
 export * from "./types/types"
-export * from "./types/types_ui"
+export * from "./types/ui/grid_ui"
 export * from "./types/ui/legend_ui"
 export * from "./types/serialisation/savefile_v1"
 
 export { serialiseToJsonV1 } from "./serialisation/json"
 export { mapSavedInstrumentToInstrumentConfig } from "./mapper/instrument_mapper"
-export { mapSavedGridToGridModel } from "./mapper/grid_mapper"
+export { mapSavedGridToGridModel } from "./mapper/saved_grid_mapper"
+export { mapRowsToGridUi } from "./mapper/grid_ui_mapper"

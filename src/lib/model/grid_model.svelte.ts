@@ -1,6 +1,6 @@
 import type { InstrumentManager } from "../manager/instrument_manager.svelte";
-import type { Bar, Beat, BeatDivision, CellLocator, GridRow, HitId, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
-import type { NotationGridRowUi, GridCellUi } from "$lib";
+import { mapRowsToGridUi, type Bar, type Beat, type BeatDivision, type CellLocator, type GridRow, type HitId, type InstrumentHit, type InstrumentId, type InstrumentWithId } from "$lib";
+import type { NotationGridRowUi } from "$lib";
 
 export class GridModel {
 
@@ -25,56 +25,25 @@ export class GridModel {
     // Total number of grid cells, derived from configurable grid state
     public gridCols = $derived(this.beatNoteFraction * this.beatsPerBar * this.bars);
 
-    // Main grid state
+    // Grid domain state
     public rows: Array<GridRow> = $state([]);
 
-    // Testing
-    public uiModel: NotationGridRowUi[] = $derived(this.buildUi(this.rows, this.instrumentManager));
+    // Grid UI state
+    public uiModel: NotationGridRowUi[] = $derived(mapRowsToGridUi(this.rows, this.instrumentManager));
 
-    buildUi(rows: GridRow[], instrumentManager: InstrumentManager): NotationGridRowUi[] {
-        let instruments = instrumentManager.instruments
-        let ui = rows.map((row, rowI) => {
-            let gridCells: GridCellUi[] = row.notation.bars.flatMap((bar, barI) => {
-                return bar.beats.flatMap((beat, beatI) => {
-                    let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
-                        let cellContent = ""
-                        if (division.hit) {
-                            // console.log(`getting instrument ${division.hit.instrumentId} from `,instruments)
-                            let instrument: InstrumentWithId | undefined = instruments.get(division.hit.instrumentId)
-                            // console.log(`getting hit ${division.hit.hitId} from instrument:`, instrument)
-                            let hit = instrument?.hitTypes.get(division.hit.hitId)
-                            // console.log(`got hit `, hit)
-                            cellContent = hit?.key ?? ""
-                        }
-                        return {
-                            darken: divisionI == 0,
-                            content: cellContent,
-                            locator: {
-                                row: rowI,
-                                notationLocator: { bar: barI, beat: beatI, division: divisionI }
-                            }
-                        }
-                    })
-                    return cells
-                })
-            })
-            return {
-                instrumentName: instruments.get(row.instrument.id)?.name ?? row.instrument.id,
-                gridCells
-            }
-        })
-        return ui
-    }
-
+    // Toggle the hit in the cell when the user clicks the cell
+    // Also plays the sound
     toggleLocation(locator: CellLocator) {
         let row = this.rows[locator.row]
         let currentValue = this.currentHit(locator);
         let newInstrumentHit: InstrumentHit | undefined = this.nextHitType(row, currentValue?.hitId);
         // console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
-        this.update(locator, newInstrumentHit)
+        this.updateCellHit(locator, newInstrumentHit)
         this.instrumentManager?.playHit(newInstrumentHit)
     }
 
+    // Returns a count of the number of columns in the grid
+    // Used to decide when to resize the grid
     notationColumns(): number {
         if (this.rows.length == 0) return 0
         let notation = this.rows[0].notation
@@ -114,6 +83,8 @@ export class GridModel {
         });
     }
 
+    // When instruments are added / removed, we need to remove the rows for the 
+    // deleted ones, and add rows for the new ones
     syncInstruments() {
         // First remove all rows where the instrument is removed
         let filteredRows = this.rows.filter((row) => {
@@ -131,6 +102,9 @@ export class GridModel {
         this.rows = filteredRows
     }
 
+    currentHit(locator: CellLocator): InstrumentHit | undefined {
+        return this.getCell(locator).hit
+    }
 
     // When we remove a hit, we need to remove all the cells which contain that hit
     removeHits(removedHit: InstrumentHit) {
@@ -147,7 +121,6 @@ export class GridModel {
             })
         })
     }
-
 
     private buildGrid(instruments: Map<InstrumentId, InstrumentWithId>): Array<GridRow> {
         return Array.from(instruments.entries())
@@ -177,6 +150,9 @@ export class GridModel {
         return { hit: undefined }
     }
 
+    // Returns the next cyclic hit type. 
+    // Clicking a cell cycles through all the available hit types
+    // TODO Would maybe be better to use right clicking or long pressing or something 
     private nextHitType(row: GridRow, hitId: HitId | undefined): InstrumentHit | undefined {
         let hits = Array.from(row.instrument.hitTypes.values());
         let instrumentHit = {
@@ -195,11 +171,7 @@ export class GridModel {
         }
     }
 
-    currentHit(locator: CellLocator): InstrumentHit | undefined {
-        return this.getCell(locator).hit
-    }
-
-    private update(locator: CellLocator, hit: InstrumentHit | undefined) {
+    private updateCellHit(locator: CellLocator, hit: InstrumentHit | undefined) {
         let division = this.getCell(locator)
         division.hit = hit
     }

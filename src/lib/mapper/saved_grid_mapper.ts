@@ -1,6 +1,7 @@
 import { GridModel } from "$lib";
 import type { Bar, Beat, BeatDivision, GridRow, InstrumentManager, SavedGridConfigV1, SavedGridRowV1, SavedGridV1, SavedInstrumentHitV1 } from "$lib";
 
+// Maps a saved grid from a save file to grid models
 export function mapSavedGridToGridModel(grid: SavedGridV1, instrumentManager: InstrumentManager): GridModel {
     let gridModel = new GridModel(instrumentManager)
     // Configure

@@ -48,7 +48,7 @@
 
 	async function onTogglePlaying(newPlaying: boolean, gridId: number): Promise<void> {
 		if (newPlaying) {
-			await instrumentManager.initInstruments();
+			await instrumentManager.ensureInstrumentsInitialised();
 			currentlyPlayingGrid = grids.get(gridId);
 		} else {
 			currentlyPlayingGrid = undefined;
@@ -63,6 +63,7 @@
 		nextCount = 0;
 	}
 
+	// TODO Extract play logic out of view
 	async function onBeat() {
 		if (!currentlyPlayingGrid) return;
 		let count = nextCount++;
