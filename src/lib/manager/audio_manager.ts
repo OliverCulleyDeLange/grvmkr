@@ -20,12 +20,12 @@ export class AudioManager {
 
     setupInstrumentAudioPlayer(instruments: InstrumentWithId) {
         instruments.hitTypes.forEach((hitType, hitId) => {
-            this.setupHitAudioPlayer(hitType)
+            this.loadSoundFromDbAndSetupHitAudioPlayer(hitType)
         })
     }
 
     // Loads the sample from the DB and initialises an Audio Player with the blob URL
-    async setupHitAudioPlayer(hit: HitTypeWithId) {
+    async loadSoundFromDbAndSetupHitAudioPlayer(hit: HitTypeWithId) {
         let audioFileName = hit.audioFileName;
         console.log(`Setting up AudioPlayer for ${hit.audioFileName}`)
         let sampleUrl = await this.audioDb.loadAudio(audioFileName)

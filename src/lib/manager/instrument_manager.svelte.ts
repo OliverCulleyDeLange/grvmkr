@@ -41,11 +41,17 @@ export class InstrumentManager {
                 let hitType = instrument?.hitTypes.get(hit.hitId)
                 if (hitType) {
                     try {
-                        await this.audioManager.setupHitAudioPlayer(hitType)
+                        // If this fails, the audio file isn't available for some reason
+                        await this.audioManager.loadSoundFromDbAndSetupHitAudioPlayer(hitType)
                         await this.audioManager.loadHitAudio(hit.hitId)
                         this.audioManager.playHit(hit)
                     } catch (e) {
-                        console.error("Can't setup uninitialised instrument hit. Error:", e)
+                        if (e == "loadAudio: onsuccess but no result"){
+                            console.error("Sound file not present in database. Removing existing sample", e)
+                            hitType.audioFileName = ""
+                        } else {
+                            console.error("Unhandled error when loading uninitialised instrument hit:", e)
+                        }
                     }
                 } else {
                     console.error(`Can't play hit as audio not initialised and instrument with id ${hit.instrumentId} with hit with id ${hit.hitId} doesn't exist in instrument manager`)
