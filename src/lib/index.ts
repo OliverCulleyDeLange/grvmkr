@@ -8,7 +8,7 @@ export { InstrumentManager } from "./manager/instrument_manager.svelte"
 export { GridModel } from "./model/grid_model.svelte"
 
 // Service layer
-export { InstrumentService } from "./db/instrument_service"
+export { InstrumentService } from "./service/instrument_service"
 
 // Data layer
 export { AudioDb } from "./db/audio_db"
@@ -16,7 +16,7 @@ export { InstrumentTable as InstrumentDb } from "./db/instrument_table"
 export { HitTable as HitDb } from "./db/hit_table"
 
 export * from "./types/data/instrument_data"
-export * from "./types/domain/types"
+export * from "./types/domain/grid_domain"
 export * from "./types/ui/grid_ui"
 export * from "./types/ui/legend_ui"
 export * from "./types/serialisation/savefile_v1"

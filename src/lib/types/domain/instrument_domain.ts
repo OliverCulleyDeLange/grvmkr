@@ -1,6 +1,7 @@
 
 export type InstrumentId = string
 export type HitId = string
+export type HitTypeKey = string | undefined
 
 // Uninitialised instrument config. 
 export type InstrumentConfig = {
@@ -28,38 +29,3 @@ export type InstrumentHit = {
     instrumentId: InstrumentId,
     hitId: HitId
 }
-
-export type GridRow = {
-    instrument: InstrumentWithId
-    notation: Notation
-};
-
-export type CellLocator = {
-    row: number
-    notationLocator: NotationLocator
-};
-
-export type NotationLocator = {
-    bar: number
-    beat: number
-    division: number
-};
-
-export type Notation = {
-    bars: Array<Bar>
-}
-
-export type Bar = {
-    beats: Array<Beat>
-};
-
-export type Beat = {
-    divisions: Array<BeatDivision>
-};
-
-export type BeatDivision = {
-    hit: InstrumentHit | undefined
-};
-
-
-export type HitTypeKey = string | undefined
