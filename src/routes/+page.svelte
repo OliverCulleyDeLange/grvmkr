@@ -51,7 +51,7 @@
 			await instrumentManager.initInstruments();
 			currentlyPlayingGrid = grids.get(gridId);
 		} else {
-			currentlyPlayingGrid = undefined
+			currentlyPlayingGrid = undefined;
 		}
 		playing = newPlaying;
 	}
@@ -69,8 +69,11 @@
 		let cell = count % currentlyPlayingGrid.gridCols;
 		let repetition = Math.floor(count / currentlyPlayingGrid.gridCols);
 		let bar =
-			Math.floor(count / (currentlyPlayingGrid.beatsPerBar * currentlyPlayingGrid.beatNoteFraction)) % currentlyPlayingGrid.bars;
-		let beat = Math.floor(count / currentlyPlayingGrid.beatNoteFraction) % currentlyPlayingGrid.beatsPerBar;
+			Math.floor(
+				count / (currentlyPlayingGrid.beatsPerBar * currentlyPlayingGrid.beatNoteFraction)
+			) % currentlyPlayingGrid.bars;
+		let beat =
+			Math.floor(count / currentlyPlayingGrid.beatNoteFraction) % currentlyPlayingGrid.beatsPerBar;
 		let beatDivision = count % currentlyPlayingGrid.beatNoteFraction;
 
 		// console.log(
@@ -113,6 +116,7 @@
 				let gridModel: GridModel = mapSavedGridToGridModel(grid, instrumentManager);
 				grids.set(index, gridModel);
 			});
+			fileInput.value = ''
 		}
 	}
 </script>
