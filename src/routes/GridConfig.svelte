@@ -1,14 +1,24 @@
 <script lang="ts">
 	import type { GridModel } from '$lib';
+	import { onMount } from 'svelte';
 
 	type TogglePlaying = (playing: boolean) => void;
-	let { 
-		grid, playing,  togglePlaying
-	 }: { 
-		grid: GridModel; 
+	let {
+		grid,
+		playing,
+		togglePlaying
+	}: {
+		grid: GridModel;
 		playing: boolean;
 		togglePlaying: TogglePlaying;
-	 } = $props();
+	} = $props();
+
+	onMount(() => {
+		bpm = grid.bpm
+		bars = grid.bars
+		beatsPerBar = grid.beatsPerBar
+		beatNoteFraction = grid.beatNoteFraction
+	});
 
 	const minBpm = 20;
 	const maxBpm = 200;
@@ -28,15 +38,15 @@
 		grid.bpm = bpm;
 	}
 	function onBarsChange() {
-		bars =  Math.round(Math.min(maxBars, Math.max(minBars, bars)));
+		bars = Math.round(Math.min(maxBars, Math.max(minBars, bars)));
 		grid.bars = bars;
 	}
 	function onBeatsPerBarChange() {
-		beatsPerBar =  Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatsPerBar)));
+		beatsPerBar = Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatsPerBar)));
 		grid.beatsPerBar = beatsPerBar;
 	}
 	function onBeatNoteFractionChange() {
-		beatNoteFraction =  Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatNoteFraction)));
+		beatNoteFraction = Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatNoteFraction)));
 		grid.beatNoteFraction = beatNoteFraction;
 	}
 </script>
@@ -48,19 +58,34 @@
 
 	<div class="mx-4">
 		<span>BPM:</span>
-		<input type="number" step="1" bind:value={bpm} onchange={onBpmChange} min={minBpm} max={maxBpm} />
+		<input
+			type="number"
+			step="1"
+			bind:value={bpm}
+			onchange={onBpmChange}
+			min={minBpm}
+			max={maxBpm}
+		/>
 		<input
 			type="range"
 			step="1"
 			bind:value={bpm}
 			oninput={onBpmChange}
-			min={minBpm} max={maxBpm}
+			min={minBpm}
+			max={maxBpm}
 			class="print:hidden"
 		/>
 	</div>
 	<div class="mx-4">
 		<span>Bars:</span>
-		<input type="number" step="1" bind:value={bars} onchange={onBarsChange} min={minBars} max={maxBars} />
+		<input
+			type="number"
+			step="1"
+			bind:value={bars}
+			onchange={onBarsChange}
+			min={minBars}
+			max={maxBars}
+		/>
 	</div>
 	<div class="mx-4">
 		<span>Grid size:</span>
