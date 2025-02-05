@@ -1,12 +1,12 @@
 import type { InstrumentWithId, HitTypeWithId } from "$lib";
 import type { InstrumentDto, HitDto } from "$lib";
-import { InstrumentDb } from "$lib";
-import { HitDb } from "$lib";
+import { InstrumentTable } from "$lib";
+import { HitTable } from "$lib";
 import { SvelteMap } from "svelte/reactivity";
 
 export class InstrumentService {
-    private instrumentDb = new InstrumentDb();
-    private hitDb = new HitDb();
+    private instrumentTable = new InstrumentTable();
+    private hitTable = new HitTable();
 
     // ✅ Save an instrument and its hits
     async saveInstrument(instrument: InstrumentWithId): Promise<void> {
@@ -24,7 +24,7 @@ export class InstrumentService {
         });
 
         // Save all hit DTOs
-        await Promise.all(hitDtos.map(hit => this.hitDb.saveHit(hit)));
+        await Promise.all(hitDtos.map(hit => this.hitTable.saveHit(hit)));
 
         // Convert instrument to DTO and store it
         const instrumentDto: InstrumentDto = {
@@ -34,18 +34,18 @@ export class InstrumentService {
             hitTypes: hitIds // Store only the hit IDs
         };
 
-        await this.instrumentDb.saveInstrument(instrumentDto);
+        await this.instrumentTable.saveInstrument(instrumentDto);
     }
 
     // ✅ Get an instrument by ID (with hitTypes mapped back)
     async getInstrument(id: string): Promise<InstrumentWithId | null> {
-        const instrumentDto = await this.instrumentDb.getInstrument(id);
+        const instrumentDto = await this.instrumentTable.getInstrument(id);
         if (!instrumentDto) return null;
 
         // Fetch all hitTypes associated with the instrument
         const hitTypeEntries = await Promise.all(
             instrumentDto.hitTypes.map(async (hitId) => {
-                const hitDto = await this.hitDb.getHit(hitId);
+                const hitDto = await this.hitTable.getHit(hitId);
                 return hitDto ? [hitId, hitDto] : null;
             })
         );
@@ -69,13 +69,13 @@ export class InstrumentService {
 
     // ✅ Get all instruments
     async getAllInstruments(): Promise<InstrumentWithId[]> {
-        const instrumentDtos = await this.instrumentDb.getAllInstruments();
+        const instrumentDtos = await this.instrumentTable.getAllInstruments();
 
         return Promise.all(
             instrumentDtos.map(async (instrumentDto) => {
                 const hitTypeEntries = await Promise.all(
                     instrumentDto.hitTypes.map(async (hitId) => {
-                        const hitDto = await this.hitDb.getHit(hitId);
+                        const hitDto = await this.hitTable.getHit(hitId);
                         return hitDto ? [hitId, hitDto] : null;
                     })
                 );
@@ -110,15 +110,15 @@ export class InstrumentService {
         if (!instrument) return;
 
         // Delete associated hits
-        await Promise.all(Array.from(instrument.hitTypes.keys()).map(hitId => this.hitDb.deleteHit(hitId)));
+        await Promise.all(Array.from(instrument.hitTypes.keys()).map(hitId => this.hitTable.deleteHit(hitId)));
 
         // Delete instrument
-        await this.instrumentDb.deleteInstrument(id);
+        await this.instrumentTable.deleteInstrument(id);
     }
 
     // ✅ Delete all instruments and all hits
     async deleteAllInstruments(): Promise<void> {
-        await this.instrumentDb.deleteAllInstruments();
-        await this.hitDb.deleteAllHits();
+        await this.instrumentTable.deleteAllInstruments();
+        await this.hitTable.deleteAllHits();
     }
 }

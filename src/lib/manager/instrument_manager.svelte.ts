@@ -1,6 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
 import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1 } from "$lib";
-import { AudioManager, HitDb, InstrumentService } from "$lib";
+import { AudioManager, InstrumentService } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
 
@@ -146,8 +146,8 @@ export class InstrumentManager {
     }
 
     // When loading from file, replace all instruments
-    replaceInstruments(instruments: SavedInstrumentV1[]) {
-        this.reset()
+    async replaceInstruments(instruments: SavedInstrumentV1[]) {
+        await this.reset()
         instruments.forEach((instrument, index) => {
             let hitMap = new SvelteMap(instrument.hits.map((hit) => {
                 let hitType: HitType = {
@@ -162,10 +162,10 @@ export class InstrumentManager {
         })
     }
 
-    private reset() {
+    private async reset() {
         this.instruments.clear()
         this.audioManager.reset()
-        this.instrumentService.deleteAllInstruments()
+        await this.instrumentService.deleteAllInstruments()
     }
 
     private buildHitFromConfig(hit: HitType): HitTypeWithId {
@@ -229,7 +229,7 @@ export class InstrumentManager {
 }
 
 // Wraps an instrument and its hits in $state rune so it becomes reactive
-function makeInstrumentReactive(instrument: InstrumentWithId):InstrumentWithId {
+function makeInstrumentReactive(instrument: InstrumentWithId): InstrumentWithId {
     instrument.hitTypes.forEach((hit) => {
         let reactiveHit = $state(hit);
         instrument.hitTypes.set(hit.id, reactiveHit);

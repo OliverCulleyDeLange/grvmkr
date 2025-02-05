@@ -111,7 +111,7 @@
 		if (fileInput.files && fileInput.files[0]) {
 			let file = fileInput.files[0];
 			let saveFile: SaveFileV1 = JSON.parse(await file.text());
-			instrumentManager.replaceInstruments(saveFile.instruments);
+			await instrumentManager.replaceInstruments(saveFile.instruments);
 
 			grids.clear();
 			saveFile.grids.forEach((grid, index) => {

@@ -17,7 +17,7 @@ export class HitTable {
     }
 
     // ✅ Save or Update a Hit
-    async saveHit(hit: HitDto & { id: HitDtoId }): Promise<void> {
+    async saveHit(hit: HitDto): Promise<void> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(instrumentHitStoreName, "readwrite");
