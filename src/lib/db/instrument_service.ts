@@ -90,10 +90,7 @@ export class InstrumentService {
                             description: hit.description,
                             audioFileName: hit.audioFileName
                         };
-                        // TODO FIXME Move all mapping to reactive state out
-                        // Rename this not.svelte - services shouldn't need to be reactive 
-                        let reactiveHit = $state(hitWithId);
-                        return [hitId, reactiveHit]
+                        return [hitId, hitWithId]
                     })
                 )
                 let instrumentWithId: InstrumentWithId = {

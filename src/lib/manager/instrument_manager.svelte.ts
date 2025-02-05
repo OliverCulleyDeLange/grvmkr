@@ -1,6 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
 import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1 } from "$lib";
-import { AudioManager, InstrumentService } from "$lib";
+import { AudioManager, HitDb, InstrumentService } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
 
@@ -89,7 +89,7 @@ export class InstrumentManager {
     addInstrumentFromConfig(instrument: InstrumentConfig) {
         let instrumentId = `instrument_${crypto.randomUUID()}`
         let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
-            let hitWithId: HitTypeWithId = this.buildReactiveHitFromConfig(hit);
+            let hitWithId: HitTypeWithId = this.buildHitFromConfig(hit);
             return [hitWithId.id, hitWithId];
         }));
         this.addInstrument(instrumentId, hitMap, instrument.name, instrument.gridIndex);
@@ -113,7 +113,7 @@ export class InstrumentManager {
 
     private saveInstrumentToStateAndDb(instrument: InstrumentWithId) {
         // Save a reactive version to state
-        let reactiveInstrument = $state(instrument)
+        let reactiveInstrument = makeInstrumentReactive(instrument);
         this.instruments.set(instrument.id, reactiveInstrument);
         // Persist non reactive version in DB
         this.instrumentService.saveInstrument(instrument)
@@ -121,10 +121,11 @@ export class InstrumentManager {
 
     // Adds a new hit to the instrument, generating a new id
     addHit(hit: HitType, instrumentId: InstrumentId) {
-        let reactiveHitWithId = this.buildReactiveHitFromConfig(hit)
+        let hitWithId = this.buildHitFromConfig(hit)
+        let reactiveHit = $state(hitWithId)
         let instrument = this.instruments.get(instrumentId)
         if (instrument) {
-            instrument.hitTypes.set(reactiveHitWithId.id, reactiveHitWithId)
+            instrument.hitTypes.set(reactiveHit.id, reactiveHit)
             this.instrumentService.saveInstrument(instrument)
         }
     }
@@ -154,7 +155,7 @@ export class InstrumentManager {
                     description: hit.description,
                     audioFileName: hit.audio_file_name
                 }
-                let hitWithId: HitTypeWithId = this.createReactiveHitWithId(hit.id, hitType);
+                let hitWithId: HitTypeWithId = this.createHitWithId(hit.id, hitType);
                 return [hitWithId.id, hitWithId];
             }));
             this.addInstrument(instrument.id, hitMap, instrument.name, index);
@@ -167,20 +168,19 @@ export class InstrumentManager {
         this.instrumentService.deleteAllInstruments()
     }
 
-    private buildReactiveHitFromConfig(hit: HitType): HitTypeWithId {
+    private buildHitFromConfig(hit: HitType): HitTypeWithId {
         let hitId = `hit_${crypto.randomUUID()}`
-        return this.createReactiveHitWithId(hitId, hit);
+        return this.createHitWithId(hitId, hit);
     }
 
-    private createReactiveHitWithId(hitId: string, hit: HitType): HitTypeWithId {
+    private createHitWithId(hitId: string, hit: HitType): HitTypeWithId {
         let hitWithId: HitTypeWithId = {
             id: hitId,
             key: hit.key,
             description: hit.description,
             audioFileName: hit.audioFileName
         };
-        let reactiveHit = $state(hitWithId);
-        return reactiveHit;
+        return hitWithId;
     }
 
     private updateInstrument(id: InstrumentId, callback: (config: InstrumentWithId) => void): InstrumentWithId | undefined {
@@ -226,4 +226,14 @@ export class InstrumentManager {
             });
         });
     }
+}
+
+// Wraps an instrument and its hits in $state rune so it becomes reactive
+function makeInstrumentReactive(instrument: InstrumentWithId):InstrumentWithId {
+    instrument.hitTypes.forEach((hit) => {
+        let reactiveHit = $state(hit);
+        instrument.hitTypes.set(hit.id, reactiveHit);
+    });
+    let reactiveInstrument = $state(instrument);
+    return reactiveInstrument;
 }
