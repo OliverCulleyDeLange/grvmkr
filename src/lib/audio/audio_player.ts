@@ -15,7 +15,7 @@ export class AudioPlayer {
             const response = await fetch(this.url);
             const arrayBuffer = await response.arrayBuffer();
             this.audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            console.log(`Audio loaded successfully for ${this.url}`);
+            // console.log(`Audio loaded successfully for ${this.url}`);
         } catch (error) {
             console.error("Error loading audio:", error);
         }
@@ -39,7 +39,7 @@ export class AudioPlayer {
     stop(): void {
         if (this.sourceNode) {
             this.sourceNode.stop();
-            console.log("Audio stopped.");
+            // console.log("Audio stopped.");
         }
     }
 }

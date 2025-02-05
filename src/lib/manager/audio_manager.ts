@@ -27,10 +27,8 @@ export class AudioManager {
     // Loads the sample from the DB and initialises an Audio Player with the blob URL
     async loadSoundFromDbAndSetupHitAudioPlayer(hit: HitTypeWithId) {
         let audioFileName = hit.audioFileName;
-        console.log(`Setting up AudioPlayer for ${hit.audioFileName}`)
         let sampleUrl = await this.audioDb.loadAudio(audioFileName)
         this.hits.set(hit.id, new AudioPlayer(sampleUrl))
-        console.log(`Setup AudioPlayer for ${hit.audioFileName}`)
     }
 
     // We can't use audio context until a user event has fired, this is why this is not done at the start
@@ -39,7 +37,6 @@ export class AudioManager {
         for (let [hit, player] of this.hits) {
             if (!player.isLoaded()) await player.loadAudio(this.audioContext!);
         }
-        console.log("All instrument audio loaded")
     }
 
     async loadHitAudio(hitId: HitId) {

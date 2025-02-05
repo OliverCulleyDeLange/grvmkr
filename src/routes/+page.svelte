@@ -33,7 +33,7 @@
 	$effect(() => {
 		if (playing) {
 			onBeat();
-			console.log('Setting interval', msPerBeatDivision);
+			// console.log('Setting interval', msPerBeatDivision);
 			playingIntervalId = setInterval(() => {
 				onBeat();
 			}, msPerBeatDivision);
@@ -41,13 +41,12 @@
 			stop();
 		}
 		return () => {
-			console.log('Clearing interval', msPerBeatDivision);
+			// console.log('Clearing interval', msPerBeatDivision);
 			clearInterval(playingIntervalId);
 		};
 	});
 
 	async function onTogglePlaying(newPlaying: boolean, gridId: number): Promise<void> {
-		console.log(`newPlaying: ${newPlaying}, gridId: ${gridId}`)
 		if (newPlaying) {
 			await instrumentManager.initInstruments();
 			currentlyPlayingGrid = grids.get(gridId);
@@ -58,7 +57,6 @@
 	}
 
 	function stop() {
-		console.log('Stopping');
 		clearInterval(playingIntervalId);
 		playingIntervalId = undefined;
 		playing = false;
@@ -75,9 +73,9 @@
 		let beat = Math.floor(count / currentlyPlayingGrid.beatNoteFraction) % currentlyPlayingGrid.beatsPerBar;
 		let beatDivision = count % currentlyPlayingGrid.beatNoteFraction;
 
-		console.log(
-			`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
-		);
+		// console.log(
+		// 	`Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
+		// );
 
 		currentlyPlayingGrid.rows.forEach((row, rowI) => {
 			let locator: CellLocator = {
@@ -95,7 +93,6 @@
 			[...instrumentManager.instruments.values()]
 		);
 		const text = JSON.stringify(saveFile);
-		console.log('Saved', text);
 		const blob = new Blob([text], { type: 'application/json' });
 		const a = document.createElement('a');
 		a.href = URL.createObjectURL(blob);
