@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HitId, InstrumentId, InstrumentManager, OnEvent } from '$lib';
-	import { defaultHitConfig, defaultInstrumentConfig } from '$lib/audio/default_instruments';
+	import { defaultHitConfig } from '$lib/audio/default_instruments';
 	import { InstrumentEvent } from '$lib/types/ui/instruments';
 
 	// TODO Remove - replace with passed down instrument UI model

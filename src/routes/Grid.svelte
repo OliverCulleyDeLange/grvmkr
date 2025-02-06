@@ -3,17 +3,14 @@
 	import GridCell from './GridCell.svelte';
 	import Legend from './Legend.svelte';
 
-
 	let {
 		grid,
 		gridUi,
-		currentColumn,
 		instrumentManager,
 		onEvent
 	}: {
 		grid: Grid;
 		gridUi: NotationGridRowUi[];
-		currentColumn: number;
 		instrumentManager: InstrumentManager;
 		onEvent: OnEvent;
 	} = $props();
@@ -35,8 +32,8 @@
 					grid.config.beatDivisions == 0
 					? 'brightness-[0.8]'
 					: ''}"
-				class:bg-green-300={currentCell == currentColumn}
-				class:bg-gray-300={currentCell != currentColumn}
+				class:bg-green-300={currentCell == grid.currentlyPlayingColumn}
+				class:bg-gray-300={currentCell != grid.currentlyPlayingColumn}
 			>
 			</div>
 		{/each}

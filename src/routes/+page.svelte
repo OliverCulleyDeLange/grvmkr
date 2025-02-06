@@ -38,7 +38,6 @@
 
 	// Playing state
 	let playing = $state(false);
-	let currentColumn = $state(0);
 	let nextCount: number = 0;
 
 	onMount(() => {
@@ -69,6 +68,9 @@
 		} else {
 			currentlyPlayingGrid = undefined;
 		}
+		updateGrid(gridId, (grid) => {
+			grid.playing = newPlaying
+		})
 		playing = newPlaying;
 	}
 
@@ -108,7 +110,8 @@
 			let currentHit = getCurrentHit(currentlyPlayingGrid, locator);
 			instrumentManager.playHit(currentHit);
 		});
-		currentColumn = cell;
+
+		currentlyPlayingGrid.currentlyPlayingColumn = cell;
 	}
 
 	function getCurrentHit(
@@ -363,7 +366,7 @@
 		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
 	</div>
 	{#if instrumentManager != undefined}
-		<Grids {instrumentManager} {grids} {currentColumn} {onEvent} />
+		<Grids {instrumentManager} {grids} {onEvent} />
 
 		<div class="flex">
 			<button onclick={addGrid} class="btn btn-outline btn-xs m-2 ml-auto print:hidden">

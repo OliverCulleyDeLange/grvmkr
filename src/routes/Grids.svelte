@@ -1,19 +1,17 @@
 <script lang="ts">
-	import { mapRowsToGridUi, type GridId, type InstrumentManager, type OnEvent, type UiEvent } from '$lib';
+	import { mapRowsToGridUi, type GridId, type InstrumentManager, type OnEvent } from '$lib';
 	import type { SvelteMap } from 'svelte/reactivity';
-	import Grid from './Grid.svelte';
 	import type { Grid as GridType } from '$lib/types/domain/grid_domain';
 	import GridConfig from './GridConfig.svelte';
+	import Grid from './Grid.svelte';
 
 	let {
 		instrumentManager,
 		grids,
-		currentColumn,
 		onEvent,
 	}: {
 		instrumentManager: InstrumentManager;
 		grids: SvelteMap<GridId, GridType>;
-		currentColumn: number;
 		onEvent: OnEvent
 	} = $props();
 </script>
@@ -26,7 +24,6 @@
 	<Grid
 		{grid}
 		gridUi={mapRowsToGridUi(grid, instrumentManager)}
-		{currentColumn}
 		{instrumentManager}
 		{onEvent}
 	/>

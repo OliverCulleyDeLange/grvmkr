@@ -8,7 +8,8 @@ export type Grid = {
     rows: GridRow[]
     msPerBeatDivision: number,
     gridCols: number,
-    playing: boolean
+    playing: boolean,
+    currentlyPlayingColumn: number
 };
 
 export type GridConfig = {
