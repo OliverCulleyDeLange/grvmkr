@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ToolbarEvent, type AppError, type OnUiEvent } from '$lib';
+	import HelpOverlay from './HelpOverlay.svelte';
 
 	let {
 		errors,
@@ -8,6 +9,8 @@
 		errors: AppError[];
 		onEvent: OnUiEvent;
 	} = $props();
+
+	let showHelp: boolean = $state(false);
 
 	function load(event: Event) {
 		const fileInput = event.target as HTMLInputElement;
@@ -19,7 +22,7 @@
 	}
 </script>
 
-<div class="flex gap-8 print:hidden">
+<div class="flex gap-4 print:hidden">
 	<h1 class="text-3xl">GrvMkr</h1>
 	<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Save })}
 		>Save</button
@@ -37,10 +40,14 @@
 	/>
 	<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
 
-	<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Reset })}>Reset</button
+	<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Reset })}
+		>Reset</button
 	>
 
-	<!-- TODO - Info section -->
+	<button class="btn btn-outline btn-sm" onclick={() => showHelp = !showHelp}>?</button>
+	{#if showHelp}
+		<HelpOverlay  closeDialog={() => showHelp = !showHelp}/>
+	{/if}
 </div>
 
 <div class="my-4 flex flex-col gap-2">
