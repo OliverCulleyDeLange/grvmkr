@@ -27,9 +27,10 @@ export class AudioDb {
                 const transaction = db.transaction(SAMPLE_STORE, 'readwrite');
                 const store = transaction.objectStore(SAMPLE_STORE);
 
-                store.put({ name: file.name, data: reader.result });
-                // console.log(`Stored file ${file.name}`);
-                resolve(file.name)
+                const request = store.put({ name: file.name, data: reader.result });
+                request.onsuccess = () => resolve(file.name);
+                request.onerror = () => reject(`Failed to store audio file ${file.name}`);
+    
             };
 
             reader.onerror = (err) => reject(err)
@@ -65,7 +66,7 @@ export class AudioDb {
                 const db = (event.target as IDBOpenDBRequest).result;
                 AUDIO_DB_STORES.forEach(storeName => {
                     if (!db.objectStoreNames.contains(storeName)) {
-                        db.createObjectStore(storeName, { keyPath: "id" });
+                        db.createObjectStore(storeName, { keyPath: "name" });
                         console.log(`Upgrading: created object store [${storeName}]`);
                     }
                 });
