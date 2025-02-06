@@ -1,5 +1,5 @@
 import { updated } from "$app/state";
-import { type GridId, type Grid, type UiEvents, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnUiEvent, type NotationLocator, type ErrorId, type AppError, UiEvent } from "$lib";
+import { type GridId, type Grid, type UiEvents, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnUiEvent, type NotationLocator, type ErrorId, type AppError, UiEvent, InstrumentService } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { calculateMsPerBeatDivision } from "$lib/mapper/saved_grid_mapper";
 import { GridService } from "$lib/service/grid_service";
@@ -19,6 +19,7 @@ export function createAppStateStore(): AppStateStore {
     let instrumentManager: InstrumentManager = new InstrumentManager();
 
     let grids: SvelteMap<GridId, Grid> = new SvelteMap();
+    
     let gridService: GridService = new GridService(instrumentManager)
 
     let currentlyPlayingGrid: Grid | undefined = $state();
@@ -40,9 +41,7 @@ export function createAppStateStore(): AppStateStore {
         console.log('Event:', event.event, event);
         switch (event.event) {
             case UiEvent.Mounted:
-                instrumentManager.initialise().then(() => {
-                    onEvent({ event: InstrumentEvent.InstrumentsInitialised })
-                });
+                initialiseInstruments();
                 break;
             case GridEvent.TogglePlaying:
                 onTogglePlaying(event.playing, event.gridId);
@@ -94,6 +93,9 @@ export function createAppStateStore(): AppStateStore {
             case ToolbarEvent.Load:
                 loadFile(event.file);
                 break;
+            case ToolbarEvent.Reset:
+                reset()
+                break;
             case DomainEvent.DatabaseError:
                 if (event.error == "UnknownError: The user denied permission to access the database.") {
                     errors.set("DB Permissions", { message: "You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page" })
@@ -105,6 +107,11 @@ export function createAppStateStore(): AppStateStore {
     }
 
 
+    function initialiseInstruments() {
+        instrumentManager.initialise().then(() => {
+            onEvent({ event: InstrumentEvent.InstrumentsInitialised });
+        });
+    }
 
     async function onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
         if (currentlyPlayingGrid) {
@@ -243,6 +250,13 @@ export function createAppStateStore(): AppStateStore {
             let gridModel: Grid = mapSavedGridToGrid(grid, instrumentManager);
             addGrid(gridModel)
         });
+    }
+
+    async function reset() {
+        await instrumentManager.reset()
+        await gridService.deleteAllGrids()
+        grids.clear()
+        initialiseInstruments()
     }
 
     function play() {

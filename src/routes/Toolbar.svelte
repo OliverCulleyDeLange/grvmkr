@@ -37,11 +37,13 @@
 	/>
 	<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
 
-	<!-- TODO - Reset button which clears site data? -->
+	<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Reset })}>Reset</button
+	>
+
 	<!-- TODO - Info section -->
 </div>
 
-<div class="flex flex-col gap-2 my-4">
+<div class="my-4 flex flex-col gap-2">
 	{#each errors as error}
 		<div class="alert alert-error">
 			{error.message}

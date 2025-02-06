@@ -173,10 +173,10 @@ export class InstrumentManager {
         })
     }
 
-    private async reset() {
+    async reset() {
+        await this.instrumentService.deleteAllInstruments()
         this.instruments.clear()
         this.audioManager.reset()
-        await this.instrumentService.deleteAllInstruments()
     }
 
     private buildHitFromConfig(hit: HitType): HitTypeWithId {

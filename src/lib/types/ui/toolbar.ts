@@ -1,11 +1,15 @@
 // Grid UI Events
-export type ToolbarEvents = Save | Load
+export type ToolbarEvents = Save | Load | Reset
 
 export enum ToolbarEvent {
     Save = "Save",
-    Load = "Load"
+    Load = "Load",
+    Reset = "Reset"
 }
 
+export type Reset = {
+    event: ToolbarEvent.Reset
+}
 export type Save = {
     event: ToolbarEvent.Save
 }
