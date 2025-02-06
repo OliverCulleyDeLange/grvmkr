@@ -26,7 +26,7 @@ export function mapSavedGridToGrid(savedGrid: SavedGridV1, instrumentManager: In
             beatDivisions: savedGrid.config.beat_divisions
         },
         rows: newRows,
-        msPerBeatDivision: 60000 / savedGrid.config.bpm / savedGrid.config.beat_divisions,
+        msPerBeatDivision: calculateMsPerBeatDivision(savedGrid.config.bpm, savedGrid.config.beat_divisions),
         gridCols: savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions),
         playing: false,
         currentlyPlayingColumn: 0
@@ -75,3 +75,6 @@ function mapSavedBeatHitsToDivisions(beatHits: SavedInstrumentHitV1[]): BeatDivi
     })
 }
 
+export function calculateMsPerBeatDivision(bpm: number, beatDivisions: number): number {
+    return 60000 / bpm / beatDivisions;
+}

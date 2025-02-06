@@ -1,5 +1,6 @@
 import { type GridId, type Grid, type UiEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnEvent, type NotationLocator } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
+import { calculateMsPerBeatDivision } from "$lib/mapper/saved_grid_mapper";
 import { GridService } from "$lib/service/grid_service";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
@@ -42,8 +43,7 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
             case GridEvent.BpmChanged:
                 updateGrid(event.gridId, (grid: Grid) => {
                     grid.config.bpm = event.bpm;
-                    // TODO DRY this calculation
-                    grid.msPerBeatDivision = 60000 / grid.config.bpm / grid.config.beatDivisions;
+                    grid.msPerBeatDivision = calculateMsPerBeatDivision(grid.config.bpm, grid.config.beatDivisions);
                 });
                 break;
             case GridEvent.BarsChanged:
@@ -80,6 +80,8 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
                 break;
         }
     }
+
+
 
     async function onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
         if (currentlyPlayingGrid) {
@@ -252,7 +254,7 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         let beatDivision = count % currentlyPlayingGrid.config.beatDivisions;
 
         console.log(
-            `Repetition: ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
+            `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
         );
 
         currentlyPlayingGrid.rows.forEach((row, rowI) => {
