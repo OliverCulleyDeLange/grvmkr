@@ -1,9 +1,16 @@
-import { GridTable, type Bar, type BarDto, type Beat, type BeatDivision, type BeatDivisionDto, type BeatDto, type Grid, type GridConfig, type GridConfigDto, type GridDto, type GridId, type GridRow, type GridRowDto, type InstrumentHit, type InstrumentHitDto, type Notation, type NotationDto } from "$lib";
+import { GridTable, InstrumentManager, type Bar, type BarDto, type Beat, type BeatDivision, type BeatDivisionDto, type BeatDto, type Grid, type GridConfig, type GridConfigDto, type GridDto, type GridId, type GridRow, type GridRowDto, type InstrumentHit, type InstrumentHitDto, type Notation, type NotationDto } from "$lib";
 
 // Chat GPT Generated :)
 export class GridService {
+
+    private instrumentManager: InstrumentManager
+
+    constructor(instrumentManager: InstrumentManager) {
+        this.instrumentManager = instrumentManager
+    }
+
     private gridTable: GridTable = new GridTable();
-    
+
     /** ✅ Save a Grid */
     async saveGrid(grid: Grid): Promise<void> {
         const gridDto = this.toDto(grid);
@@ -38,7 +45,11 @@ export class GridService {
         return {
             id: grid.id,
             config: this.configToDto(grid.config),
-            rows: grid.rows.map(row => this.rowToDto(row))
+            rows: grid.rows.map(row => this.rowToDto(row)),
+            currentlyPlayingColumn: grid.currentlyPlayingColumn,
+            msPerBeatDivision: grid.msPerBeatDivision,
+            gridCols: grid.gridCols,
+            playing: grid.playing,
         };
     }
 
@@ -55,7 +66,7 @@ export class GridService {
     /** ✅ Convert a domain GridRow to a DTO GridRowDto */
     private rowToDto(gridRow: GridRow): GridRowDto {
         return {
-            instrument: gridRow.instrument.id,
+            instrumentId: gridRow.instrument.id,
             notation: this.notationToDto(gridRow.notation)
         };
     }
@@ -101,7 +112,11 @@ export class GridService {
         return {
             id: gridDto.id,
             config: this.configFromDto(gridDto.config),
-            rows: gridDto.rows.map(row => this.rowFromDto(row))
+            rows: gridDto.rows.map(row => this.rowFromDto(row)),
+            currentlyPlayingColumn: gridDto.currentlyPlayingColumn,
+            msPerBeatDivision: gridDto.msPerBeatDivision,
+            gridCols: gridDto.gridCols,
+            playing: gridDto.playing,
         };
     }
 
@@ -117,8 +132,9 @@ export class GridService {
 
     /** ✅ Convert a DTO GridRowDto back to a domain GridRow */
     private rowFromDto(gridRowDto: GridRowDto): GridRow {
+        let instrument = this.instrumentManager.instruments.get(gridRowDto.instrumentId)
         return {
-            instrument: { id: gridRowDto.instrument, hitTypes: new Map(), gridIndex: 0, name: "" }, // Placeholder for instrument resolution
+            instrument: instrument!,
             notation: this.notationFromDto(gridRowDto.notation)
         };
     }

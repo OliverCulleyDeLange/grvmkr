@@ -6,6 +6,10 @@ export type GridDto = {
     id: GridDtoId
     config: GridConfigDto
     rows: GridRowDto[]
+    currentlyPlayingColumn: number
+    msPerBeatDivision: number
+    gridCols: number
+    playing: boolean
 };
 
 export type GridConfigDto = {
@@ -16,7 +20,7 @@ export type GridConfigDto = {
 };
 
 export type GridRowDto = {
-    instrument: InstrumentDtoId
+    instrumentId: InstrumentDtoId
     notation: NotationDto
 };
 

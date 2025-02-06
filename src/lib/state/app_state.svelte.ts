@@ -1,5 +1,6 @@
-import { type GridId, type Grid, type UiEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnEvent } from "$lib";
+import { type GridId, type Grid, type UiEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnEvent, type NotationLocator } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
+import { GridService } from "$lib/service/grid_service";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
 
@@ -10,6 +11,7 @@ export type AppStateStore = {
 
 export function createAppStateStore(instrumentManager: InstrumentManager): AppStateStore {
     let grids: SvelteMap<GridId, Grid> = new SvelteMap();
+    let gridService: GridService = new GridService(instrumentManager)
 
     let currentlyPlayingGrid: Grid | undefined = $state();
     let msPerBeatDivision = $derived(currentlyPlayingGrid?.msPerBeatDivision);
@@ -35,7 +37,7 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
                 grids.delete(event.gridId);
                 break;
             case GridEvent.AddGrid:
-                addGrid()
+                addDefaultGrid()
                 break;
             case GridEvent.BpmChanged:
                 updateGrid(event.gridId, (grid: Grid) => {
@@ -68,8 +70,7 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
                 syncInstruments();
                 break;
             case InstrumentEvent.InstrumentsInitialised:
-                let grid: Grid = $state(buildDefaultGrid(instrumentManager.instruments));
-                grids.set(grid.id, grid);
+                initialiseGrids()
                 break;
             case ToolbarEvent.Save:
                 save();
@@ -93,9 +94,9 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         updateGrid(gridId, (grid) => {
             grid.playing = newPlaying;
         });
-        if(newPlaying){
+        if (newPlaying) {
             play()
-        }else {
+        } else {
             stop()
         }
     }
@@ -108,7 +109,9 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
             let currentValue = currentHit(locator);
             let newInstrumentHit: InstrumentHit | undefined = nextHitType(row, currentValue?.hitId);
             // console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
-            updateCellHit(locator, newInstrumentHit);
+            updateGridCell(locator, (cell) => {
+                cell.hit = newInstrumentHit;
+            })
             instrumentManager?.playHit(newInstrumentHit);
         } else {
             console.error(
@@ -120,7 +123,10 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         }
     }
 
-
+    function currentHit(locator: CellLocator): InstrumentHit | undefined {
+        let grid = grids.get(locator.grid)
+        return grid ? getGridCell(grid, locator)?.hit : undefined
+    }
 
     function resizeGrid(grid: Grid) {
         // TODO Tidy this deeply nested fucktion up
@@ -180,15 +186,6 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         });
     }
 
-    function updateGrid(id: GridId, withGrid: (grid: Grid) => void) {
-        let grid = grids.get(id);
-        if (grid) {
-            withGrid(grid);
-        } else {
-            console.error("Couldn't find grid to update with id ", id);
-        }
-    }
-
     // Returns a count of the number of columns in the grid
     // Used to decide when to resize the grid
     function notationColumns(grid: Grid): number {
@@ -199,7 +196,6 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         let beatDivisions = beats[0].divisions;
         return bars.length * (beats.length * beatDivisions.length);
     }
-
 
     function save() {
         let saveFile = serialiseToJsonV1(
@@ -221,29 +217,25 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
 
         grids.clear();
         saveFile.grids.forEach((grid) => {
-            let gridModel: Grid = $state(mapSavedGridToGrid(grid, instrumentManager));
-            grids.set(grid.id, gridModel);
-            console.log('Loaded grid from file', gridModel);
+            let gridModel: Grid = mapSavedGridToGrid(grid, instrumentManager);
+            addGrid(gridModel)
         });
     }
 
     function play(): number {
-        console.log("Play")
         onBeat();
         playingIntervalId = setInterval(() => {
             onBeat();
         }, msPerBeatDivision);
         return playingIntervalId
     }
-    
+
     function stop() {
-        console.log("Stop")
         clearInterval(playingIntervalId);
         playingIntervalId = undefined;
         nextCount = 0;
     }
 
-    // TODO Extract play logic out of view
     async function onBeat() {
         if (!currentlyPlayingGrid) return;
         let count = nextCount++;
@@ -281,13 +273,21 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         locator: CellLocator
     ): InstrumentHit | undefined {
         if (!currentlyPlayingGrid) return undefined;
-        return getCurrentlyPlayingGridCell(currentlyPlayingGrid, locator).hit;
+        return getGridCell(currentlyPlayingGrid, locator).hit;
     }
 
+    async function initialiseGrids() {
+        let grids = await gridService.getAllGrids()
+        if (grids.length == 0) {
+            addDefaultGrid()
+        } else {
+            grids.forEach((grid) => addGrid(grid))
+        }
+    }
 
-    function addGrid() {
-        let newGrid = $state(buildDefaultGrid(instrumentManager.instruments));
-        grids.set(newGrid.id, newGrid);
+    function addDefaultGrid() {
+        let grid: Grid = $state(buildDefaultGrid(instrumentManager.instruments));
+        addGrid(grid)
     }
 
     // Returns the next cyclic hit type.
@@ -311,31 +311,38 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         }
     }
 
-    function updateCellHit(locator: CellLocator, hit: InstrumentHit | undefined) {
-        let division = getCell(locator);
-        if (division) {
-            division.hit = hit;
+    // Makes the grid reactive, and sets it in state and the DB
+    function addGrid(grid: Grid) {
+        let reactiveGrid = $state(grid);
+        grids.set(reactiveGrid.id, reactiveGrid);
+        gridService.saveGrid(grid)
+    }
+
+    // Updates grid in state and DB
+    function updateGrid(id: GridId, withGrid: (grid: Grid) => void) {
+        let grid = grids.get(id);
+        if (grid) {
+            withGrid(grid);
+            gridService.saveGrid(grid)
         } else {
-            console.error("Couldn't update cell hit");
+            console.error("Couldn't find grid to update with id ", id);
         }
     }
 
-    function currentHit(locator: CellLocator): InstrumentHit | undefined {
-        return getCell(locator)?.hit;
+    // Updates grid cell in state and DB
+    function updateGridCell(locator: CellLocator, withGridCell: (division: BeatDivision) => void) {
+        updateGrid(locator.grid, (grid) => {
+            let cell = getGridCell(grid, locator)
+            if (cell) {
+                withGridCell(cell)
+            } else {
+                console.error("Couldn't find grid cell to update with locator ", locator);
+            }
+        })
     }
 
-    //TODO DRY
-    function getCell(locator: CellLocator): BeatDivision | undefined {
-        return grids.get(locator.grid)?.rows[locator.row].notation.bars[locator.notationLocator.bar]
-            .beats[locator.notationLocator.beat].divisions[locator.notationLocator.division];
-    }
-
-    function getCurrentlyPlayingGridCell(
-        currentlyPlayingGrid: Grid,
-        locator: CellLocator
-    ): BeatDivision {
-        return currentlyPlayingGrid.rows[locator.row].notation.bars[locator.notationLocator.bar].beats[
-            locator.notationLocator.beat
-        ].divisions[locator.notationLocator.division];
+    function getGridCell(grid: Grid, locator: CellLocator): BeatDivision {
+        return grid.rows[locator.row].notation.bars[locator.notationLocator.bar]
+            .beats[locator.notationLocator.beat].divisions[locator.notationLocator.division]
     }
 }
