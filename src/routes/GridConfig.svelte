@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { GridEvent, type Grid, type OnEvent } from '$lib';
-	import { onMount } from 'svelte';
 
 	let {
 		grid,
@@ -10,7 +9,7 @@
 		onEvent: OnEvent;
 	} = $props();
 
-	onMount(() => {
+	$effect(() => {
 		bpm = grid.config.bpm;
 		bars = grid.config.bars;
 		beatsPerBar = grid.config.beatsPerBar;
