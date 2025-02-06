@@ -90,17 +90,15 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         if (newPlaying) {
             await instrumentManager.ensureInstrumentsInitialised();
             currentlyPlayingGrid = grids.get(gridId);
+            stop()
+            play()
         } else {
             currentlyPlayingGrid = undefined;
+            stop()
         }
         updateGrid(gridId, (grid) => {
             grid.playing = newPlaying;
         });
-        if (newPlaying) {
-            play()
-        } else {
-            stop()
-        }
     }
 
     // Toggle the hit in the cell when the user clicks the cell
@@ -224,12 +222,11 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         });
     }
 
-    function play(): number {
+    function play() {
         onBeat();
         playingIntervalId = setInterval(() => {
             onBeat();
         }, msPerBeatDivision);
-        return playingIntervalId
     }
 
     function stop() {
