@@ -2,8 +2,6 @@
 [Groove Maker](https://oliverdelange.co.uk/grvmkr/) is a percussion grid notation tool and modern replacement for the now obsolete [Mango Drum](http://mangodrum.com/) which only runs on Windows.
 
 ## Features
-Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful. 
-
 - ✅ Live editing
   - Modify the grid and hear the results immediately, even when playing.
 - ✅ Choose the BPM for your composition (obviously)
@@ -14,18 +12,21 @@ Some features from MangoDrum are still missing, i may or may not add them depend
 - ✅ Save your composition grids as a json file, which can be re-loaded at a later date. 
 - ✅ Save your composition grids as a PDF file for sharing with others
   -  Technically possible by 'Printing to PDF'. I've made sure the grids aren't split between pages. 
+- ✅ Saving progress automatically so you don't lose everything if you refresh the page
+
+### Coming soon (maybe)
+- Better layout for longer patterns
+  - Currently anything over a 2 bar phrase is pretty impossible to work with / print. Bars should ideally wrap nicely like test does. 
+
+
+### Unimplemented
+Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful. 
+
 - ❓ Create a 'Playlist' which brings all the sections of your composition together
   -  Er, kinda - You can create multiple grids, and play them seperately, but you can't create a playlist per se. If this is a useful feature, let me know, but the main purpose of this tool isn't to create songs, its to create grid notation.
 - ❌ ~~Change the volume and balance of each instrument~~: This didn't seem that important to me.
 - ❌ ~~Metronome~~: As above, didn't seem that useful. Just create an instrument with a beep sound file and fill in some squares?
 - ❌ ~~Undo and Redo~~: Seems unnecessary for such a simple app.
-
-### Coming soon (maybe)
-- Saving progress automatically so you don't lose everything if you refresh the page
-- Fix: GridConfig UI doesn't update to match loaded file
-- Better layout for longer patterns
-  - Currently anything over a 2 bar phrase is pretty impossible to work with / print. Bars should ideally wrap nicely like test does. 
-
   
 ## Developing
 
