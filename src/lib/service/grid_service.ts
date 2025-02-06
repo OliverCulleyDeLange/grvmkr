@@ -15,6 +15,7 @@ export class GridService {
     async saveGrid(grid: Grid): Promise<void> {
         const gridDto = this.toDto(grid);
         await this.gridTable.saveGrid(gridDto);
+        console.log("Saved Grid to DB", gridDto)
     }
 
     /** ✅ Get a Grid by ID */
@@ -26,6 +27,7 @@ export class GridService {
     /** ✅ Delete a Grid by ID */
     async deleteGrid(id: GridId): Promise<void> {
         await this.gridTable.deleteGrid(id);
+        console.log("Deleted Grid from DB", id)
     }
 
     /** ✅ Get all Grids */
@@ -37,6 +39,8 @@ export class GridService {
     /** ✅ Delete all Grids */
     async deleteAllGrids(): Promise<void> {
         await this.gridTable.deleteAllGrids();
+        console.log("Deleted all Grids from DB"
+        )
     }
 
 

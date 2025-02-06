@@ -35,6 +35,7 @@ export class InstrumentService {
         };
 
         await this.instrumentTable.saveInstrument(instrumentDto);
+        console.log("Saved Instrument to DB", instrumentDto)
     }
 
     // ✅ Get an instrument by ID (with hitTypes mapped back)
@@ -114,11 +115,13 @@ export class InstrumentService {
 
         // Delete instrument
         await this.instrumentTable.deleteInstrument(id);
+        console.log("Deleted Instrument from DB", id)
     }
-
+    
     // ✅ Delete all instruments and all hits
     async deleteAllInstruments(): Promise<void> {
         await this.instrumentTable.deleteAllInstruments();
         await this.hitTable.deleteAllHits();
+        console.log("Deleted all instruments from DB")
     }
 }
