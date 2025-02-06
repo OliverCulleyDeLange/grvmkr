@@ -23,6 +23,7 @@
             If you notice any issues or think of a way this could be more useful, please feel free to reach out at
             <a class="link link-primary" href="mailto:grvmkr@oliverdelange.co.uk">grvmkr@oliverdelange.co.uk</a>, and i may or may not respond 😇
          </p>
+		 <p>The code is on <a class="link link-primary" href="https://github.com/OliverCulleyDeLange/grvmkr">GitHub</a></p>
 	</div>
 	<form method="dialog" class="modal-backdrop">
 		<button onclick={closeDialog}>close</button>
