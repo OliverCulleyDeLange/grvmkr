@@ -276,11 +276,16 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
     }
 
     async function initialiseGrids() {
-        let grids = await gridService.getAllGrids()
-        if (grids.length == 0) {
+        try {
+            let grids = await gridService.getAllGrids()
+            if (grids.length == 0) {
+                addDefaultGrid()
+            } else {
+                grids.forEach((grid) => addGrid(grid))
+            }
+        } catch (e) {
+            console.error("Failed to get all grids:", e)
             addDefaultGrid()
-        } else {
-            grids.forEach((grid) => addGrid(grid))
         }
     }
 

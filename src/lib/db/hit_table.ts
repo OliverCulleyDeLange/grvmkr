@@ -1,6 +1,6 @@
 import type { HitDto, HitDtoId } from "$lib";
 import { getDataDb } from "./data_db";
-import { dataDbName, instrumentHitStoreName } from "./db_config";
+import { DATA_DB_NAME, INSTRUMENT_HIT_STORE } from "./db_config";
 
 // ChatGPT Generated :)
 export class HitTable {
@@ -20,8 +20,8 @@ export class HitTable {
     async saveHit(hit: HitDto): Promise<void> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(instrumentHitStoreName, "readwrite");
-            const store = tx.objectStore(instrumentHitStoreName);
+            const tx = db.transaction(INSTRUMENT_HIT_STORE, "readwrite");
+            const store = tx.objectStore(INSTRUMENT_HIT_STORE);
             const request = store.put(hit);
 
             request.onsuccess = () => resolve();
@@ -33,8 +33,8 @@ export class HitTable {
     async getHit(id: HitDtoId): Promise<HitDto | null> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(instrumentHitStoreName, "readonly");
-            const store = tx.objectStore(instrumentHitStoreName);
+            const tx = db.transaction(INSTRUMENT_HIT_STORE, "readonly");
+            const store = tx.objectStore(INSTRUMENT_HIT_STORE);
             const request = store.get(id);
 
             request.onsuccess = () => resolve(request.result ?? null);
@@ -46,8 +46,8 @@ export class HitTable {
     async getAllHits(): Promise<HitDto[]> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(instrumentHitStoreName, "readonly");
-            const store = tx.objectStore(instrumentHitStoreName);
+            const tx = db.transaction(INSTRUMENT_HIT_STORE, "readonly");
+            const store = tx.objectStore(INSTRUMENT_HIT_STORE);
             const request = store.getAll();
 
             request.onsuccess = () => resolve(request.result);
@@ -59,8 +59,8 @@ export class HitTable {
     async deleteHit(id: HitDtoId): Promise<void> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(instrumentHitStoreName, "readwrite");
-            const store = tx.objectStore(instrumentHitStoreName);
+            const tx = db.transaction(INSTRUMENT_HIT_STORE, "readwrite");
+            const store = tx.objectStore(INSTRUMENT_HIT_STORE);
             const request = store.delete(id);
 
             request.onsuccess = () => resolve();
@@ -72,8 +72,8 @@ export class HitTable {
     async deleteAllHits(): Promise<void> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(instrumentHitStoreName, "readwrite");
-            const store = tx.objectStore(instrumentHitStoreName);
+            const tx = db.transaction(INSTRUMENT_HIT_STORE, "readwrite");
+            const store = tx.objectStore(INSTRUMENT_HIT_STORE);
             const request = store.clear();
 
             request.onsuccess = () => resolve();

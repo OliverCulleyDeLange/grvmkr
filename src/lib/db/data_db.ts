@@ -1,30 +1,24 @@
-import { dataDbName, instrumentStoreName, instrumentHitStoreName, gridStoreName } from "./db_config";
+import { DATA_DB_STORES, DATA_DB_VERSION, DATA_DB_NAME } from "./db_config";
 
 export function getDataDb(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open(dataDbName, 1);
+        const request = indexedDB.open(DATA_DB_NAME, DATA_DB_VERSION);
 
         request.onupgradeneeded = (event) => {
-            console.log(`Upgrading ${dataDbName}`);
+            console.log(`Upgrading ${DATA_DB_NAME}`);
             const db = (event.target as IDBOpenDBRequest).result;
-            if (!db.objectStoreNames.contains(instrumentStoreName)) {
-                db.createObjectStore(instrumentStoreName, { keyPath: "id" });
-                console.log(`Upgrading: created object store [${instrumentStoreName}]`);
-            }
-            if (!db.objectStoreNames.contains(instrumentHitStoreName)) {
-                db.createObjectStore(instrumentHitStoreName, { keyPath: "id" });
-                console.log(`Upgrading: created object store [${instrumentHitStoreName}]`);
-            }
-            if (!db.objectStoreNames.contains(gridStoreName)) {
-                db.createObjectStore(gridStoreName, { keyPath: "id" });
-                console.log(`Upgrading: created object store [${gridStoreName}]`);
-            }
+            DATA_DB_STORES.forEach(storeName => {
+                if (!db.objectStoreNames.contains(storeName)) {
+                    db.createObjectStore(storeName, { keyPath: "id" });
+                    console.log(`Upgrading: created object store [${storeName}]`);
+                }
+            });
         };
 
         request.onsuccess = () => {
             resolve(request.result);
         };
 
-        request.onerror = () => reject(`Failed to open ${dataDbName}`);
+        request.onerror = () => reject(`Failed to open ${DATA_DB_NAME}`);
     });
 }

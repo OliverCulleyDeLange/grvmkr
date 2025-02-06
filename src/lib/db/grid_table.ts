@@ -1,6 +1,6 @@
 import type { GridDto } from "$lib";
 import { getDataDb } from "./data_db";
-import { gridStoreName } from "./db_config";
+import { GRID_STORE } from "./db_config";
 
 export class GridTable {
     private db: IDBDatabase | null = null;
@@ -19,8 +19,8 @@ export class GridTable {
     async saveGrid(grid: GridDto): Promise<void> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(gridStoreName, "readwrite");
-            const store = tx.objectStore(gridStoreName);
+            const tx = db.transaction(GRID_STORE, "readwrite");
+            const store = tx.objectStore(GRID_STORE);
             const request = store.put(grid);
 
             request.onsuccess = () => resolve();
@@ -32,8 +32,8 @@ export class GridTable {
     async getGrid(id: string): Promise<GridDto | null> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(gridStoreName, "readonly");
-            const store = tx.objectStore(gridStoreName);
+            const tx = db.transaction(GRID_STORE, "readonly");
+            const store = tx.objectStore(GRID_STORE);
             const request = store.get(id);
 
             request.onsuccess = () => resolve(request.result || null);
@@ -45,8 +45,8 @@ export class GridTable {
     async getAllGrids(): Promise<GridDto[]> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(gridStoreName, "readonly");
-            const store = tx.objectStore(gridStoreName);
+            const tx = db.transaction(GRID_STORE, "readonly");
+            const store = tx.objectStore(GRID_STORE);
             const request = store.getAll();
 
             request.onsuccess = () => resolve(request.result);
@@ -58,8 +58,8 @@ export class GridTable {
     async deleteGrid(id: string): Promise<void> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(gridStoreName, "readwrite");
-            const store = tx.objectStore(gridStoreName);
+            const tx = db.transaction(GRID_STORE, "readwrite");
+            const store = tx.objectStore(GRID_STORE);
             const request = store.delete(id);
 
             request.onsuccess = () => resolve();
@@ -71,8 +71,8 @@ export class GridTable {
     async deleteAllGrids(): Promise<void> {
         const db = await this.getDB();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(gridStoreName, "readwrite");
-            const store = tx.objectStore(gridStoreName);
+            const tx = db.transaction(GRID_STORE, "readwrite");
+            const store = tx.objectStore(GRID_STORE);
             const request = store.clear();
 
             request.onsuccess = () => resolve();

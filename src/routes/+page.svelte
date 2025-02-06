@@ -1,32 +1,13 @@
 <script lang="ts">
 	import {
-		buildDefaultGrid,
 		createAppStateStore,
-		defaultBar,
-		defaultBeat,
-		defaultBeatDivision,
-		defaultGridRow,
-		GridEvent,
-		mapSavedGridToGrid,
-		serialiseToJsonV1,
-		ToolbarEvent,
-		type BeatDivision,
-		type CellLocator,
-		type Grid,
-		type GridId,
-		type GridRow,
-		type HitId,
-		type InstrumentHit,
-		type SaveFileV1,
-		type UiEvent
+		GridEvent
 	} from '$lib';
 	import { InstrumentManager } from '$lib/manager/instrument_manager.svelte';
+	import { InstrumentEvent } from '$lib/types/ui/instruments';
 	import { onMount } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
 	import Grids from './Grids.svelte';
 	import Instruments from './Instruments.svelte';
-	import { InstrumentEvent } from '$lib/types/ui/instruments';
-	import { defaultInstrumentConfig } from '$lib/audio/default_instruments';
 	import Toolbar from './Toolbar.svelte';
 
 	let instrumentManager: InstrumentManager = $state(new InstrumentManager());

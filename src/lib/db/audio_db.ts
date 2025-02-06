@@ -1,11 +1,11 @@
-import { audioDbName, sampleStoreName } from "./db_config";
+import { AUDIO_DB_NAME, AUDIO_DB_STORES, AUDIO_DB_VERSION, SAMPLE_STORE } from "./db_config";
 
 // Wraps indexedDB - giving access to the audio sample files
 export class AudioDb {
     async audioExists(fileName: string): Promise<boolean> {
         return this.onDb((db, resolve) => {
-            const transaction = db.transaction(sampleStoreName, 'readonly');
-            const store = transaction.objectStore(sampleStoreName);
+            const transaction = db.transaction(SAMPLE_STORE, 'readonly');
+            const store = transaction.objectStore(SAMPLE_STORE);
             const request = store.get(fileName);
             request.onsuccess = () => {
                 if (request.result) {
@@ -24,8 +24,8 @@ export class AudioDb {
             reader.readAsArrayBuffer(file);
 
             reader.onload = () => {
-                const transaction = db.transaction(sampleStoreName, 'readwrite');
-                const store = transaction.objectStore(sampleStoreName);
+                const transaction = db.transaction(SAMPLE_STORE, 'readwrite');
+                const store = transaction.objectStore(SAMPLE_STORE);
 
                 store.put({ name: file.name, data: reader.result });
                 // console.log(`Stored file ${file.name}`);
@@ -40,8 +40,8 @@ export class AudioDb {
     // Rejects promise if nothing found
     loadAudio(fileName: string): Promise<string> {
         return this.onDb((db, resolve, reject) => {
-            const transaction = db.transaction(sampleStoreName, 'readonly');
-            const store = transaction.objectStore(sampleStoreName);
+            const transaction = db.transaction(SAMPLE_STORE, 'readonly');
+            const store = transaction.objectStore(SAMPLE_STORE);
             const request = store.get(fileName);
             request.onsuccess = () => {
                 if (request.result) {
@@ -58,15 +58,17 @@ export class AudioDb {
 
     private onDb(doStuff: (db: IDBDatabase, resolve: (val: unknown) => void, reject: (reason?: any) => void) => any): Promise<any> {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(audioDbName, 1);
+            const request = indexedDB.open(AUDIO_DB_NAME, AUDIO_DB_VERSION);
 
             request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-                console.log(`Upgrading ${audioDbName}`);
+                console.log(`Upgrading ${AUDIO_DB_NAME}`);
                 const db = (event.target as IDBOpenDBRequest).result;
-                if (!db.objectStoreNames.contains(sampleStoreName)) {
-                    db.createObjectStore(sampleStoreName, { keyPath: 'name' });
-                    console.log(`Upgrading: created object store [${sampleStoreName}]`);
-                }
+                AUDIO_DB_STORES.forEach(storeName => {
+                    if (!db.objectStoreNames.contains(storeName)) {
+                        db.createObjectStore(storeName, { keyPath: "id" });
+                        console.log(`Upgrading: created object store [${storeName}]`);
+                    }
+                });
             };
 
 
