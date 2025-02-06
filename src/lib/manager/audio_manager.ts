@@ -1,6 +1,5 @@
-import { AudioPlayer } from "$lib";
-import type { HitId, HitTypeWithId, InstrumentHit, InstrumentId, InstrumentWithId } from "$lib";
-import { AudioDb } from "$lib";
+import type { HitId, HitTypeWithId, InstrumentHit } from "$lib";
+import { AudioDb, AudioPlayer } from "$lib";
 
 // Maintains a collection of playable 'hits',
 // which are samples that an instrument can plan

@@ -1,4 +1,4 @@
-import { type GridId, type Grid, type UiEvents, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnUiEvent, type NotationLocator, type ErrorId, type AppError } from "$lib";
+import { type GridId, type Grid, type UiEvents, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnUiEvent, type NotationLocator, type ErrorId, type AppError, UiEvent } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { calculateMsPerBeatDivision } from "$lib/mapper/saved_grid_mapper";
 import { GridService } from "$lib/service/grid_service";
@@ -10,10 +10,13 @@ import { SvelteMap } from "svelte/reactivity";
 export type AppStateStore = {
     grids: Map<GridId, Grid>
     errors: Map<ErrorId, AppError>
-    onEvent: OnUiEvent
+    onEvent: OnUiEvent,
+    instrumentManager: InstrumentManager
 }
 
-export function createAppStateStore(instrumentManager: InstrumentManager): AppStateStore {
+export function createAppStateStore(): AppStateStore {
+	let instrumentManager: InstrumentManager = new InstrumentManager();
+
     let grids: SvelteMap<GridId, Grid> = new SvelteMap();
     let gridService: GridService = new GridService(instrumentManager)
 
@@ -23,16 +26,23 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
     let nextCount: number = 0;
 
     let errors: SvelteMap<ErrorId, AppError> = new SvelteMap()
+    
     let state = {
         grids,
         errors,
-        onEvent
+        onEvent,
+        instrumentManager
     }
     return state
 
     function onEvent(event: AppEvent) {
         console.log('Event:', event.event, event);
         switch (event.event) {
+            case UiEvent.Mounted:
+                instrumentManager.initialise().then(() => {
+                    onEvent({event: InstrumentEvent.InstrumentsInitialised})
+                });
+                break;
             case GridEvent.TogglePlaying:
                 onTogglePlaying(event.playing, event.gridId);
                 break;

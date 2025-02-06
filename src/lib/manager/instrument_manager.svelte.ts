@@ -19,16 +19,21 @@ export class InstrumentManager {
         try {
             let instruments = await this.instrumentService.getAllInstruments()
             if (instruments.length == 0) {
-                defaultInstruments.forEach((instrument) => this.addInstrumentFromConfig(instrument))
-                this.downloadDefaultAudioFiles();
+                this.setupDefaultInstruments();
             } else {
                 instruments.forEach((instrument) => this.saveInstrumentToStateAndDb(instrument))
             }
         } catch (e: any) {
             let error = e.target.error
             console.error("Error initialising instruments", error, e)
+            this.setupDefaultInstruments();
         }
         return this.instruments
+    }
+
+    private setupDefaultInstruments() {
+        defaultInstruments.forEach((instrument) => this.addInstrumentFromConfig(instrument));
+        this.downloadDefaultAudioFiles();
     }
 
     async playHit(hit: InstrumentHit | undefined) {
