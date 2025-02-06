@@ -3,6 +3,7 @@ import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, In
 import { AudioManager, InstrumentService } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
+import { InstrumentEvent } from "$lib/types/ui/instruments";
 
 // Responsible for modifying and playing instruments
 export class InstrumentManager {
@@ -103,7 +104,10 @@ export class InstrumentManager {
             let hitWithId: HitTypeWithId = this.buildHitFromConfig(hit);
             return [hitWithId.id, hitWithId];
         }));
-        this.addInstrument(instrumentId, hitMap, instrument.name, instrument.gridIndex);
+        let instruments = [...this.instruments.values()]
+        let maxIndex = Math.max(0, ...[...instruments.map((i) => i.gridIndex)])
+        let index = maxIndex + 1
+        this.addInstrument(instrumentId, hitMap, instrument.name, index);
     }
 
     // Saves a reactive instrument in state and db
@@ -120,6 +124,29 @@ export class InstrumentManager {
             name: name
         };
         this.saveInstrumentToStateAndDb(instrument);
+    }
+
+    moveInstrument(event: InstrumentEvent, instrumentId: InstrumentId) {
+        let movingInstrument = this.instruments.get(instrumentId)
+        if (!movingInstrument) return
+        let movingIndex = movingInstrument.gridIndex
+
+        let swappingIndex 
+        if (event == InstrumentEvent.MoveDown){
+            swappingIndex = movingIndex + 1
+        } else if (event == InstrumentEvent.MoveUp){
+            swappingIndex = movingIndex - 1
+        } else {
+            return
+        }
+        let swappingInstrument = [...this.instruments.values()].find((i) => i.gridIndex == swappingIndex)
+        if (!swappingInstrument) return
+        this.updateInstrument(movingInstrument.id, (i) => {
+            i.gridIndex = swappingIndex
+        })
+        this.updateInstrument(swappingInstrument.id, (i) => {
+             i.gridIndex = movingIndex
+        })
     }
 
     private saveInstrumentToStateAndDb(instrument: InstrumentWithId) {

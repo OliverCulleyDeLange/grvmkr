@@ -6,7 +6,6 @@ export type HitTypeKey = string | undefined
 // Uninitialised instrument config. 
 export type InstrumentConfig = {
     hitTypes: Array<HitType>
-    gridIndex: number
     name: string
 };
 

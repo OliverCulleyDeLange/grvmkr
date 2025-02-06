@@ -22,23 +22,38 @@
 </script>
 
 <h1 class="text-xl">Instruments</h1>
-{#each [...instrumentManager.instruments] as [instrumentId, instrument]}
+{#each [...instrumentManager.instruments.values()].sort((a,b) =>a.gridIndex-b.gridIndex) as instrument}
 	<div class="flex-right flex gap-2">
+		<div
+			class=""
+		>{instrument.gridIndex}</div>
 		<input
 			value={instrument.name}
-			oninput={(e) => instrumentManager.onChangeName(e.target.value, instrumentId)}
+			oninput={(e) => instrumentManager.onChangeName(e.target.value, instrument.id)}
 			type="text"
 			class="input input-xs input-bordered"
 		/>
 		<button
 			class="btn btn-outline btn-xs"
-			onclick={() => onEvent({ event: InstrumentEvent.RemoveInstrument, instrumentId })}
+			onclick={() => onEvent({ event: InstrumentEvent.RemoveInstrument, instrumentId: instrument.id })}
 		>
 			X
 		</button>
 		<button
 			class="btn btn-outline btn-xs"
-			onclick={() => instrumentManager.addHit(defaultHitConfig, instrumentId)}
+			onclick={() => onEvent({ event: InstrumentEvent.MoveUp, instrumentId: instrument.id })}
+		>
+			⬆︎
+		</button>
+		<button
+			class="btn btn-outline btn-xs"
+			onclick={() => onEvent({ event: InstrumentEvent.MoveDown, instrumentId: instrument.id })}
+		>
+			⬇︎
+		</button>
+		<button
+			class="btn btn-outline btn-xs"
+			onclick={() => instrumentManager.addHit(defaultHitConfig, instrument.id)}
 		>
 			Add Hit
 		</button>
@@ -49,7 +64,7 @@
 			<li class="flex-right flex gap-2 p-1">
 				<input
 					value={hit.key}
-					oninput={(e) => instrumentManager.onChangeHitKey(e.target.value, instrumentId, hitId)}
+					oninput={(e) => instrumentManager.onChangeHitKey(e.target.value, instrument.id, hitId)}
 					type="text"
 					class="input input-xs input-bordered w-8"
 				/>
@@ -57,10 +72,25 @@
 				<input
 					value={hit.description}
 					oninput={(e) =>
-						instrumentManager.onChangeHitDescription(e.target.value, instrumentId, hitId)}
+						instrumentManager.onChangeHitDescription(e.target.value, instrument.id, hitId)}
 					type="text"
 					class="input input-xs input-bordered"
 				/>
+
+				<!-- Delete Button -->
+				<button
+					class="btn btn-outline btn-xs"
+					onclick={() => instrumentManager.removeHit(instrument.id, hitId)}
+				>
+					X
+				</button>
+				<!-- Play button -->
+				{#if hit.audioFileName != ''}
+					<button
+						class="btn btn-outline btn-xs"
+						onclick={() => instrumentManager.play(instrument.id, hitId)}>▶︎</button
+					>
+				{/if}
 
 				<!-- This button is a proxy for the input below it to hide the un-needed file input UI -->
 				<button
@@ -77,26 +107,10 @@
 				<input
 					id="hidden-file-input-{hitId}"
 					type="file"
-					onchange={(e) => handleFile(e, instrumentId, hitId)}
+					onchange={(e) => handleFile(e, instrument.id, hitId)}
 					accept="audio/*"
 					hidden
 				/>
-
-				<!-- Play button -->
-				{#if hit.audioFileName != ''}
-					<button
-						class="btn btn-outline btn-xs"
-						onclick={() => instrumentManager.play(instrumentId, hitId)}>▶︎</button
-					>
-				{/if}
-
-				<!-- Delete Button -->
-				<button
-					class="btn btn-outline btn-xs"
-					onclick={() => instrumentManager.removeHit(instrumentId, hitId)}
-				>
-					X
-				</button>
 			</li>
 		</ul>
 	{/each}

@@ -85,6 +85,14 @@ export function createAppStateStore(): AppStateStore {
                 instrumentManager.addInstrumentFromConfig(defaultInstrumentConfig);
                 syncInstruments();
                 break;
+            case InstrumentEvent.MoveUp:
+                instrumentManager.moveInstrument(event.event, event.instrumentId)
+                syncInstruments();
+                break;
+                case InstrumentEvent.MoveDown:
+                instrumentManager.moveInstrument(event.event, event.instrumentId)
+                syncInstruments();
+                break;
             case InstrumentEvent.InstrumentsInitialised:
                 initialiseGrids()
                 break;
@@ -420,4 +428,5 @@ export function createAppStateStore(): AppStateStore {
         return grid.rows[locator.row].notation.bars[locator.notationLocator.bar]
             .beats[locator.notationLocator.beat].divisions[locator.notationLocator.division]
     }
+    
 }

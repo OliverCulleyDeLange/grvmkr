@@ -13,7 +13,9 @@ export function buildDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId
         },
         rows: buildGridRows(instruments),
         msPerBeatDivision: 125,
-        gridCols: 16
+        gridCols: 16,
+        playing: false,
+        currentlyPlayingColumn: 0
     }
     return grid
 }
