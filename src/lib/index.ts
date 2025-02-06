@@ -6,6 +6,9 @@ export { AudioPlayer } from "./audio/audio_player"
 export { AudioManager } from "./manager/audio_manager"
 export { InstrumentManager } from "./manager/instrument_manager.svelte"
 
+//Domain layer
+export * from "./state/app_state.svelte"
+
 // Service layer
 export { InstrumentService } from "./service/instrument_service"
 
@@ -15,6 +18,7 @@ export { InstrumentTable } from "./db/instrument_table"
 export { HitTable } from "./db/hit_table"
 export { GridTable } from "./db/grid_table"
 
+// Types
 export * from "./types/data/grid_data"
 export * from "./types/data/instrument_data"
 
@@ -29,8 +33,12 @@ export * from "./types/ui/callback"
 
 export * from "./types/serialisation/savefile_v1"
 
-export { serialiseToJsonV1 } from "./serialisation/json"
+
+// Mappers
 export { mapSavedInstrumentToInstrumentConfig } from "./mapper/instrument_mapper"
 export { mapSavedGridToGrid } from "./mapper/saved_grid_mapper"
 export { mapRowsToGridUi } from "./mapper/grid_ui_mapper"
+
+//Misc
+export { serialiseToJsonV1 } from "./serialisation/json"
 export * from "./model/default_grid"

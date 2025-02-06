@@ -11,7 +11,7 @@
 		onEvent,
 	}: {
 		instrumentManager: InstrumentManager;
-		grids: SvelteMap<GridId, GridType>;
+		grids: Map<GridId, GridType>;
 		onEvent: OnEvent
 	} = $props();
 </script>
