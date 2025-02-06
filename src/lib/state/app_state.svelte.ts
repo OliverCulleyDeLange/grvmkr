@@ -19,7 +19,7 @@ export function createAppStateStore(): AppStateStore {
     let instrumentManager: InstrumentManager = new InstrumentManager();
 
     let grids: SvelteMap<GridId, Grid> = new SvelteMap();
-    
+
     let gridService: GridService = new GridService(instrumentManager)
 
     let currentlyPlayingGrid: Grid | undefined = $state();
@@ -58,8 +58,9 @@ export function createAppStateStore(): AppStateStore {
             case GridEvent.BpmChanged:
                 updateGrid(event.gridId, (grid: Grid) => {
                     grid.config.bpm = event.bpm;
-                    grid.msPerBeatDivision = calculateMsPerBeatDivision(grid.config.bpm, grid.config.beatDivisions);
+                    grid.msPerBeatDivision = calculateMsPerBeatDivision(event.bpm, grid.config.beatDivisions);
                 });
+                restartInterval()
                 break;
             case GridEvent.BarsChanged:
                 updateGrid(event.gridId, (grid: Grid) => {
@@ -271,6 +272,13 @@ export function createAppStateStore(): AppStateStore {
         playingIntervalId = undefined;
         nextCount = 0;
     }
+    
+    function restartInterval() {
+        clearInterval(playingIntervalId);
+        playingIntervalId = setInterval(() => {
+            onBeat();
+        }, msPerBeatDivision);
+    }
 
     async function onBeat() {
         if (!currentlyPlayingGrid) return;
@@ -287,9 +295,9 @@ export function createAppStateStore(): AppStateStore {
             currentlyPlayingGrid.config.beatsPerBar;
         let beatDivision = count % currentlyPlayingGrid.config.beatDivisions;
 
-        console.log(
-            `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
-        );
+        // console.log(
+        //     `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
+        // );
 
         currentlyPlayingGrid.rows.forEach((row, rowI) => {
             let locator: CellLocator = {
