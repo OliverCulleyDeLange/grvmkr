@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mapRowsToGridUi, type GridId, type InstrumentManager, type OnEvent } from '$lib';
+	import { mapRowsToGridUi, type GridId, type InstrumentManager, type OnUiEvent } from '$lib';
 	import type { SvelteMap } from 'svelte/reactivity';
 	import type { Grid as GridType } from '$lib/types/domain/grid_domain';
 	import GridConfig from './GridConfig.svelte';
@@ -12,7 +12,7 @@
 	}: {
 		instrumentManager: InstrumentManager;
 		grids: Map<GridId, GridType>;
-		onEvent: OnEvent
+		onEvent: OnUiEvent
 	} = $props();
 </script>
 

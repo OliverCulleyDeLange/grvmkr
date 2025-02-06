@@ -19,6 +19,6 @@ export function getDataDb(): Promise<IDBDatabase> {
             resolve(request.result);
         };
 
-        request.onerror = () => reject(`Failed to open ${DATA_DB_NAME}`);
+        request.onerror = (e: Event) => reject(e);
     });
 }

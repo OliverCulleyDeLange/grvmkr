@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { HitId, InstrumentId, InstrumentManager, OnEvent } from '$lib';
+	import type { HitId, InstrumentId, InstrumentManager, OnUiEvent } from '$lib';
 	import { defaultHitConfig } from '$lib/audio/default_instruments';
 	import { InstrumentEvent } from '$lib/types/ui/instruments';
 
@@ -9,7 +9,7 @@
 		onEvent
 	}: {
 		instrumentManager: InstrumentManager;
-		onEvent: OnEvent;
+		onEvent: OnUiEvent;
 	} = $props();
 
 	function handleFile(event: Event, instrumentId: InstrumentId, hitId: HitId) {

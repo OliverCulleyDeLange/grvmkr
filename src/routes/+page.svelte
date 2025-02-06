@@ -22,7 +22,7 @@
 </script>
 
 <div class="m-2 p-4">
-	<Toolbar {onEvent} />
+	<Toolbar {onEvent} errors={[...appStateStore.errors.values()]}/>
 	{#if instrumentManager != undefined}
 		<Grids {instrumentManager} grids={appStateStore.grids} {onEvent} />
 

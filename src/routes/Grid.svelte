@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GridEvent, type Grid, type InstrumentManager, type NotationGridRowUi, type OnEvent } from '$lib';
+	import { GridEvent, type Grid, type InstrumentManager, type NotationGridRowUi, type OnUiEvent } from '$lib';
 	import GridCell from './GridCell.svelte';
 	import Legend from './Legend.svelte';
 
@@ -12,7 +12,7 @@
 		grid: Grid;
 		gridUi: NotationGridRowUi[];
 		instrumentManager: InstrumentManager;
-		onEvent: OnEvent;
+		onEvent: OnUiEvent;
 	} = $props();
 	let cells = $derived(grid.gridCols);
 </script>

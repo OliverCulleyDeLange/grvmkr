@@ -4,21 +4,10 @@ import { DATA_DB_NAME, INSTRUMENT_HIT_STORE } from "./db_config";
 
 // ChatGPT Generated :)
 export class HitTable {
-    private db: IDBDatabase | null = null;
-
-    private getDB(): Promise<IDBDatabase> {
-        return new Promise((resolve, reject) => {
-            if (this.db) resolve(this.db);
-            else getDataDb().then((db) => { 
-                this.db = db
-                resolve(this.db!)
-             }).catch(reject);
-        });
-    }
 
     // ✅ Save or Update a Hit
     async saveHit(hit: HitDto): Promise<void> {
-        const db = await this.getDB();
+        const db = await getDataDb();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(INSTRUMENT_HIT_STORE, "readwrite");
             const store = tx.objectStore(INSTRUMENT_HIT_STORE);
@@ -31,7 +20,7 @@ export class HitTable {
 
     // ✅ Retrieve a Hit by ID
     async getHit(id: HitDtoId): Promise<HitDto | null> {
-        const db = await this.getDB();
+        const db = await getDataDb();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(INSTRUMENT_HIT_STORE, "readonly");
             const store = tx.objectStore(INSTRUMENT_HIT_STORE);
@@ -44,7 +33,7 @@ export class HitTable {
 
     // ✅ Retrieve All Hits
     async getAllHits(): Promise<HitDto[]> {
-        const db = await this.getDB();
+        const db = await getDataDb();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(INSTRUMENT_HIT_STORE, "readonly");
             const store = tx.objectStore(INSTRUMENT_HIT_STORE);
@@ -57,7 +46,7 @@ export class HitTable {
 
     // ✅ Delete a Hit
     async deleteHit(id: HitDtoId): Promise<void> {
-        const db = await this.getDB();
+        const db = await getDataDb();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(INSTRUMENT_HIT_STORE, "readwrite");
             const store = tx.objectStore(INSTRUMENT_HIT_STORE);
@@ -70,7 +59,7 @@ export class HitTable {
 
     // ✅ Delete All Hits
     async deleteAllHits(): Promise<void> {
-        const db = await this.getDB();
+        const db = await getDataDb();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(INSTRUMENT_HIT_STORE, "readwrite");
             const store = tx.objectStore(INSTRUMENT_HIT_STORE);

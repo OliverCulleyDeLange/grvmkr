@@ -1,13 +1,16 @@
-import { type GridId, type Grid, type UiEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnEvent, type NotationLocator } from "$lib";
+import { type GridId, type Grid, type UiEvents, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnUiEvent, type NotationLocator, type ErrorId, type AppError } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { calculateMsPerBeatDivision } from "$lib/mapper/saved_grid_mapper";
 import { GridService } from "$lib/service/grid_service";
+import { DomainEvent } from "$lib/types/domain/event";
+import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
 
 export type AppStateStore = {
     grids: Map<GridId, Grid>
-    onEvent: OnEvent
+    errors: Map<ErrorId, AppError>
+    onEvent: OnUiEvent
 }
 
 export function createAppStateStore(instrumentManager: InstrumentManager): AppStateStore {
@@ -19,13 +22,15 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
     let playingIntervalId: number | undefined = undefined;
     let nextCount: number = 0;
 
+    let errors: SvelteMap<ErrorId, AppError> = new SvelteMap()
     let state = {
         grids,
+        errors,
         onEvent
     }
     return state
 
-    function onEvent(event: UiEvent) {
+    function onEvent(event: AppEvent) {
         console.log('Event:', event.event, event);
         switch (event.event) {
             case GridEvent.TogglePlaying:
@@ -77,6 +82,13 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
                 break;
             case ToolbarEvent.Load:
                 loadFile(event.file);
+                break;
+            case DomainEvent.DatabaseError:
+                if (event.error == "UnknownError: The user denied permission to access the database."){
+                    errors.set("DB Permissions", { message: "You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page" })
+                } else {
+                    errors.set(event.doingWhat, { message: `Error ${event.doingWhat}: [${event.error}]` })
+                }
                 break;
         }
     }
@@ -283,8 +295,13 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
             } else {
                 grids.forEach((grid) => addGrid(grid))
             }
-        } catch (e) {
-            console.error("Failed to get all grids:", e)
+        } catch (e: any) {
+            console.error("Error getting all grids:", e)
+            onEvent({
+                event: DomainEvent.DatabaseError,
+                doingWhat: "initialising grids",
+                error: e.target.error
+            })
             addDefaultGrid()
         }
     }
@@ -319,7 +336,7 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
     function addGrid(grid: Grid) {
         let reactiveGrid = $state(grid);
         grids.set(reactiveGrid.id, reactiveGrid);
-        gridService.saveGrid(grid)
+        trySaveGrid(grid);
     }
 
     // Updates grid in state and DB
@@ -327,10 +344,23 @@ export function createAppStateStore(instrumentManager: InstrumentManager): AppSt
         let grid = grids.get(id);
         if (grid) {
             withGrid(grid);
-            gridService.saveGrid(grid)
+            trySaveGrid(grid)
         } else {
             console.error("Couldn't find grid to update with id ", id);
         }
+    }
+
+    function trySaveGrid(grid: Grid) {
+        gridService.saveGrid(grid)
+            .catch((e) => {
+                let error = e.target.error
+                console.error("Error saving grid", error, e)
+                onEvent({
+                    event: DomainEvent.DatabaseError,
+                    doingWhat: "saving grid",
+                    error
+                })
+            });
     }
 
     // Updates grid cell in state and DB

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { GridEvent, type Grid, type OnEvent } from '$lib';
+	import { GridEvent, type Grid, type OnUiEvent } from '$lib';
 
 	let {
 		grid,
 		onEvent
 	}: {
 		grid: Grid;
-		onEvent: OnEvent;
+		onEvent: OnUiEvent;
 	} = $props();
 
 	$effect(() => {
