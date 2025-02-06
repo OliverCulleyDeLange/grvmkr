@@ -21,7 +21,7 @@
 	let bpm = $state(120);
 
 	const minBars = 1;
-	const maxBars = 4;
+	const maxBars = 6; // 3 sections fit nicely onto one sheet of A4
 	let bars = $state(1);
 
 	const minGridSize = 1;

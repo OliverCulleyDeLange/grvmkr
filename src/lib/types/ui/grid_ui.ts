@@ -1,7 +1,21 @@
 import type { CellLocator, GridId } from "$lib";
 
 // UI Models
-export type NotationGridRowUi = {
+export type GridUi = {
+    // This represents how a grid is split vertically into sections to make long phrases easier to read
+    notationSections: NotationSection[],
+};
+
+// This represents how a grid is split vertically into sections to make long phrases easier to read
+export type NotationSection = {
+    // Total number of columns in this section
+    columns: number,
+    // The cell numbers this section handles
+    columnRange: number[],
+    sectionRows: GridRowUi[]
+}
+
+export type GridRowUi = {
     index: number,
     instrumentName: string
     gridCells: GridCellUi[]

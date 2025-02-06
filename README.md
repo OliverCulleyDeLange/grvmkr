@@ -15,9 +15,6 @@
 - ✅ Saving progress automatically so you don't lose everything if you refresh the page
 
 ### Coming soon (maybe)
-- Better layout for longer patterns
-  - Currently anything over a 2 bar phrase is pretty impossible to work with / print. Bars should ideally wrap nicely like test does. 
-- Ordering of instruments on grid
 - Triplets, and/or other specific beat divisions
 
 
