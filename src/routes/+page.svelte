@@ -62,6 +62,9 @@
 	});
 
 	async function onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
+		if (currentlyPlayingGrid) {
+			currentlyPlayingGrid.playing = false
+		}
 		if (newPlaying) {
 			await instrumentManager.ensureInstrumentsInitialised();
 			currentlyPlayingGrid = grids.get(gridId);
@@ -241,6 +244,8 @@
 			case GridEvent.BpmChanged:
 				updateGrid(event.gridId, (grid: Grid) => {
 					grid.config.bpm = event.bpm;
+					// TODO DRY this calculation
+					grid.msPerBeatDivision = 60000 / grid.config.bpm / grid.config.beatDivisions
 				});
 				break;
 			case GridEvent.BarsChanged:
