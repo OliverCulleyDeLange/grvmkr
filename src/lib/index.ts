@@ -17,11 +17,15 @@ export { GridTable } from "./db/grid_table"
 
 export * from "./types/data/grid_data"
 export * from "./types/data/instrument_data"
+
 export * from "./types/domain/grid_domain"
 export * from "./types/domain/instrument_domain"
+
+export * from "./types/ui/event"
 export * from "./types/ui/grid_ui"
 export * from "./types/ui/legend_ui"
 export * from "./types/ui/callback"
+
 export * from "./types/serialisation/savefile_v1"
 
 export { serialiseToJsonV1 } from "./serialisation/json"

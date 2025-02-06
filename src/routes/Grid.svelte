@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Grid, InstrumentManager, NotationGridRowUi } from '$lib';
-	import type { OnRemoveGrid, OnTapGridCell } from '$lib/types/ui/callback';
+	import { GridEvent, type Grid, type InstrumentManager, type NotationGridRowUi, type OnEvent } from '$lib';
 	import GridCell from './GridCell.svelte';
 	import Legend from './Legend.svelte';
 
@@ -10,42 +9,21 @@
 		gridUi,
 		currentColumn,
 		instrumentManager,
-		onTapGridCell,
-		onRemoveGrid
+		onEvent
 	}: {
 		grid: Grid;
 		gridUi: NotationGridRowUi[];
 		currentColumn: number;
 		instrumentManager: InstrumentManager;
-		onTapGridCell: OnTapGridCell;
-		onRemoveGrid: OnRemoveGrid;
+		onEvent: OnEvent;
 	} = $props();
 	let cells = $derived(grid.gridCols);
-
-	// TODO These effects are side effects of state changes,
-	// i feel like there's a better way of handling these,
-	// where they're not tied to the UI
-	// $effect(() => {
-	// 	let requiredGridCols = grid.gridCols;
-	// 	let actualGridCols = grid.notationColumns();
-	// 	if (requiredGridCols != actualGridCols) {
-	// 		grid.resizeGrid();
-	// 	}
-	// });
-
-	// $effect(() => {
-	// 	let requiredGridRows = instrumentManager.instruments.size;
-	// 	let actualRows = grid.rows.length;
-	// 	if (actualRows != requiredGridRows) {
-	// 		grid.syncInstruments();
-	// 	}
-	// });
 </script>
 
 <div class="grid" style="--cells: {cells};">
 	<button
 		class="btn btn-outline btn-xs print:hidden"
-		onclick={onRemoveGrid}
+		onclick={() => onEvent({event: GridEvent.RemoveGrid, gridId: grid.id})}
 	>
 		X
 	</button>
@@ -60,7 +38,6 @@
 				class:bg-green-300={currentCell == currentColumn}
 				class:bg-gray-300={currentCell != currentColumn}
 			>
-				<!-- {currentCell.text} -->
 			</div>
 		{/each}
 	</div>
@@ -75,7 +52,7 @@
 			<GridCell
 				text={cell.content}
 				darken={cell.darken}
-				onTap={() => onTapGridCell(cell.locator)}
+				onTap={() => onEvent({event: GridEvent.ToggleGridHit, locator: cell.locator})}
 			/>
 		{/each}
 	{/each}	

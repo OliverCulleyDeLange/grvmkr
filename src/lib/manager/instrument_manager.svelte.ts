@@ -15,7 +15,7 @@ export class InstrumentManager {
 
     // Populate instruments state from db, defaulting to default config
     // Also downloads default sound files
-    async initialise() {
+    async initialise(): Promise<Map<InstrumentId, InstrumentWithId>> {
         let instruments = await this.instrumentService.getAllInstruments()
         if (instruments.length == 0) {
             defaultInstruments.forEach((instrument) => this.addInstrumentFromConfig(instrument))
@@ -23,6 +23,7 @@ export class InstrumentManager {
         } else {
             instruments.forEach((instrument) => this.saveInstrumentToStateAndDb(instrument))
         }
+        return this.instruments
     }
 
     async playHit(hit: InstrumentHit | undefined) {

@@ -1,23 +1,20 @@
 <script lang="ts">
-	import type { Grid } from '$lib';
+	import { GridEvent, type Grid, type OnEvent } from '$lib';
 	import { onMount } from 'svelte';
 
-	type TogglePlaying = (playing: boolean) => void;
 	let {
 		grid,
-		playing,
-		togglePlaying
+		onEvent
 	}: {
 		grid: Grid;
-		playing: boolean;
-		togglePlaying: TogglePlaying;
+		onEvent: OnEvent;
 	} = $props();
 
 	onMount(() => {
-		bpm = grid.config.bpm
-		bars = grid.config.bars
-		beatsPerBar = grid.config.beatsPerBar
-		beatNoteFraction = grid.config.beatDivisions
+		bpm = grid.config.bpm;
+		bars = grid.config.bars;
+		beatsPerBar = grid.config.beatsPerBar;
+		beatNoteFraction = grid.config.beatDivisions;
 	});
 
 	const minBpm = 20;
@@ -33,27 +30,48 @@
 	let beatsPerBar = $state(4);
 	let beatNoteFraction = $state(4);
 
+	function togglePlaying() {
+		onEvent({ event: GridEvent.TogglePlaying, playing: !grid.playing, gridId: grid.id });
+	}
 	function onBpmChange() {
 		bpm = Math.round(Math.min(maxBpm, Math.max(minBpm, bpm)));
-		grid.config.bpm = bpm;
+		onEvent({
+			event:GridEvent.BpmChanged,
+			bpm: bpm,
+			gridId: grid.id
+		});
 	}
 	function onBarsChange() {
 		bars = Math.round(Math.min(maxBars, Math.max(minBars, bars)));
-		grid.config.bars = bars;
+		onEvent({
+			event: GridEvent.BarsChanged,
+			bars: bars,
+			gridId: grid.id
+		});
 	}
 	function onBeatsPerBarChange() {
 		beatsPerBar = Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatsPerBar)));
-		grid.config.beatsPerBar = beatsPerBar;
+		onEvent({
+			event: GridEvent.GridSizeChanged,
+			beats_per_bar: beatsPerBar,
+			beat_divisions: beatNoteFraction,
+			gridId: grid.id
+		});
 	}
 	function onBeatNoteFractionChange() {
 		beatNoteFraction = Math.round(Math.min(maxGridSize, Math.max(minGridSize, beatNoteFraction)));
-		grid.config.beatDivisions = beatNoteFraction;
+		onEvent({
+			event: GridEvent.GridSizeChanged,
+			beats_per_bar: beatsPerBar,
+			beat_divisions: beatNoteFraction,
+			gridId: grid.id
+		});
 	}
 </script>
 
 <div class="flex-left flex-end flex break-after-avoid items-center">
-	<button onclick={() => togglePlaying(!playing)} class="btn btn-outline my-2 print:invisible">
-		{playing ? 'Stop' : 'Play'}
+	<button onclick={togglePlaying} class="btn btn-outline my-2 print:invisible">
+		{grid.playing ? 'Stop' : 'Play'}
 	</button>
 
 	<div class="mx-4">

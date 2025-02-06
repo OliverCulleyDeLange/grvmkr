@@ -22,6 +22,7 @@ Some features from MangoDrum are still missing, i may or may not add them depend
 
 ### Coming soon (maybe)
 - Saving progress automatically so you don't lose everything if you refresh the page
+- Fix: GridConfig UI doesn't update to match loaded file
 - Better layout for longer patterns
   - Currently anything over a 2 bar phrase is pretty impossible to work with / print. Bars should ideally wrap nicely like test does. 
 

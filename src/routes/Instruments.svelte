@@ -1,8 +1,16 @@
 <script lang="ts">
-	import type { HitId, InstrumentId, InstrumentManager } from '$lib';
+	import type { HitId, InstrumentId, InstrumentManager, OnEvent } from '$lib';
 	import { defaultHitConfig, defaultInstrumentConfig } from '$lib/audio/default_instruments';
+	import { InstrumentEvent } from '$lib/types/ui/instruments';
 
-	let { instrumentManager }: { instrumentManager: InstrumentManager } = $props();
+	// TODO Remove - replace with passed down instrument UI model
+	let {
+		instrumentManager,
+		onEvent
+	}: {
+		instrumentManager: InstrumentManager;
+		onEvent: OnEvent;
+	} = $props();
 
 	function handleFile(event: Event, instrumentId: InstrumentId, hitId: HitId) {
 		const fileInput = event.target as HTMLInputElement;
@@ -24,7 +32,7 @@
 		/>
 		<button
 			class="btn btn-outline btn-xs"
-			onclick={() => instrumentManager.removeInstrument(instrumentId)}
+			onclick={() => onEvent({ event: InstrumentEvent.RemoveInstrument, instrumentId })}
 		>
 			X
 		</button>
@@ -96,7 +104,7 @@
 
 <button
 	class="btn btn-outline btn-xs"
-	onclick={() => instrumentManager.addInstrumentFromConfig(defaultInstrumentConfig)}
+	onclick={() => onEvent({ event: InstrumentEvent.AddInstrument })}
 >
 	Add Instrument
 </button>

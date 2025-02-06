@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mapRowsToGridUi, type GridId, type InstrumentManager, type OnTapGridCell } from '$lib';
+	import { mapRowsToGridUi, type GridId, type InstrumentManager, type OnEvent, type UiEvent } from '$lib';
 	import type { SvelteMap } from 'svelte/reactivity';
 	import Grid from './Grid.svelte';
 	import type { Grid as GridType } from '$lib/types/domain/grid_domain';
@@ -8,32 +8,26 @@
 	let {
 		instrumentManager,
 		grids,
-		currentlyPlayingGrid,
 		currentColumn,
-		onTogglePlaying,
-		onTapGridCell
+		onEvent,
 	}: {
 		instrumentManager: InstrumentManager;
 		grids: SvelteMap<GridId, GridType>;
-		currentlyPlayingGrid: GridType | undefined;
 		currentColumn: number;
-		onTogglePlaying: (newPlaying: boolean, gridKey: GridId) => void;
-		onTapGridCell: OnTapGridCell;
+		onEvent: OnEvent
 	} = $props();
 </script>
 
-{#each [...grids.entries()] as [gridKey, grid]}
+{#each [...grids.entries()] as [gridId, grid]}
 	<GridConfig
 		{grid}
-		playing={currentlyPlayingGrid == grid}
-		togglePlaying={(newPlaying) => onTogglePlaying(newPlaying, gridKey)}
+		{onEvent}
 	/>
 	<Grid
 		{grid}
 		gridUi={mapRowsToGridUi(grid, instrumentManager)}
 		{currentColumn}
 		{instrumentManager}
-		{onTapGridCell}
-		onRemoveGrid={() => grids.delete(gridKey)}
+		{onEvent}
 	/>
 {/each}
