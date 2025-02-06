@@ -174,7 +174,7 @@ export function createAppStateStore(): AppStateStore {
                 row.notation.bars.length = grid.config.bars;
             } else {
                 let newBars = Array.from({ length: grid.config.bars - row.notation.bars.length }, () =>
-                    defaultBar()
+                    defaultBar(grid.config.beatsPerBar, grid.config.beatDivisions)
                 );
                 row.notation.bars.push(...newBars);
             }
@@ -184,7 +184,7 @@ export function createAppStateStore(): AppStateStore {
                     bar.beats.length = beatsPerBar;
                 } else {
                     let newBeats = Array.from({ length: beatsPerBar - bar.beats.length }, () =>
-                        defaultBeat()
+                        defaultBeat(grid.config.beatDivisions)
                     );
                     bar.beats.push(...newBeats);
                 }
@@ -217,7 +217,7 @@ export function createAppStateStore(): AppStateStore {
             if (filteredRows.length < instrumentManager.instruments.size) {
                 let instrument = [...instrumentManager.instruments.values()].pop();
                 if (instrument) {
-                    filteredRows.push(defaultGridRow(instrument));
+                    filteredRows.push(defaultGridRow(instrument, grid.config.bars, grid.config.beatsPerBar, grid.config.beatDivisions));
                 }
             }
             // console.log("Filtered rows +", filteredRows)

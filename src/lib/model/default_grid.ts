@@ -11,7 +11,7 @@ export function buildDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId
             beatsPerBar: 4,
             beatDivisions: 4
         },
-        rows: buildGridRows(instruments),
+        rows: buildGridRows(instruments, 1, 4, 4),
         msPerBeatDivision: 125,
         gridCols: 16,
         playing: false,
@@ -20,27 +20,27 @@ export function buildDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId
     return grid
 }
 
-export function buildGridRows(instruments: Map<InstrumentId, InstrumentWithId>): GridRow[] {
+export function buildGridRows(instruments: Map<InstrumentId, InstrumentWithId>, bars: number, beats: number, divisions: number): GridRow[] {
     return Array.from(instruments.values())
-        .map((instrument) => defaultGridRow(instrument))
+        .map((instrument) => defaultGridRow(instrument, bars, beats, divisions))
 }
 
-export function defaultGridRow(instrument: InstrumentWithId): GridRow {
+export function defaultGridRow(instrument: InstrumentWithId, bars: number, beats: number, divisions: number): GridRow {
     let notation = {
-        bars: Array.from({ length: 1 }, () => defaultBar())
+        bars: Array.from({ length: bars }, () => defaultBar(beats, divisions))
     }
     return { instrument, notation }
 }
 
-export function defaultBar(): Bar {
+export function defaultBar(beats: number, divisions: number): Bar {
     return {
-        beats: Array.from({ length: 4 }, () => defaultBeat())
+        beats: Array.from({ length: beats }, () => defaultBeat(divisions))
     }
 }
 
-export function defaultBeat(): Beat {
+export function defaultBeat(divisions: number): Beat {
     return {
-        divisions: Array.from({ length: 4 }, () => defaultBeatDivision())
+        divisions: Array.from({ length: divisions }, () => defaultBeatDivision())
     }
 }
 

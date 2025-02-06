@@ -8,7 +8,6 @@ export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentManager
     let ui: GridUi = {
         notationSections: sections
     }
-    console.log(ui)
     return ui
 }
 
