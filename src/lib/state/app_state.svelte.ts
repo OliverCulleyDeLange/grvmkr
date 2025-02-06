@@ -1,3 +1,4 @@
+import { updated } from "$app/state";
 import { type GridId, type Grid, type UiEvents, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnUiEvent, type NotationLocator, type ErrorId, type AppError, UiEvent } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { calculateMsPerBeatDivision } from "$lib/mapper/saved_grid_mapper";
@@ -15,7 +16,7 @@ export type AppStateStore = {
 }
 
 export function createAppStateStore(): AppStateStore {
-	let instrumentManager: InstrumentManager = new InstrumentManager();
+    let instrumentManager: InstrumentManager = new InstrumentManager();
 
     let grids: SvelteMap<GridId, Grid> = new SvelteMap();
     let gridService: GridService = new GridService(instrumentManager)
@@ -26,7 +27,7 @@ export function createAppStateStore(): AppStateStore {
     let nextCount: number = 0;
 
     let errors: SvelteMap<ErrorId, AppError> = new SvelteMap()
-    
+
     let state = {
         grids,
         errors,
@@ -40,7 +41,7 @@ export function createAppStateStore(): AppStateStore {
         switch (event.event) {
             case UiEvent.Mounted:
                 instrumentManager.initialise().then(() => {
-                    onEvent({event: InstrumentEvent.InstrumentsInitialised})
+                    onEvent({ event: InstrumentEvent.InstrumentsInitialised })
                 });
                 break;
             case GridEvent.TogglePlaying:
@@ -94,7 +95,7 @@ export function createAppStateStore(): AppStateStore {
                 loadFile(event.file);
                 break;
             case DomainEvent.DatabaseError:
-                if (event.error == "UnknownError: The user denied permission to access the database."){
+                if (event.error == "UnknownError: The user denied permission to access the database.") {
                     errors.set("DB Permissions", { message: "You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page" })
                 } else {
                     errors.set(event.doingWhat, { message: `Error ${event.doingWhat}: [${event.error}]` })
@@ -190,7 +191,7 @@ export function createAppStateStore(): AppStateStore {
     // When instruments are added / removed, we need to remove the rows for the
     // deleted ones, and add rows for the new ones
     function syncInstruments() {
-        grids.forEach((grid) => {
+        updateGrids((grid) => {
             // First remove all rows where the instrument is removed
             let filteredRows = grid.rows.filter((row) => {
                 return instrumentManager.instruments.has(row.instrument.id);
@@ -347,6 +348,14 @@ export function createAppStateStore(): AppStateStore {
         let reactiveGrid = $state(grid);
         grids.set(reactiveGrid.id, reactiveGrid);
         trySaveGrid(grid);
+    }
+
+    // Updates grids in state and DB
+    function updateGrids(withGrid: (grid: Grid) => void) {
+        grids.forEach((grid) => {
+            withGrid(grid)
+            trySaveGrid(grid)
+        })
     }
 
     // Updates grid in state and DB
