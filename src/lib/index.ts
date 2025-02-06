@@ -24,6 +24,7 @@ export * from "./types/domain/instrument_domain"
 export * from "./types/ui/event"
 export * from "./types/ui/grid_ui"
 export * from "./types/ui/legend_ui"
+export * from "./types/ui/toolbar"
 export * from "./types/ui/callback"
 
 export * from "./types/serialisation/savefile_v1"

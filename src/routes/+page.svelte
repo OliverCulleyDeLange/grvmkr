@@ -8,6 +8,7 @@
 		GridEvent,
 		mapSavedGridToGrid,
 		serialiseToJsonV1,
+		ToolbarEvent,
 		type BeatDivision,
 		type CellLocator,
 		type Grid,
@@ -25,6 +26,7 @@
 	import Instruments from './Instruments.svelte';
 	import { InstrumentEvent } from '$lib/types/ui/instruments';
 	import { defaultInstrumentConfig } from '$lib/audio/default_instruments';
+	import Toolbar from './Toolbar.svelte';
 
 	let instrumentManager: InstrumentManager = $state(new InstrumentManager());
 
@@ -63,7 +65,7 @@
 
 	async function onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
 		if (currentlyPlayingGrid) {
-			currentlyPlayingGrid.playing = false
+			currentlyPlayingGrid.playing = false;
 		}
 		if (newPlaying) {
 			await instrumentManager.ensureInstrumentsInitialised();
@@ -72,8 +74,8 @@
 			currentlyPlayingGrid = undefined;
 		}
 		updateGrid(gridId, (grid) => {
-			grid.playing = newPlaying
-		})
+			grid.playing = newPlaying;
+		});
 		playing = newPlaying;
 	}
 
@@ -139,20 +141,16 @@
 		URL.revokeObjectURL(a.href);
 	}
 
-	async function loadFile(event: Event) {
-		const fileInput = event.target as HTMLInputElement;
-		if (fileInput.files && fileInput.files[0]) {
-			let file = fileInput.files[0];
-			let saveFile: SaveFileV1 = JSON.parse(await file.text());
-			await instrumentManager.replaceInstruments(saveFile.instruments);
+	async function loadFile(file: File) {
+		let saveFile: SaveFileV1 = JSON.parse(await file.text());
+		await instrumentManager.replaceInstruments(saveFile.instruments);
 
-			grids.clear();
-			saveFile.grids.forEach((grid) => {
-				let gridModel: Grid = $state(mapSavedGridToGrid(grid, instrumentManager));
-				grids.set(grid.id, gridModel);
-			});
-			fileInput.value = '';
-		}
+		grids.clear();
+		saveFile.grids.forEach((grid) => {
+			let gridModel: Grid = $state(mapSavedGridToGrid(grid, instrumentManager));
+			grids.set(grid.id, gridModel);
+			console.log('Loaded grid from file', gridModel);
+		});
 	}
 
 	function addGrid() {
@@ -245,7 +243,7 @@
 				updateGrid(event.gridId, (grid: Grid) => {
 					grid.config.bpm = event.bpm;
 					// TODO DRY this calculation
-					grid.msPerBeatDivision = 60000 / grid.config.bpm / grid.config.beatDivisions
+					grid.msPerBeatDivision = 60000 / grid.config.bpm / grid.config.beatDivisions;
 				});
 				break;
 			case GridEvent.BarsChanged:
@@ -270,6 +268,12 @@
 			case InstrumentEvent.AddInstrument:
 				instrumentManager.addInstrumentFromConfig(defaultInstrumentConfig);
 				syncInstruments();
+				break;
+			case ToolbarEvent.Save:
+				save();
+				break;
+			case ToolbarEvent.Load:
+				loadFile(event.file);
 				break;
 		}
 	}
@@ -354,22 +358,7 @@
 </script>
 
 <div class="m-2 p-4">
-	<div class="flex gap-8 print:hidden">
-		<h1 class="text-3xl">GrvMkr</h1>
-		<button class="btn btn-outline btn-sm" onclick={save}>Save</button>
-		<button
-			class="btn btn-outline btn-sm"
-			onclick={() => document.getElementById('hidden-file-input-for-load')?.click()}>Load</button
-		>
-		<input
-			id="hidden-file-input-for-load"
-			type="file"
-			onchange={loadFile}
-			accept="application/json"
-			hidden
-		/>
-		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
-	</div>
+	<Toolbar {onEvent} />
 	{#if instrumentManager != undefined}
 		<Grids {instrumentManager} {grids} {onEvent} />
 

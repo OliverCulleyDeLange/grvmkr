@@ -27,7 +27,9 @@ export function mapSavedGridToGrid(savedGrid: SavedGridV1, instrumentManager: In
         },
         rows: newRows,
         msPerBeatDivision: 60000 / savedGrid.config.bpm / savedGrid.config.beat_divisions,
-        gridCols: savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions)
+        gridCols: savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions),
+        playing: false,
+        currentlyPlayingColumn: 0
     }
     return grid
 }
