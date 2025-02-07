@@ -14,7 +14,7 @@
 	let fileName: string = $state(toolbarUi.fileName);
 
 	$effect(() => {
-		onEvent({ event: ToolbarEvent.FileNameChanged, fileName: fileName });
+		fileName = toolbarUi.fileName;
 	});
 
 	function load(event: Event) {
@@ -24,6 +24,10 @@
 			onEvent({ event: ToolbarEvent.Load, file });
 			fileInput.value = '';
 		}
+	}
+
+	function onFilenameChange() {
+		onEvent({ event: ToolbarEvent.FileNameChanged, fileName: fileName });
 	}
 </script>
 
@@ -63,4 +67,8 @@
 	{/each}
 </div>
 
-<input bind:value={fileName} class="flex-grow input input-xl input-bordered w-full" />
+<input
+	bind:value={fileName}
+	oninput={onFilenameChange}
+	class="input-xl input input-bordered w-full flex-grow"
+/>

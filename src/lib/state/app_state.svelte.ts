@@ -279,6 +279,7 @@ export class AppStateStore {
             this.addGrid(gridModel)
         });
         this.fileName = saveFile.name
+        console.log(`Filename ${this.fileName}`)
     }
 
     async reset() {
