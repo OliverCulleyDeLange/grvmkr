@@ -9,181 +9,159 @@ import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
 import { formatDateYYYYMMMDD } from "./date";
 
-export type AppStateStore = {
-    fileName: string
-    grids: Map<GridId, Grid>
-    errors: Map<ErrorId, AppError>
-    onEvent: OnUiEvent,
-    instrumentManager: InstrumentManager
-}
+export class AppStateStore {
+    // TODO make private
+    public instrumentManager: InstrumentManager = new InstrumentManager();
+    private gridService: GridService = new GridService(this.instrumentManager)
+    private playingIntervalId: number | undefined = undefined;
+    private nextCount: number = 0;
 
-export function createAppStateStore(): AppStateStore {
-    let instrumentManager: InstrumentManager = new InstrumentManager();
+    public fileName: string = $state(`Groove from ${formatDateYYYYMMMDD()}`)
+    public grids: SvelteMap<GridId, Grid> = new SvelteMap();
+    public currentlyPlayingGrid: Grid | undefined = $state();
+    public msPerBeatDivision = $derived(this.currentlyPlayingGrid?.msPerBeatDivision);
+    public errors: SvelteMap<ErrorId, AppError> = new SvelteMap();
 
-    let fileName: string = $state(`Groove from ${formatDateYYYYMMMDD()}`)
-
-    let grids: SvelteMap<GridId, Grid> = new SvelteMap();
-
-    let gridService: GridService = new GridService(instrumentManager)
-
-    let currentlyPlayingGrid: Grid | undefined = $state();
-    let msPerBeatDivision = $derived(currentlyPlayingGrid?.msPerBeatDivision);
-    let playingIntervalId: number | undefined = undefined;
-    let nextCount: number = 0;
-
-    let errors: SvelteMap<ErrorId, AppError> = new SvelteMap()
-
-
-    // This is the main state object that gets returned from this function
-    // Now sure about this pattern yet - lets see how it pans out. 
-    let reactiveState: AppStateStore = $state({
-        fileName,
-        grids,
-        errors,
-        onEvent,
-        instrumentManager
-    })
-    return reactiveState
-
-    function onEvent(event: AppEvent) {
+    onEvent(event: AppEvent) {
         console.log('Event:', event.event, event);
         switch (event.event) {
             case UiEvent.Mounted:
-                initialiseInstruments();
+                console.log(this)
+                this.initialiseInstruments();
                 break;
             case ToolbarEvent.FileNameChanged:
-                fileName = event.fileName
+                this.fileName = event.fileName
                 break;
             case GridEvent.TogglePlaying:
-                onTogglePlaying(event.playing, event.gridId);
+                this.onTogglePlaying(event.playing, event.gridId);
                 break;
             case GridEvent.ToggleGridHit:
-                toggleGridHit(event.locator);
+                this.toggleGridHit(event.locator);
                 break;
             case GridEvent.RemoveGrid:
-                grids.delete(event.gridId);
+                this.grids.delete(event.gridId);
                 break;
             case GridEvent.AddGrid:
-                addDefaultGrid()
+                this.addDefaultGrid()
                 break;
             case GridEvent.BpmChanged:
-                updateGrid(event.gridId, (grid: Grid) => {
+                this.updateGrid(event.gridId, (grid: Grid) => {
                     grid.config.bpm = event.bpm;
                     grid.msPerBeatDivision = calculateMsPerBeatDivision(event.bpm, grid.config.beatDivisions);
                 });
-                restartInterval()
+                this.restartInterval()
                 break;
             case GridEvent.BarsChanged:
-                updateGrid(event.gridId, (grid: Grid) => {
+                this.updateGrid(event.gridId, (grid: Grid) => {
                     grid.config.bars = event.bars;
-                    resizeGrid(grid);
-                    grid.gridCols = notationColumns(grid);
+                    this.resizeGrid(grid);
+                    grid.gridCols = this.notationColumns(grid);
                 });
                 break;
             case GridEvent.GridSizeChanged:
-                updateGrid(event.gridId, (grid: Grid) => {
+                this.updateGrid(event.gridId, (grid: Grid) => {
                     grid.config.beatsPerBar = event.beats_per_bar;
                     grid.config.beatDivisions = event.beat_divisions;
-                    resizeGrid(grid);
-                    grid.gridCols = notationColumns(grid);
+                    this.resizeGrid(grid);
+                    grid.gridCols = this.notationColumns(grid);
                 });
                 break;
             case GridEvent.NameChanged:
-                updateGrid(event.gridId, (grid) => {
+                this.updateGrid(event.gridId, (grid) => {
                     grid.config.name = event.name
                 })
                 break;
             case InstrumentEvent.RemoveInstrument:
-                instrumentManager.removeInstrument(event.instrumentId);
-                syncInstruments();
+                this.instrumentManager.removeInstrument(event.instrumentId);
+                this.syncInstruments();
                 break;
             case InstrumentEvent.AddInstrument:
-                instrumentManager.addInstrumentFromConfig(defaultInstrumentConfig);
-                syncInstruments();
+                this.instrumentManager.addInstrumentFromConfig(defaultInstrumentConfig);
+                this.syncInstruments();
                 break;
             case InstrumentEvent.MoveUp:
-                instrumentManager.moveInstrument(event.event, event.instrumentId)
-                syncInstruments();
+                this.instrumentManager.moveInstrument(event.event, event.instrumentId)
+                this.syncInstruments();
                 break;
             case InstrumentEvent.MoveDown:
-                instrumentManager.moveInstrument(event.event, event.instrumentId)
-                syncInstruments();
+                this.instrumentManager.moveInstrument(event.event, event.instrumentId)
+                this.syncInstruments();
                 break;
             case InstrumentEvent.InstrumentsInitialised:
-                initialiseGrids()
+                this.initialiseGrids()
                 break;
             case ToolbarEvent.Save:
-                save();
+                this.save();
                 break;
             case ToolbarEvent.Load:
-                loadFile(event.file);
+                this.loadFile(event.file);
                 break;
             case ToolbarEvent.Reset:
-                reset()
+                this.reset()
                 break;
             case DomainEvent.DatabaseError:
                 if (event.error == "UnknownError: The user denied permission to access the database.") {
-                    errors.set("DB Permissions", { message: "You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page" })
+                    this.errors.set("DB Permissions", { message: "You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page" })
                 } else {
-                    errors.set(event.doingWhat, { message: `Error ${event.doingWhat}: [${event.error}]` })
+                    this.errors.set(event.doingWhat, { message: `Error ${event.doingWhat}: [${event.error}]` })
                 }
                 break;
         }
     }
 
 
-    function initialiseInstruments() {
-        instrumentManager.initialise().then(() => {
-            onEvent({ event: InstrumentEvent.InstrumentsInitialised });
+    initialiseInstruments() {
+        this.instrumentManager.initialise().then(() => {
+            this.onEvent({ event: InstrumentEvent.InstrumentsInitialised });
         });
     }
 
-    async function onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
-        if (currentlyPlayingGrid) {
-            currentlyPlayingGrid.playing = false;
+    async onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
+        if (this.currentlyPlayingGrid) {
+            this.currentlyPlayingGrid.playing = false;
         }
         if (newPlaying) {
-            await instrumentManager.ensureInstrumentsInitialised();
-            currentlyPlayingGrid = grids.get(gridId);
-            stop()
-            play()
+            await this.instrumentManager.ensureInstrumentsInitialised();
+            this.currentlyPlayingGrid = this.grids.get(gridId);
+            this.stop()
+            this.play()
         } else {
-            currentlyPlayingGrid = undefined;
-            stop()
+            this.currentlyPlayingGrid = undefined;
+            this.stop()
         }
-        updateGrid(gridId, (grid) => {
+        this.updateGrid(gridId, (grid) => {
             grid.playing = newPlaying;
         });
     }
 
     // Toggle the hit in the cell when the user clicks the cell
     // Also plays the sound
-    function toggleGridHit(locator: CellLocator) {
-        let row = grids.get(locator.grid)?.rows[locator.row];
+    toggleGridHit(locator: CellLocator) {
+        let row = this.grids.get(locator.grid)?.rows[locator.row];
         if (row) {
-            let currentValue = currentHit(locator);
-            let newInstrumentHit: InstrumentHit | undefined = nextHitType(row, currentValue?.hitId);
+            let currentValue = this.currentHit(locator);
+            let newInstrumentHit: InstrumentHit | undefined = this.nextHitType(row, currentValue?.hitId);
             // console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
-            updateGridCell(locator, (cell) => {
+            this.updateGridCell(locator, (cell) => {
                 cell.hit = newInstrumentHit;
             })
-            instrumentManager?.playHit(newInstrumentHit);
+            this.instrumentManager?.playHit(newInstrumentHit);
         } else {
             console.error(
                 `Can't toggle grid cell hit as can't find the row. Locator: `,
                 locator,
                 ', grids:',
-                grids
+                this.grids
             );
         }
     }
 
-    function currentHit(locator: CellLocator): InstrumentHit | undefined {
-        let grid = grids.get(locator.grid)
-        return grid ? getGridCell(grid, locator)?.hit : undefined
+    currentHit(locator: CellLocator): InstrumentHit | undefined {
+        let grid = this.grids.get(locator.grid)
+        return grid ? this.getGridCell(grid, locator)?.hit : undefined
     }
 
-    function resizeGrid(grid: Grid) {
+    resizeGrid(grid: Grid) {
         // TODO Tidy this deeply nested fucktion up
         grid.rows.forEach((row) => {
             if (grid.config.bars < row.notation.bars.length) {
@@ -222,16 +200,16 @@ export function createAppStateStore(): AppStateStore {
 
     // When instruments are added / removed, we need to remove the rows for the
     // deleted ones, and add rows for the new ones
-    function syncInstruments() {
-        updateGrids((grid) => {
+    syncInstruments() {
+        this.updateGrids((grid) => {
             // First remove all rows where the instrument is removed
             let filteredRows = grid.rows.filter((row) => {
-                return instrumentManager.instruments.has(row.instrument.id);
+                return this.instrumentManager.instruments.has(row.instrument.id);
             });
             // console.log("Filtered rows -", filteredRows)
             // Now add any new instruments
-            if (filteredRows.length < instrumentManager.instruments.size) {
-                let instrument = [...instrumentManager.instruments.values()].pop();
+            if (filteredRows.length < this.instrumentManager.instruments.size) {
+                let instrument = [...this.instrumentManager.instruments.values()].pop();
                 if (instrument) {
                     filteredRows.push(defaultGridRow(instrument, grid.config.bars, grid.config.beatsPerBar, grid.config.beatDivisions));
                 }
@@ -243,7 +221,7 @@ export function createAppStateStore(): AppStateStore {
 
     // Returns a count of the number of columns in the grid
     // Used to decide when to resize the grid
-    function notationColumns(grid: Grid): number {
+    notationColumns(grid: Grid): number {
         if (grid.rows.length == 0) return 0;
         let notation = grid.rows[0].notation;
         let bars = notation.bars;
@@ -252,10 +230,10 @@ export function createAppStateStore(): AppStateStore {
         return bars.length * (beats.length * beatDivisions.length);
     }
 
-    function save() {
+    save() {
         let saveFile = serialiseToJsonV1(
-            [...grids.values()],
-            [...instrumentManager.instruments.values()]
+            [...this.grids.values()],
+            [...this.instrumentManager.instruments.values()]
         );
         const text = JSON.stringify(saveFile);
         const blob = new Blob([text], { type: 'application/json' });
@@ -266,47 +244,49 @@ export function createAppStateStore(): AppStateStore {
         URL.revokeObjectURL(a.href);
     }
 
-    async function loadFile(file: File) {
+    async loadFile(file: File) {
         let saveFile: SaveFileV1 = JSON.parse(await file.text());
-        await instrumentManager.replaceInstruments(saveFile.instruments);
+        await this.instrumentManager.replaceInstruments(saveFile.instruments);
 
-        grids.clear();
+        this.grids.clear();
         saveFile.grids.forEach((grid) => {
-            let gridModel: Grid = mapSavedGridToGrid(grid, instrumentManager);
-            addGrid(gridModel)
+            let gridModel: Grid = mapSavedGridToGrid(grid, this.instrumentManager);
+            this.addGrid(gridModel)
         });
     }
 
-    async function reset() {
-        await instrumentManager.reset()
-        await gridService.deleteAllGrids()
-        grids.clear()
-        initialiseInstruments()
+    async reset() {
+        await this.instrumentManager.reset()
+        await this.gridService.deleteAllGrids()
+        this.grids.clear()
+        this.initialiseInstruments()
     }
 
-    function play() {
-        onBeat();
-        playingIntervalId = setInterval(() => {
-            onBeat();
-        }, msPerBeatDivision);
+    play() {
+        this.onBeat();
+        this.playingIntervalId = setInterval(() => {
+            this.onBeat();
+        }, this.msPerBeatDivision);
     }
 
-    function stop() {
-        clearInterval(playingIntervalId);
-        playingIntervalId = undefined;
-        nextCount = 0;
+    stop() {
+        clearInterval(this.playingIntervalId);
+        this.playingIntervalId = undefined;
+        this.nextCount = 0;
     }
 
-    function restartInterval() {
-        clearInterval(playingIntervalId);
-        playingIntervalId = setInterval(() => {
-            onBeat();
-        }, msPerBeatDivision);
+    restartInterval() {
+        clearInterval(this.playingIntervalId);
+        this.playingIntervalId = setInterval(() => {
+            this.onBeat();
+        }, this.msPerBeatDivision);
     }
 
-    async function onBeat() {
-        if (!currentlyPlayingGrid) return;
-        let count = nextCount++;
+    async onBeat() {
+        if (!this.currentlyPlayingGrid) return;
+        let currentlyPlayingGrid = this.currentlyPlayingGrid
+        let count = this.nextCount++;
+        
         let cell = count % currentlyPlayingGrid.gridCols;
         let repetition = Math.floor(count / currentlyPlayingGrid.gridCols);
         let bar =
@@ -329,49 +309,49 @@ export function createAppStateStore(): AppStateStore {
                 row: rowI,
                 notationLocator: { bar: bar, beat: beat, division: beatDivision }
             };
-            let currentHit = getCurrentHit(currentlyPlayingGrid, locator);
-            instrumentManager.playHit(currentHit);
+            let currentHit = this.getCurrentHit(currentlyPlayingGrid, locator);
+            this.instrumentManager.playHit(currentHit);
         });
 
         currentlyPlayingGrid.currentlyPlayingColumn = cell;
     }
 
-    function getCurrentHit(
+    getCurrentHit(
         currentlyPlayingGrid: Grid | undefined,
         locator: CellLocator
     ): InstrumentHit | undefined {
         if (!currentlyPlayingGrid) return undefined;
-        return getGridCell(currentlyPlayingGrid, locator).hit;
+        return this.getGridCell(currentlyPlayingGrid, locator).hit;
     }
 
-    async function initialiseGrids() {
+    async initialiseGrids() {
         try {
-            let grids = await gridService.getAllGrids()
+            let grids = await this.gridService.getAllGrids()
             if (grids.length == 0) {
-                addDefaultGrid()
+                this.addDefaultGrid()
             } else {
-                grids.forEach((grid) => addGrid(grid))
+                grids.forEach((grid) => this.addGrid(grid))
             }
         } catch (e: any) {
             console.error("Error getting all grids:", e)
-            onEvent({
+            this.onEvent({
                 event: DomainEvent.DatabaseError,
                 doingWhat: "initialising grids",
                 error: e.target.error
             })
-            addDefaultGrid()
+            this.addDefaultGrid()
         }
     }
 
-    function addDefaultGrid() {
-        let grid: Grid = $state(buildDefaultGrid(instrumentManager.instruments));
-        addGrid(grid)
+    addDefaultGrid() {
+        let grid: Grid = $state(buildDefaultGrid(this.instrumentManager.instruments));
+        this.addGrid(grid)
     }
 
     // Returns the next cyclic hit type.
     // Clicking a cell cycles through all the available hit types
     // TODO Would maybe be better to use right clicking or long pressing or something
-    function nextHitType(row: GridRow, hitId: HitId | undefined): InstrumentHit | undefined {
+    nextHitType(row: GridRow, hitId: HitId | undefined): InstrumentHit | undefined {
         let hits = Array.from(row.instrument.hitTypes.values());
         let instrumentHit = {
             instrumentId: row.instrument.id,
@@ -390,37 +370,37 @@ export function createAppStateStore(): AppStateStore {
     }
 
     // Makes the grid reactive, and sets it in state and the DB
-    function addGrid(grid: Grid) {
+    addGrid(grid: Grid) {
         let reactiveGrid = $state(grid);
-        grids.set(reactiveGrid.id, reactiveGrid);
-        trySaveGrid(grid);
+        this.grids.set(reactiveGrid.id, reactiveGrid);
+        this.trySaveGrid(grid);
     }
 
     // Updates grids in state and DB
-    function updateGrids(withGrid: (grid: Grid) => void) {
-        grids.forEach((grid) => {
+    updateGrids(withGrid: (grid: Grid) => void) {
+        this.grids.forEach((grid) => {
             withGrid(grid)
-            trySaveGrid(grid)
+            this.trySaveGrid(grid)
         })
     }
 
     // Updates grid in state and DB
-    function updateGrid(id: GridId, withGrid: (grid: Grid) => void) {
-        let grid = grids.get(id);
+    updateGrid(id: GridId, withGrid: (grid: Grid) => void) {
+        let grid = this.grids.get(id);
         if (grid) {
             withGrid(grid);
-            trySaveGrid(grid)
+            this.trySaveGrid(grid)
         } else {
             console.error("Couldn't find grid to update with id ", id);
         }
     }
 
-    function trySaveGrid(grid: Grid) {
-        gridService.saveGrid(grid)
+    trySaveGrid(grid: Grid) {
+        this.gridService.saveGrid(grid)
             .catch((e) => {
                 let error = e.target.error
                 console.error("Error saving grid", error, e)
-                onEvent({
+                this.onEvent({
                     event: DomainEvent.DatabaseError,
                     doingWhat: "saving grid",
                     error
@@ -429,9 +409,9 @@ export function createAppStateStore(): AppStateStore {
     }
 
     // Updates grid cell in state and DB
-    function updateGridCell(locator: CellLocator, withGridCell: (division: BeatDivision) => void) {
-        updateGrid(locator.grid, (grid) => {
-            let cell = getGridCell(grid, locator)
+    updateGridCell(locator: CellLocator, withGridCell: (division: BeatDivision) => void) {
+        this.updateGrid(locator.grid, (grid) => {
+            let cell = this.getGridCell(grid, locator)
             if (cell) {
                 withGridCell(cell)
             } else {
@@ -440,7 +420,7 @@ export function createAppStateStore(): AppStateStore {
         })
     }
 
-    function getGridCell(grid: Grid, locator: CellLocator): BeatDivision {
+    getGridCell(grid: Grid, locator: CellLocator): BeatDivision {
         return grid.rows[locator.row].notation.bars[locator.notationLocator.bar]
             .beats[locator.notationLocator.beat].divisions[locator.notationLocator.division]
     }

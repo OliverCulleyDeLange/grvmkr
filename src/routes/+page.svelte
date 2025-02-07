@@ -1,16 +1,18 @@
 <script lang="ts">
-	import { createAppStateStore, GridEvent, mapToolbarUi, UiEvent } from '$lib';
+	import { AppStateStore, GridEvent, mapToolbarUi, UiEvent } from '$lib';
 	import { onMount } from 'svelte';
 	import Grids from './Grids.svelte';
 	import Instruments from './Instruments.svelte';
 	import Toolbar from './Toolbar.svelte';
+	import type { AppEvent } from '$lib/types/event';
 
-	let appStateStore = createAppStateStore();
-	let onEvent = appStateStore.onEvent;
+	let appStateStore: AppStateStore = new AppStateStore();
+	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
 
 	onMount(() => onEvent({ event: UiEvent.Mounted }));
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.fileName, appStateStore.errors))
+	$inspect(toolbarUi)
 </script>
 
 <div class="m-2 p-4">
