@@ -7,11 +7,13 @@ import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
 import { formatDateYYYYMMMDD } from "./date";
+import { FileService } from "$lib/service/file_service";
 
 export class AppStateStore {
     // TODO make private
     public instrumentManager: InstrumentManager = new InstrumentManager();
     private gridService: GridService = new GridService(this.instrumentManager)
+    private fileService: FileService = new FileService(this.instrumentManager)
     private playingIntervalId: number | undefined = undefined;
     private nextCount: number = 0;
 

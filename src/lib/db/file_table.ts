@@ -1,0 +1,61 @@
+import type { FileDto, FileDtoId } from "$lib/types/data/file_data";
+import { getDataDb } from "./data_db";
+import { FILE_STORE } from "./db_config";
+
+export class FileTable {
+
+    async addFile(file: FileDto): Promise<void> {
+        const db = await getDataDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(FILE_STORE, "readwrite");
+            const store = tx.objectStore(FILE_STORE);
+            store.add(file);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+
+    async getFile(id: FileDtoId): Promise<FileDto | undefined> {
+        const db = await getDataDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(FILE_STORE, "readonly");
+            const store = tx.objectStore(FILE_STORE);
+            const request = store.get(id);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async updateFile(file: FileDto): Promise<void> {
+        const db = await getDataDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(FILE_STORE, "readwrite");
+            const store = tx.objectStore(FILE_STORE);
+            store.put(file);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+
+    async deleteFile(id: FileDtoId): Promise<void> {
+        const db = await getDataDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(FILE_STORE, "readwrite");
+            const store = tx.objectStore(FILE_STORE);
+            store.delete(id);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+
+    async getAllFiles(): Promise<FileDto[]> {
+        const db = await getDataDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(FILE_STORE, "readonly");
+            const store = tx.objectStore(FILE_STORE);
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    }
+}
