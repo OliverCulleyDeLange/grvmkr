@@ -13,6 +13,7 @@ export type GridDto = {
 };
 
 export type GridConfigDto = {
+    name: string | undefined
     bpm: number
     bars: number
     beatsPerBar: number

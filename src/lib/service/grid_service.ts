@@ -60,6 +60,7 @@ export class GridService {
     /** ✅ Convert a domain GridConfig to a DTO GridConfigDto */
     private configToDto(config: GridConfig): GridConfigDto {
         return {
+            name: config.name,
             bpm: config.bpm,
             bars: config.bars,
             beatsPerBar: config.beatsPerBar,
@@ -127,6 +128,7 @@ export class GridService {
     /** ✅ Convert a DTO GridConfigDto back to a domain GridConfig */
     private configFromDto(configDto: GridConfigDto): GridConfig {
         return {
+            name: configDto.name ?? "",
             bpm: configDto.bpm,
             bars: configDto.bars,
             beatsPerBar: configDto.beatsPerBar,

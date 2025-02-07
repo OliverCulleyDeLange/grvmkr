@@ -12,7 +12,6 @@
 	onMount(() => onEvent({ event: UiEvent.Mounted }));
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.fileName, appStateStore.errors))
-	$inspect(toolbarUi)
 </script>
 
 <div class="m-2 p-4">
