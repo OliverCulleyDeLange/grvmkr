@@ -7,8 +7,10 @@ export * from "./manager/audio_manager"
 export * from "./manager/instrument_manager.svelte"
 
 export * from "./model/default_grid"
+export * from "./model/default_file"
 
 export * from "./state/app_state.svelte"
+export * from "./state/date"
 
 export * from "./service/instrument_service"
 

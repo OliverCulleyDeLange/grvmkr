@@ -1,6 +1,6 @@
-import type { FileDto, File } from "$lib";
+import type { FileDto, GrvMkrFile } from "$lib";
 
-export function mapToDto(file: File): FileDto {
+export function mapToDto(file: GrvMkrFile): FileDto {
     return {
         id: file.id,
         name: file.name,

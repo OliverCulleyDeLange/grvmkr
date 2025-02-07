@@ -1,14 +1,13 @@
 import type { InstrumentId } from "$lib"
 
 // Grid UI Events
-export type InstrumentEvents = RemoveInstrument | AddInstrument | InstrumentsInitialised | MoveUp | MoveDown
+export type InstrumentEvents = RemoveInstrument | AddInstrument  | MoveUp | MoveDown
 
 export enum InstrumentEvent {
     RemoveInstrument = "RemoveInstrument",
     AddInstrument = "AddInstrument",
     MoveUp = "MoveUp",
     MoveDown = "MoveDown",
-    InstrumentsInitialised = "InstrumentsInitialised"
 }
 
 export type RemoveInstrument = {
@@ -25,7 +24,4 @@ export type MoveUp = {
 export type MoveDown = {
     event: InstrumentEvent.MoveDown
     instrumentId: InstrumentId
-}
-export type InstrumentsInitialised = {
-    event: InstrumentEvent.InstrumentsInitialised
 }

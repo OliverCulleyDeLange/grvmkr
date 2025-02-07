@@ -4,14 +4,14 @@ import { FILE_STORE } from "./db_config";
 
 export class FileTable {
 
-    async addFile(file: FileDto): Promise<void> {
+    async saveFile(file: FileDto): Promise<void> {
         const db = await getDataDb();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(FILE_STORE, "readwrite");
             const store = tx.objectStore(FILE_STORE);
-            store.add(file);
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
+            const request = store.put(file);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
         });
     }
 
@@ -26,25 +26,14 @@ export class FileTable {
         });
     }
 
-    async updateFile(file: FileDto): Promise<void> {
-        const db = await getDataDb();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(FILE_STORE, "readwrite");
-            const store = tx.objectStore(FILE_STORE);
-            store.put(file);
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    }
-
     async deleteFile(id: FileDtoId): Promise<void> {
         const db = await getDataDb();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(FILE_STORE, "readwrite");
             const store = tx.objectStore(FILE_STORE);
-            store.delete(id);
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
+            const request = store.delete(id);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
         });
     }
 

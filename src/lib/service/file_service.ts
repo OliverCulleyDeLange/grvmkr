@@ -1,5 +1,5 @@
 import { GridTable, FileTable, mapGridDtoToGrid, InstrumentManager, mapFileDtoToFile, mapToDto } from "$lib";
-import type { File, FileId, FileDto, Grid, GridId } from "$lib";
+import type { GrvMkrFile, GrvMkrFileId, FileDto, Grid, GridId } from "$lib";
 
 export class FileService {
     private instrumentManager: InstrumentManager
@@ -11,12 +11,13 @@ export class FileService {
         this.instrumentManager = instrumentManager
     }
 
-    async saveFile(file: File): Promise<void> {
+    async saveFile(file: GrvMkrFile): Promise<void> {
         const fileDto = mapToDto(file);
-        await this.fileTable.addFile(fileDto);
+        await this.fileTable.saveFile(fileDto);
+        console.log("Saved File to DB", fileDto)
     }
 
-    async getFile(id: FileId): Promise<File | undefined> {
+    async getFile(id: GrvMkrFileId): Promise<GrvMkrFile | undefined> {
         const fileDto = await this.fileTable.getFile(id);
         if (!fileDto) return undefined;
 
@@ -29,13 +30,14 @@ export class FileService {
         return mapFileDtoToFile(fileDto, grids);
     }
 
-    async deleteFile(id: FileId): Promise<void> {
+    async deleteFile(id: GrvMkrFileId): Promise<void> {
         await this.fileTable.deleteFile(id);
+        console.log("Deleted File from DB", id)
     }
 
-    async getAllFiles(): Promise<File[]> {
+    async getAllFiles(): Promise<GrvMkrFile[]> {
         const fileDtos = await this.fileTable.getAllFiles();
-        const files: File[] = [];
+        const files: GrvMkrFile[] = [];
 
         for (const fileDto of fileDtos) {
             const grids = new Map<GridId, Grid>();

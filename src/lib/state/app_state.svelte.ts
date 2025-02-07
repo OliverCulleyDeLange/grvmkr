@@ -1,13 +1,11 @@
-import { buildDefaultGrid, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ErrorId, type Grid, type GridId, type GridRow, type HitId, type InstrumentHit, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ErrorId, type Grid, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
-import { calculateMsPerBeatDivision } from "$lib";
+import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
-import { formatDateYYYYMMMDD } from "./date";
-import { FileService } from "$lib/service/file_service";
 
 export class AppStateStore {
     // TODO make private
@@ -17,20 +15,23 @@ export class AppStateStore {
     private playingIntervalId: number | undefined = undefined;
     private nextCount: number = 0;
 
-    public fileName: string = $state(`Groove from ${formatDateYYYYMMMDD()}`)
+    // Main state
+    public file: GrvMkrFile = $state(defaultFile)
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
-    public msPerBeatDivision = $derived(this.currentlyPlayingGrid?.msPerBeatDivision);
     public errors: SvelteMap<ErrorId, AppError> = new SvelteMap();
+
+    // Derived state
+    public msPerBeatDivision = $derived(this.currentlyPlayingGrid?.msPerBeatDivision);
 
     onEvent(event: AppEvent) {
         console.log('Event:', event.event, event);
         switch (event.event) {
             case UiEvent.Mounted:
-                this.initialiseInstruments();
+                this.initialise();
                 break;
             case ToolbarEvent.FileNameChanged:
-                this.fileName = event.fileName
+                this.updateFile((file) => { file.name = event.fileName })
                 break;
             case GridEvent.TogglePlaying:
                 this.onTogglePlaying(event.playing, event.gridId);
@@ -87,9 +88,6 @@ export class AppStateStore {
                 this.instrumentManager.moveInstrument(event.event, event.instrumentId)
                 this.syncInstruments();
                 break;
-            case InstrumentEvent.InstrumentsInitialised:
-                this.initialiseGrids()
-                break;
             case ToolbarEvent.Save:
                 this.save();
                 break;
@@ -107,13 +105,6 @@ export class AppStateStore {
                 }
                 break;
         }
-    }
-
-
-    initialiseInstruments() {
-        this.instrumentManager.initialise().then(() => {
-            this.onEvent({ event: InstrumentEvent.InstrumentsInitialised });
-        });
     }
 
     async onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
@@ -232,7 +223,7 @@ export class AppStateStore {
 
     save() {
         let saveFile: SaveFileV2 = serialiseToSaveFileV2(
-            this.fileName,
+            this.file.name,
             [...this.grids.values()],
             [...this.instrumentManager.instruments.values()]
         );
@@ -261,7 +252,7 @@ export class AppStateStore {
     async loadSaveFileV1(saveFileContent: string) {
         let saveFile: SaveFileV1 = JSON.parse(saveFileContent);
         await this.instrumentManager.replaceInstruments(saveFile.instruments);
-        
+
         this.gridService.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
@@ -269,7 +260,7 @@ export class AppStateStore {
             this.addGrid(gridModel)
         });
     }
-    
+
     async loadSaveFileV2(saveFileContent: string) {
         let saveFile: SaveFileV2 = JSON.parse(saveFileContent);
         await this.instrumentManager.replaceInstruments(saveFile.instruments);
@@ -280,15 +271,17 @@ export class AppStateStore {
             let gridModel: Grid = mapSavedGridV2ToGrid(grid, this.instrumentManager);
             this.addGrid(gridModel)
         });
-        this.fileName = saveFile.name
-        console.log(`Filename ${this.fileName}`)
+        this.file.name = saveFile.name
+        console.log(`Filename ${this.file.name}`)
     }
 
     async reset() {
         await this.instrumentManager.reset()
         await this.gridService.deleteAllGrids()
+        await this.fileService.deleteFile('default file')
         this.grids.clear()
-        this.initialiseInstruments()
+        this.file = defaultFile
+        this.initialise()
     }
 
     play() {
@@ -353,7 +346,17 @@ export class AppStateStore {
         return this.getGridCell(currentlyPlayingGrid, locator).hit;
     }
 
-    async initialiseGrids() {
+    // Initialises the app 
+    async initialise() {
+        await this.instrumentManager.initialise()
+        try {
+            let file = await this.fileService.getFile('default file')
+            if (file) {
+                this.file.name = file.name
+            }
+        } catch (e) {
+
+        }
         try {
             let grids = await this.gridService.getAllGrids()
             if (grids.length == 0) {
@@ -432,6 +435,25 @@ export class AppStateStore {
                 this.onEvent({
                     event: DomainEvent.DatabaseError,
                     doingWhat: "saving grid",
+                    error
+                })
+            });
+    }
+
+    // Updates grid in state and DB
+    updateFile(withFile: (file: GrvMkrFile) => void) {
+        withFile(this.file);
+        this.trySaveFile(this.file)
+    }
+
+    trySaveFile(file: GrvMkrFile) {
+        this.fileService.saveFile(file)
+            .catch((e) => {
+                console.error(`Error saving file. Error: [${e}]`, file)
+                let error = e.target.error
+                this.onEvent({
+                    event: DomainEvent.DatabaseError,
+                    doingWhat: "saving file",
                     error
                 })
             });
