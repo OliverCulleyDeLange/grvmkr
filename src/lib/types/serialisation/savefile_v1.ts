@@ -1,7 +1,9 @@
 // Don't change anything in here.
 // If things change, create a V2 and confirm backwards compatibility with V1 files. 
 
-export type SaveFileV1 = {
+import type { SaveFile } from "$lib"
+
+export type SaveFileV1 = SaveFile & {
     type: 'savefile'
     version: 1
 

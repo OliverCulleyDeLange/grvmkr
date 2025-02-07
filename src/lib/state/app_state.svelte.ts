@@ -1,7 +1,6 @@
-import { updated } from "$app/state";
-import { type GridId, type Grid, type UiEvents, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, ToolbarEvent, type CellLocator, type InstrumentHit, buildDefaultGrid, InstrumentManager, mapSavedGridToGrid, serialiseToJsonV1, type BeatDivision, type GridRow, type HitId, type SaveFileV1, type OnUiEvent, type NotationLocator, type ErrorId, type AppError, UiEvent, InstrumentService } from "$lib";
+import { buildDefaultGrid, defaultBar, defaultBeat, defaultBeatDivision, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ErrorId, type Grid, type GridId, type GridRow, type HitId, type InstrumentHit, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
-import { calculateMsPerBeatDivision } from "$lib/mapper/saved_grid_mapper";
+import { calculateMsPerBeatDivision } from "$lib";
 import { GridService } from "$lib/service/grid_service";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
@@ -26,7 +25,6 @@ export class AppStateStore {
         console.log('Event:', event.event, event);
         switch (event.event) {
             case UiEvent.Mounted:
-                console.log(this)
                 this.initialiseInstruments();
                 break;
             case ToolbarEvent.FileNameChanged:
@@ -231,7 +229,8 @@ export class AppStateStore {
     }
 
     save() {
-        let saveFile = serialiseToJsonV1(
+        let saveFile: SaveFileV2 = serialiseToSaveFileV2(
+            this.fileName,
             [...this.grids.values()],
             [...this.instrumentManager.instruments.values()]
         );
@@ -245,14 +244,41 @@ export class AppStateStore {
     }
 
     async loadFile(file: File) {
-        let saveFile: SaveFileV1 = JSON.parse(await file.text());
-        await this.instrumentManager.replaceInstruments(saveFile.instruments);
+        let fileText = await file.text()
+        let saveFileBase: SaveFile = JSON.parse(fileText)
+        switch (saveFileBase.version) {
+            case 1:
+                this.loadSaveFileV1(fileText)
+                break;
+            case 2:
+                this.loadSaveFileV2(fileText)
+                break;
+        }
+    }
 
+    async loadSaveFileV1(saveFileContent: string) {
+        let saveFile: SaveFileV1 = JSON.parse(saveFileContent);
+        await this.instrumentManager.replaceInstruments(saveFile.instruments);
+        
+        this.gridService.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
-            let gridModel: Grid = mapSavedGridToGrid(grid, this.instrumentManager);
+            let gridModel: Grid = mapSavedGridV1ToGrid(grid, this.instrumentManager);
             this.addGrid(gridModel)
         });
+    }
+    
+    async loadSaveFileV2(saveFileContent: string) {
+        let saveFile: SaveFileV2 = JSON.parse(saveFileContent);
+        await this.instrumentManager.replaceInstruments(saveFile.instruments);
+
+        this.gridService.deleteAllGrids()
+        this.grids.clear();
+        saveFile.grids.forEach((grid) => {
+            let gridModel: Grid = mapSavedGridV2ToGrid(grid, this.instrumentManager);
+            this.addGrid(gridModel)
+        });
+        this.fileName = saveFile.name
     }
 
     async reset() {
@@ -286,7 +312,7 @@ export class AppStateStore {
         if (!this.currentlyPlayingGrid) return;
         let currentlyPlayingGrid = this.currentlyPlayingGrid
         let count = this.nextCount++;
-        
+
         let cell = count % currentlyPlayingGrid.gridCols;
         let repetition = Math.floor(count / currentlyPlayingGrid.gridCols);
         let bar =
@@ -398,8 +424,8 @@ export class AppStateStore {
     trySaveGrid(grid: Grid) {
         this.gridService.saveGrid(grid)
             .catch((e) => {
+                console.error("Error saving grid", e, grid)
                 let error = e.target.error
-                console.error("Error saving grid", error, e)
                 this.onEvent({
                     event: DomainEvent.DatabaseError,
                     doingWhat: "saving grid",

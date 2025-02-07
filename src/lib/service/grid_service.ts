@@ -139,6 +139,9 @@ export class GridService {
     /** ✅ Convert a DTO GridRowDto back to a domain GridRow */
     private rowFromDto(gridRowDto: GridRowDto): GridRow {
         let instrument = this.instrumentManager.instruments.get(gridRowDto.instrumentId)
+        if (!instrument){
+            console.error(`Can't find instrument with id [${gridRowDto.instrumentId}] from db. Domain obj will have no instrument!`, instrument)
+        }
         return {
             instrument: instrument!,
             notation: this.notationFromDto(gridRowDto.notation)
