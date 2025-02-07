@@ -1,10 +1,11 @@
-// Grid UI Events
-export type ToolbarEvents = Save | Load | Reset
+// Toolbar UI Events
+export type ToolbarEvents = Save | Load | Reset | FileNameChanged
 
 export enum ToolbarEvent {
     Save = "Save",
     Load = "Load",
-    Reset = "Reset"
+    Reset = "Reset",
+    FileNameChanged = "FileNameChanged",
 }
 
 export type Reset = {
@@ -16,4 +17,18 @@ export type Save = {
 export type Load = {
     event: ToolbarEvent.Load
     file: File
+}
+export type FileNameChanged = {
+    event: ToolbarEvent.FileNameChanged
+    fileName: string
+}
+
+// Toolbar UI components
+export type ToolbarUi = {
+    errors: AppErrorUi[],
+    fileName: string
+}
+
+export type AppErrorUi = {
+    message: string
 }

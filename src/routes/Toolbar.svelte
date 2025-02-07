@@ -1,16 +1,21 @@
 <script lang="ts">
-	import { ToolbarEvent, type AppError, type OnUiEvent } from '$lib';
+	import { ToolbarEvent, type AppError, type OnUiEvent, type ToolbarUi } from '$lib';
 	import HelpOverlay from './HelpOverlay.svelte';
 
 	let {
-		errors,
+		toolbarUi,
 		onEvent
 	}: {
-		errors: AppError[];
+		toolbarUi: ToolbarUi;
 		onEvent: OnUiEvent;
 	} = $props();
 
 	let showHelp: boolean = $state(false);
+	let fileName: string = $state(toolbarUi.fileName);
+
+	$effect(() => {
+		onEvent({ event: ToolbarEvent.FileNameChanged, fileName: fileName });
+	});
 
 	function load(event: Event) {
 		const fileInput = event.target as HTMLInputElement;
@@ -44,16 +49,18 @@
 		>Reset</button
 	>
 
-	<button class="btn btn-outline btn-sm" onclick={() => showHelp = !showHelp}>?</button>
+	<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}>?</button>
 	{#if showHelp}
-		<HelpOverlay  closeDialog={() => showHelp = !showHelp}/>
+		<HelpOverlay closeDialog={() => (showHelp = !showHelp)} />
 	{/if}
 </div>
 
 <div class="my-4 flex flex-col gap-2">
-	{#each errors as error}
+	{#each toolbarUi.errors as error}
 		<div class="alert alert-error">
 			{error.message}
 		</div>
 	{/each}
 </div>
+
+<input bind:value={fileName} class="flex-grow input input-xl input-bordered w-full" />

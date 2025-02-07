@@ -16,7 +16,7 @@
 </script>
 
 <div class="flex flex-col gap-8">
-	{#each [...grids.entries()] as [gridId, grid]}
+	{#each [...grids.entries()] as [_, grid]}
 		<div>
 			<GridConfig {grid} {onEvent} />
 			<Grid

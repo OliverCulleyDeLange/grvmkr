@@ -7,8 +7,10 @@ import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
+import { formatDateYYYYMMMDD } from "./date";
 
 export type AppStateStore = {
+    fileName: string
     grids: Map<GridId, Grid>
     errors: Map<ErrorId, AppError>
     onEvent: OnUiEvent,
@@ -17,6 +19,8 @@ export type AppStateStore = {
 
 export function createAppStateStore(): AppStateStore {
     let instrumentManager: InstrumentManager = new InstrumentManager();
+
+    let fileName: string = $state(`Groove from ${formatDateYYYYMMMDD()}`)
 
     let grids: SvelteMap<GridId, Grid> = new SvelteMap();
 
@@ -29,19 +33,26 @@ export function createAppStateStore(): AppStateStore {
 
     let errors: SvelteMap<ErrorId, AppError> = new SvelteMap()
 
-    let state = {
+
+    // This is the main state object that gets returned from this function
+    // Now sure about this pattern yet - lets see how it pans out. 
+    let reactiveState: AppStateStore = $state({
+        fileName,
         grids,
         errors,
         onEvent,
         instrumentManager
-    }
-    return state
+    })
+    return reactiveState
 
     function onEvent(event: AppEvent) {
         console.log('Event:', event.event, event);
         switch (event.event) {
             case UiEvent.Mounted:
                 initialiseInstruments();
+                break;
+            case ToolbarEvent.FileNameChanged:
+                fileName = event.fileName
                 break;
             case GridEvent.TogglePlaying:
                 onTogglePlaying(event.playing, event.gridId);
@@ -77,6 +88,11 @@ export function createAppStateStore(): AppStateStore {
                     grid.gridCols = notationColumns(grid);
                 });
                 break;
+            case GridEvent.NameChanged:
+                updateGrid(event.gridId, (grid) => {
+                    grid.config.name = event.name
+                })
+                break;
             case InstrumentEvent.RemoveInstrument:
                 instrumentManager.removeInstrument(event.instrumentId);
                 syncInstruments();
@@ -89,7 +105,7 @@ export function createAppStateStore(): AppStateStore {
                 instrumentManager.moveInstrument(event.event, event.instrumentId)
                 syncInstruments();
                 break;
-                case InstrumentEvent.MoveDown:
+            case InstrumentEvent.MoveDown:
                 instrumentManager.moveInstrument(event.event, event.instrumentId)
                 syncInstruments();
                 break;
@@ -280,7 +296,7 @@ export function createAppStateStore(): AppStateStore {
         playingIntervalId = undefined;
         nextCount = 0;
     }
-    
+
     function restartInterval() {
         clearInterval(playingIntervalId);
         playingIntervalId = setInterval(() => {
@@ -428,5 +444,5 @@ export function createAppStateStore(): AppStateStore {
         return grid.rows[locator.row].notation.bars[locator.notationLocator.bar]
             .beats[locator.notationLocator.beat].divisions[locator.notationLocator.division]
     }
-    
+
 }

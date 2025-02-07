@@ -30,16 +30,17 @@ export * from "./types/ui/event"
 export * from "./types/ui/grid_ui"
 export * from "./types/ui/legend_ui"
 export * from "./types/ui/toolbar"
-export * from "./types/ui/callback"
+export * from "./types/ui/toolbar"
 
 export * from "./types/serialisation/savefile_v1"
 
 
 // Mappers
-export { mapSavedInstrumentToInstrumentConfig } from "./mapper/instrument_mapper"
-export { mapSavedGridToGrid } from "./mapper/saved_grid_mapper"
-export { mapRowsToGridUi } from "./mapper/grid_ui_mapper"
+export * from "./mapper/instrument_mapper"
+export * from "./mapper/saved_grid_mapper"
+export * from "./mapper/grid_ui_mapper"
+export * from "./mapper/toolbar_mapper"
 
 //Misc
-export { serialiseToJsonV1 } from "./serialisation/json"
+export * from "./serialisation/json"
 export * from "./model/default_grid"

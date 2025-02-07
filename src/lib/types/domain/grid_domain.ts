@@ -13,6 +13,7 @@ export type Grid = {
 };
 
 export type GridConfig = {
+    name: string
     bpm: number
     bars: number
     beatsPerBar: number
