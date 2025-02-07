@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { GridEvent, type Grid, type InstrumentManager, type OnUiEvent, type GridUi } from '$lib';
-	import GridCell from './GridCell.svelte';
-	import Legend from './Legend.svelte';
+	import GridCell from '../ui_elements/GridCell.svelte';
+	import Legend from '../ui_elements/Legend.svelte';
 
 	let {
 		grid,

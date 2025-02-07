@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ToolbarEvent, type AppError, type OnUiEvent, type ToolbarUi } from '$lib';
+	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
 	import HelpOverlay from './HelpOverlay.svelte';
 
 	let {

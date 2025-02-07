@@ -1,35 +1,40 @@
 <script lang="ts">
-	import { AppStateStore, GridEvent, mapToolbarUi, UiEvent } from '$lib';
+	import { AppStateStore, GridEvent, mapRowsToGridUi, mapToolbarUi, UiEvent } from '$lib';
 	import { onMount } from 'svelte';
-	import Grids from './Grids.svelte';
-	import Instruments from './Instruments.svelte';
-	import Toolbar from './Toolbar.svelte';
 	import type { AppEvent } from '$lib/types/event';
+	import Button from './ui_elements/Button.svelte';
+	import Toolbar from './ui_elements/Toolbar.svelte';
+	import GridConfig from './ui_elements/GridConfig.svelte';
+	import Grid from './ui_elements/Grid.svelte';
+	import Instruments from './ui_elements/Instruments.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
 
 	onMount(() => onEvent({ event: UiEvent.Mounted }));
 
-	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors))
+	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));
 </script>
 
-<div class="m-2 p-4">
+<div class="p-4">
 	<Toolbar {onEvent} {toolbarUi} />
 	{#if appStateStore.instrumentManager != undefined}
-		<Grids
-			instrumentManager={appStateStore.instrumentManager}
-			grids={appStateStore.grids}
-			{onEvent}
-		/>
+		<div class="flex flex-col gap-8">
+			{#each [...appStateStore.grids.entries()] as [_, grid]}
+				<div>
+					<GridConfig {grid} {onEvent} />
+					<Grid
+						{grid}
+						gridUi={mapRowsToGridUi(grid, appStateStore.instrumentManager)}
+						instrumentManager={appStateStore.instrumentManager}
+						{onEvent}
+					/>
+				</div>
+			{/each}
+		</div>
 
 		<div class="flex">
-			<button
-				onclick={() => onEvent({ event: GridEvent.AddGrid })}
-				class="btn btn-outline btn-xs m-2 ml-auto print:hidden"
-			>
-				Add Grid
-			</button>
+			<Button text="Add Grid" onClick={() => onEvent({ event: GridEvent.AddGrid })} classes="print:hidden" />
 		</div>
 
 		<div class="print:hidden">
