@@ -19,6 +19,7 @@ export function mapSavedGridV1ToGrid(savedGrid: SavedGridV1, instrumentManager: 
     }).filter((r) => r != null)
     let grid: Grid = {
         id: savedGrid.id,
+        index: 0, // Not present in V1
         config: {
             name: "", // Doesn't exist in V1 save file
             bpm: savedGrid.config.bpm,

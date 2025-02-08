@@ -3,6 +3,7 @@ import type { Bar, BarDto, Beat, BeatDivision, BeatDivisionDto, BeatDto, Grid, G
 export function mapGridDtoToGrid(gridDto: GridDto, instrumentManager: InstrumentManager): Grid {
     return {
         id: gridDto.id,
+        index: gridDto.index,
         config: configFromDto(gridDto.config),
         rows: gridDto.rows.map(row => rowFromDto(row, instrumentManager)),
         currentlyPlayingColumn: gridDto.currentlyPlayingColumn,

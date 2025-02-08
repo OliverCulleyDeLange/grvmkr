@@ -4,6 +4,7 @@ export type GridDtoId = string
 
 export type GridDto = {
     id: GridDtoId
+    index: number
     config: GridConfigDto
     rows: GridRowDto[]
     currentlyPlayingColumn: number

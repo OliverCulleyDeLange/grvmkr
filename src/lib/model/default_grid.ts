@@ -2,10 +2,12 @@ import type { Grid, GridRow, Bar, Beat, BeatDivision } from "$lib"
 import type { InstrumentId, InstrumentWithId } from "$lib"
 
 // The values here are pre calculated
-export function buildDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>): Grid {
+export function buildDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>, index: number): Grid {
     let grid: Grid = {
         id: `grid_${crypto.randomUUID()}`,
+        index: index,
         config: {
+            name: "Groove " + index,
             bpm: 120,
             bars: 1,
             beatsPerBar: 4,

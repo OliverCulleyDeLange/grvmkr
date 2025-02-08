@@ -6,12 +6,13 @@ export type GridUis = {
 }
 export type GridUi = {
     id: GridId
+    index: number
     config: GridConfig
     // This represents how a grid is split vertically into sections to make long phrases easier to read
-    notationSections: NotationSection[],
-    msPerBeatDivision: number,
-    gridCols: number,
-    playing: boolean,
+    notationSections: NotationSection[]
+    msPerBeatDivision: number
+    gridCols: number
+    playing: boolean
     currentlyPlayingColumn: number
 };
 

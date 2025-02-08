@@ -5,7 +5,7 @@ export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: Instrumen
         mapRowsToGridUi(grid, instrumentManager)
     );
     let ui: GridUis = {
-        grids: gridUis
+        grids: gridUis.sort((a,b) => a.index - b.index)
     };
     return ui
 }
@@ -18,6 +18,7 @@ export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentManager
     let ui: GridUi = {
         notationSections: sections,
         id: grid.id,
+        index: grid.index,
         config: grid.config,// Using a domain object for now- TODO replace with UI
         msPerBeatDivision: grid.msPerBeatDivision,
         gridCols: grid.gridCols,

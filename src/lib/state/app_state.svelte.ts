@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ErrorId, type Grid, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ErrorId, type Grid, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -40,7 +40,7 @@ export class AppStateStore {
                 this.toggleGridHit(event.locator);
                 break;
             case GridEvent.RemoveGrid:
-                this.grids.delete(event.gridId);
+                this.removeGrid(event);
                 break;
             case GridEvent.AddGrid:
                 this.addDefaultGrid()
@@ -106,6 +106,11 @@ export class AppStateStore {
                 }
                 break;
         }
+    }
+
+    private removeGrid(event: RemoveGrid) {
+        this.grids.delete(event.gridId);
+        this.gridService.deleteGrid(event.gridId)
     }
 
     async onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
@@ -377,8 +382,15 @@ export class AppStateStore {
     }
 
     addDefaultGrid() {
-        let grid: Grid = $state(buildDefaultGrid(this.instrumentManager.instruments));
+        const index = this.getNextGridIndex()
+        let grid: Grid = $state(buildDefaultGrid(this.instrumentManager.instruments, index));
         this.addGrid(grid)
+    }
+
+    getNextGridIndex(): number {
+        let indexes = [...this.grids.values()].map((grid) => grid.index).filter((i) => i >= 0)
+        console.log(`indexes`, indexes)
+        return Math.max(...indexes, -1) + 1
     }
 
     // Returns the next cyclic hit type.

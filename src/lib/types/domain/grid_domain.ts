@@ -4,6 +4,7 @@ export type GridId = string
 
 export type Grid = {
     id: GridId
+    index: number,
     config: GridConfig
     rows: GridRow[]
     msPerBeatDivision: number,
