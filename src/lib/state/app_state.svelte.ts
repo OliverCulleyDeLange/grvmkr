@@ -65,6 +65,7 @@ export class AppStateStore {
                     grid.config.beatDivisions = event.beat_divisions;
                     this.resizeGrid(grid);
                     grid.gridCols = this.notationColumns(grid);
+                    grid.msPerBeatDivision = calculateMsPerBeatDivision(grid.config.bpm, grid.config.beatDivisions);
                 });
                 break;
             case GridEvent.NameChanged:
