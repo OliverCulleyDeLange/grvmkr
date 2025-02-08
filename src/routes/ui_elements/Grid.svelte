@@ -27,7 +27,7 @@
 			<div class="beat-indicator">
 				{#each section.beatIndicator as indicator}
 					<div
-						class="flex h-6 items-center justify-center"
+						class="flex h-6 items-center justify-center print:border print:border-gray-400"
 						class:bg-green-300={indicator.playing}
 						class:bg-gray-100={!indicator.playing && !indicator.isBeat && !indicator.isFirstBeatOfBar}
 						class:bg-gray-300={!indicator.playing && indicator.isBeat}
