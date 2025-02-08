@@ -42,6 +42,7 @@ export type GridCellUi = {
     isFirstBeatOfBar: boolean
     content: string
     locator: CellLocator
+    cellsOccupied: number
 }
 
 // Grid UI Events

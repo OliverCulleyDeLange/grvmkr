@@ -48,6 +48,7 @@
 
 				{#each row.gridCells as cell}
 					<GridCell
+						columnsOccupied={cell.cellsOccupied}
 						text={cell.content}
 						isBeat={cell.isBeat}
 						isFirstBeatOfBar={cell.isFirstBeatOfBar}
@@ -74,7 +75,6 @@
 	.beat-indicator {
 		display: grid;
 		grid-column: span var(--cells) / span var(--cells);
-		grid-column-start: 2;
 		grid-template-columns: subgrid;
 	}
 </style>

@@ -1,11 +1,13 @@
 <script lang="ts">
 	let {
+		columnsOccupied,
 		text,
 		isBeat,
 		isFirstBeatOfBar,
 		onTap,
 		onRightTap
 	}: {
+		columnsOccupied: number
 		text: string;
 		isFirstBeatOfBar: boolean;
 		isBeat: boolean;
@@ -27,6 +29,7 @@
 	class:bg-gray-300={isBeat && !isFirstBeatOfBar}
 	class:bg-gray-400={isFirstBeatOfBar}
 	class:no-print-adjust={isBeat}
+	class:merged-cells-2={columnsOccupied==2}
 >
 	{text}
 </button>
@@ -35,5 +38,11 @@
 	.no-print-adjust {
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
+	}
+
+	.merged-cells-2 {
+		display: grid;
+		grid-column: span 2;
+		grid-template-columns: subgrid;
 	}
 </style>

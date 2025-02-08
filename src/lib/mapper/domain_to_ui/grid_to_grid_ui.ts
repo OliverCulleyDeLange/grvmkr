@@ -5,7 +5,7 @@ export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: Instrumen
         mapRowsToGridUi(grid, instrumentManager)
     );
     let ui: GridUis = {
-        grids: gridUis.sort((a,b) => a.index - b.index)
+        grids: gridUis.sort((a, b) => a.index - b.index)
     };
     return ui
 }
@@ -37,9 +37,9 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
             return bar.beats.flatMap((beat, beatI) => {
                 let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
                     let cellContent = ""
-                    if (division.hit) {
-                        let instrument: InstrumentWithId | undefined = instruments.get(division.hit.instrumentId)
-                        let hit = instrument?.hitTypes.get(division.hit.hitId)
+                    if (division.hits) {
+                        let instrument: InstrumentWithId | undefined = instruments.get(division.hits.instrumentId)
+                        let hit = instrument?.hitTypes.get(division.hits.hitId)
                         cellContent = hit?.key ?? ""
                     }
                     let row: GridCellUi = {
@@ -50,7 +50,8 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
                             grid: grid.id,
                             row: rowI,
                             notationLocator: { bar: barI, beat: beatI, division: divisionI }
-                        }
+                        },
+                        cellsOccupied: division.cellsOccupied
                     }
                     return row
                 })
@@ -70,24 +71,34 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
 function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: number, currentlyPlayingColumn: number): NotationSection[] {
     const sections: NotationSection[] = [];
     let chunkSize = (gridCols / config.bars) * 2; // Start with 2 bars per section
-    if (chunkSize > 32){
+    if (chunkSize > 32) {
         chunkSize = gridCols / config.bars // But downsize to 1 bar per section if > 32 cells
     }
     const numSections = Math.ceil(gridCols / chunkSize);
 
     for (let i = 0; i < numSections; i++) {
-        let min = i * chunkSize
-        let max = (i + 1) * chunkSize
-        const sectionRows: GridRowUi[] = rows.map(row => ({
-            ...row,
-            gridCells: row.gridCells.slice(min, max)
-        }));
+        let min = i * chunkSize // 0 
+        let max = (i + 1) * chunkSize //16
+        const sectionRows: GridRowUi[] = rows.map(row => {
+            let gridRowUi = {
+                ...row,
+                gridCells: (row.gridCells.reduce((acc, cell, index, arr) => {
+                    if (acc.cnt >= min && acc.cnt < max){
+                        acc.acc.push(cell)
+                    }
+                    acc.cnt += cell.cellsOccupied
+                    return acc
+                }, {cnt: 0, acc: [] as GridCellUi[]})).acc
+            }
+            return gridRowUi
+        });
 
-        let cols = sectionRows[0].gridCells.length
-        const beatIndicator: BeatIndicator[] = Array.from({ length: cols }, (_, i) => {
+        let sectionColumns = sectionRows[0].gridCells.reduce((acc, cell) => acc + cell.cellsOccupied, 0)
+        console.log(sectionColumns)
+        const beatIndicator: BeatIndicator[] = Array.from({ length: sectionColumns }, (_, i) => {
             let text = "";
             let index = min + i
-            
+
             const playing = index == currentlyPlayingColumn
             const divisionModulo = index % config.beatDivisions
             const isBeat = divisionModulo == 0
@@ -109,7 +120,7 @@ function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: 
         })
         sections.push({
             sectionRows,
-            columns: cols,
+            columns: sectionColumns,
             beatIndicator
         });
     }

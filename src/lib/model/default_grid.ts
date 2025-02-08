@@ -1,6 +1,47 @@
 import type { Grid, GridRow, Bar, Beat, BeatDivision } from "$lib"
 import type { InstrumentId, InstrumentWithId } from "$lib"
 
+export function buildTestGrid(instruments: Map<InstrumentId, InstrumentWithId>, index: number): Grid {
+    const grid: Grid = {
+        id: "testgrid",
+        index: index,
+        config: {
+            name: "test",
+            bpm: 60,
+            bars: 1,
+            beatsPerBar: 4,
+            beatDivisions: 4
+        },
+        rows: Array.from(instruments.values())
+            .map((instrument) => {
+                return {
+                    instrument,
+                    notation: {
+                        bars: Array.from({ length: 1 }, () => {
+                            return {
+                                beats: Array.from({ length: 4 }, () => {
+                                    return {
+                                        divisions: [
+                                            { hits: [], cellsOccupied: 1 },
+                                            { hits: [], cellsOccupied: 1 },
+                                            { hits: [], cellsOccupied: 2 },
+                                        ]
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
+            }),
+        msPerBeatDivision: 250,
+        gridCols: 8,
+        playing: false,
+        currentlyPlayingColumn: 0
+    }
+    return grid
+}
+
+
 // The values here are pre calculated
 export function buildDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>, index: number): Grid {
     let grid: Grid = {
@@ -47,5 +88,5 @@ export function defaultBeat(divisions: number): Beat {
 }
 
 export function defaultBeatDivision(): BeatDivision {
-    return { hit: undefined }
+    return { hits: [], cellsOccupied: 1 }
 }

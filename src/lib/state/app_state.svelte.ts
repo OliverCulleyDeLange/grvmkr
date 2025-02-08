@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
+import { buildDefaultGrid, buildTestGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridConfig, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -118,10 +118,20 @@ export class AppStateStore {
         }
     }
 
-    private mergeCells(locator: CellLocator, side: string) {
+    private mergeCells(locator: CellLocator, side: "left" | "right") {
         this.updateGrid(locator.grid, (grid) => {
             console.log(`Merging grid cell ${side}`, $state.snapshot(locator))
-
+            let cell = this.getGridCell(grid, locator)
+            let mergeCellLocator = getCellLocatorTo(side, locator, grid.config)
+            let cellToMerge = this.getGridCell(grid, mergeCellLocator)
+            if (cell && cellToMerge) {
+                console.log("Cells to merge", locator, mergeCellLocator)
+                cell.cellsOccupied++
+                cell.hits.push(...cellToMerge.hits)
+                this.removeGridCell(grid, mergeCellLocator)
+            } else {
+                console.error("Couldn't find grid cell to merge with locator ", locator);
+            }
         })
     }
 
@@ -168,7 +178,7 @@ export class AppStateStore {
             let newInstrumentHit: InstrumentHit | undefined = this.nextHitType(row, currentValue?.hitId);
             // console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
             this.updateGridCell(locator, (cell) => {
-                cell.hit = newInstrumentHit;
+                cell.hits = newInstrumentHit;
             })
             this.instrumentManager?.playHit(newInstrumentHit);
         } else {
@@ -183,7 +193,7 @@ export class AppStateStore {
 
     currentHit(locator: CellLocator): InstrumentHit | undefined {
         let grid = this.grids.get(locator.grid)
-        return grid ? this.getGridCell(grid, locator)?.hit : undefined
+        return grid ? this.getGridCell(grid, locator)?.hits : undefined
     }
 
     resizeGrid(grid: Grid) {
@@ -247,12 +257,14 @@ export class AppStateStore {
     // Returns a count of the number of columns in the grid
     // Used to decide when to resize the grid
     notationColumns(grid: Grid): number {
-        if (grid.rows.length == 0) return 0;
-        let notation = grid.rows[0].notation;
-        let bars = notation.bars;
-        let beats = bars[0].beats;
-        let beatDivisions = beats[0].divisions;
-        return bars.length * (beats.length * beatDivisions.length);
+        return grid.config.bars * (grid.config.beatsPerBar * grid.config.beatDivisions)
+        // Not sure what this nonsense was about, pretty sure its not required anymore. 
+        // if (grid.rows.length == 0) return 0;
+        // let notation = grid.rows[0].notation;
+        // let bars = notation.bars;
+        // let beats = bars[0].beats;
+        // let beatDivisions = beats[0].divisions;
+        // return bars.length * (beats.length * beatDivisions.length);
     }
 
     save() {
@@ -377,7 +389,7 @@ export class AppStateStore {
         locator: CellLocator
     ): InstrumentHit | undefined {
         if (!currentlyPlayingGrid) return undefined;
-        return this.getGridCell(currentlyPlayingGrid, locator).hit;
+        return this.getGridCell(currentlyPlayingGrid, locator).hits;
     }
 
     // Initialises the app 
@@ -517,4 +529,91 @@ export class AppStateStore {
             .beats[locator.notationLocator.beat].divisions[locator.notationLocator.division]
     }
 
+    removeGridCell(grid: Grid, locator: CellLocator) {
+        let divisions = grid.rows[locator.row].notation.bars[locator.notationLocator.bar]
+            .beats[locator.notationLocator.beat].divisions
+        divisions.splice(locator.notationLocator.division, 1);
+    }
+
 }
+
+//TODO This needs massively simplifying
+function getCellLocatorTo(side: 'left' | 'right', locator: CellLocator, config: GridConfig): CellLocator {
+    switch (side) {
+        case "left":
+            if (locator.notationLocator.division == 0) {
+                if (locator.notationLocator.beat == 0) {
+                    if (locator.notationLocator.bar == 0) {
+                        // If first division, beat and bar, we can't merge left! This is an error and shouldn't be possible.
+                        console.error("Trying to merge left on first division, of first beat of first bar. This shouldn't be possible.")
+                        return locator
+                    } else {
+                        // If first division of first beat, we must go back a bar
+                        return {
+                            ...locator, notationLocator: {
+                                bar: locator.notationLocator.bar - 1,
+                                beat: config.beatsPerBar,
+                                division: config.beatDivisions
+                            }
+                        }
+                    }
+                } else {
+                    // Left of first division is last division of previous beat
+                    return {
+                        ...locator, notationLocator: {
+                            bar: locator.notationLocator.bar,
+                            beat: locator.notationLocator.beat - 1,
+                            division: config.beatDivisions
+                        }
+                    }
+                }
+            } else {
+                // Left of any other division is simply division -1
+                return {
+                    ...locator, notationLocator: {
+                        bar: locator.notationLocator.bar,
+                        beat: locator.notationLocator.beat,
+                        division: locator.notationLocator.division - 1
+                    }
+                }
+            }
+        case "right":
+            if (locator.notationLocator.division == config.beatDivisions) {
+                if (locator.notationLocator.beat == config.beatsPerBar) {
+                    if (locator.notationLocator.bar == config.bars) {
+                        // If last division, beat and bar, we can't merge right! This is an error and shouldn't be possible.
+                        console.error("Trying to merge right on last division, of last beat of lsat bar. This shouldn't be possible.")
+                        return locator
+                    } else {
+                        // If last division of last beat, we must go forward a bar
+                        return {
+                            ...locator, notationLocator: {
+                                bar: locator.notationLocator.bar + 1,
+                                beat: 0,
+                                division: 0
+                            }
+                        }
+                    }
+                } else {
+                    // Right of last division is first division of next beat
+                    return {
+                        ...locator, notationLocator: {
+                            bar: locator.notationLocator.bar,
+                            beat: locator.notationLocator.beat + 1,
+                            division: 0
+                        }
+                    }
+                }
+            } else {
+                // Right of any other division is simply division -1
+                return {
+                    ...locator, notationLocator: {
+                        bar: locator.notationLocator.bar,
+                        beat: locator.notationLocator.beat,
+                        division: locator.notationLocator.division + 1
+                    }
+                }
+            }
+    }
+}
+

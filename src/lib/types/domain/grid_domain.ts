@@ -39,7 +39,8 @@ export type Beat = {
 };
 
 export type BeatDivision = {
-    hit: InstrumentHit | undefined
+    cellsOccupied: number
+    hits: InstrumentHit[]
 };
 
 export type InstrumentHit = {

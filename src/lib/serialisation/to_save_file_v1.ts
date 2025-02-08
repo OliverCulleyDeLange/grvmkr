@@ -61,8 +61,8 @@ function mapBeatToSavedInstrumentHitsV1(beat: Beat): SavedInstrumentHitV1[] {
 
 function mapDivisionToSavedInstrumentHitV1(division: BeatDivision): SavedInstrumentHitV1 {
     let savedHit: SavedInstrumentHitV1 = {
-        instrument_id: division.hit?.instrumentId ?? "",
-        hit_id: division.hit?.hitId ?? ""
+        instrument_id: division.hits?.instrumentId ?? "",
+        hit_id: division.hits?.hitId ?? ""
     };
     return savedHit;
 }
