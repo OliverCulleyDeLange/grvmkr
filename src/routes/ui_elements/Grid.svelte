@@ -1,15 +1,13 @@
 <script lang="ts">
-	import { GridEvent, type Grid, type InstrumentManager, type OnUiEvent, type GridUi } from '$lib';
-	import GridCell from '../ui_elements/GridCell.svelte';
-	import Legend from '../ui_elements/Legend.svelte';
+	import { GridEvent, type GridUi, type InstrumentManager, type OnUiEvent } from '$lib';
+	import GridCell from './GridCell.svelte';
+	import Legend from './Legend.svelte';
 
 	let {
-		grid,
 		gridUi,
 		instrumentManager,
 		onEvent
 	}: {
-		grid: Grid;
 		gridUi: GridUi;
 		instrumentManager: InstrumentManager;
 		onEvent: OnUiEvent;
@@ -21,22 +19,22 @@
 		<div class="grid" style="--cells: {section.columns};">
 			<button
 				class="btn btn-outline btn-xs print:hidden"
-				onclick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: grid.id })}
+				onclick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}
 			>
 				X
 			</button>
 			<!-- Beat indicator -->
 			<div class="beat-indicator">
-				{#each section.columnRange as currentCell}
+				{#each section.beatIndicator as indicator}
 					<div
-						class="flex h-6 items-center justify-center border border-gray-400 {currentCell %
-							grid.config.beatDivisions ==
-						0
+						class="{indicator.darken
 							? 'brightness-[0.8]'
-							: ''}"
-						class:bg-green-300={currentCell == grid.currentlyPlayingColumn}
-						class:bg-gray-300={currentCell != grid.currentlyPlayingColumn}
-					></div>
+							: ''} flex h-6 items-center justify-center border border-gray-400"
+						class:bg-green-300={indicator.playing}
+						class:bg-gray-300={!indicator.playing}
+					>
+						{indicator.text}
+					</div>
 				{/each}
 			</div>
 

@@ -1,12 +1,28 @@
-import type { Grid, GridCellUi, GridUi, InstrumentId, InstrumentManager, InstrumentWithId, NotationSection, GridConfig, GridRowUi } from "$lib"
+import type { Grid, GridCellUi, GridUi, InstrumentId, InstrumentManager, InstrumentWithId, NotationSection, GridConfig, GridRowUi, GridId, GridUis, BeatIndicator } from "$lib"
+
+export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: InstrumentManager): GridUis {
+    let gridUis: GridUi[] = [...grids.values()].map((grid) =>
+        mapRowsToGridUi(grid, instrumentManager)
+    );
+    let ui: GridUis = {
+        grids: gridUis
+    };
+    return ui
+}
 
 export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentManager): GridUi {
     let instruments = instrumentManager.instruments
     let rows = mapRows(grid, instruments)
-    let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols)
+    let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols, grid.currentlyPlayingColumn)
 
     let ui: GridUi = {
-        notationSections: sections
+        notationSections: sections,
+        id: grid.id,
+        config: grid.config,// Using a domain object for now- TODO replace with UI
+        msPerBeatDivision: grid.msPerBeatDivision,
+        gridCols: grid.gridCols,
+        playing: grid.playing,
+        currentlyPlayingColumn: grid.currentlyPlayingColumn
     }
     return ui
 }
@@ -52,7 +68,7 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
 }
 
 // Splits the grid UI into manageable 32 cell sections which stack vertically
-function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: number): NotationSection[] {
+function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: number, currentlyPlayingColumn: number): NotationSection[] {
     const sections: NotationSection[] = [];
     const chunkSize = 32;
     const numSections = Math.ceil(gridCols / chunkSize);
@@ -66,10 +82,33 @@ function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: 
         }));
 
         let cols = sectionRows[0].gridCells.length
+        const beatIndicator: BeatIndicator[] = Array.from({ length: cols }, (_, i) => {
+            let index = min + i
+            let darken = index % config.beatDivisions == 0
+            const playing = index == currentlyPlayingColumn
+
+            let text = "";
+            const divisionModulo = index % config.beatDivisions
+            const isFirstBeatOfBar = divisionModulo == 0
+            const isAndBeatOfBar = divisionModulo == (config.beatDivisions * 0.5)
+            const isEBeatOfBar = divisionModulo == (config.beatDivisions * 0.25)
+            const isABeatOfBar = divisionModulo == (config.beatDivisions * 0.75)
+            if (isFirstBeatOfBar) {
+                text = `${((index / config.beatDivisions) % config.beatsPerBar) + 1}`
+            } else if (isAndBeatOfBar) {
+                text = "&"
+            } else if (isEBeatOfBar) {
+                text = "e"
+            } else if (isABeatOfBar) {
+                text = "a"
+            }
+            const indicator: BeatIndicator = { darken, playing, text }
+            return indicator
+        })
         sections.push({
             sectionRows,
             columns: cols,
-            columnRange: Array.from({ length: cols }, (_, i) => min + i)
+            beatIndicator
         });
     }
 

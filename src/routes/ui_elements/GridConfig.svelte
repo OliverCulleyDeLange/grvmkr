@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { GridEvent, type Grid, type OnUiEvent } from '$lib';
+	import { GridEvent, type GridUi, type OnUiEvent } from '$lib';
 
 	let {
-		grid,
+		gridUi,
 		onEvent
 	}: {
-		grid: Grid;
+		gridUi: GridUi;
 		onEvent: OnUiEvent;
 	} = $props();
 
 	$effect(() => {
-		gridName = grid.config.name;
-		bpm = grid.config.bpm;
-		bars = grid.config.bars;
-		beatsPerBar = grid.config.beatsPerBar;
-		beatNoteFraction = grid.config.beatDivisions;
+		gridName = gridUi.config.name;
+		bpm = gridUi.config.bpm;
+		bars = gridUi.config.bars;
+		beatsPerBar = gridUi.config.beatsPerBar;
+		beatNoteFraction = gridUi.config.beatDivisions;
 	});
 
-	let gridName: string = $state(grid.config.name);
+	let gridName: string = $state(gridUi.config.name);
 	$effect(() => {
-		onEvent({ event: GridEvent.NameChanged, gridId: grid.id, name: gridName });
+		onEvent({ event: GridEvent.NameChanged, gridId: gridUi.id, name: gridName });
 	});
 
 	const minBpm = 20;
@@ -36,14 +36,14 @@
 	let beatNoteFraction = $state(4);
 
 	function togglePlaying() {
-		onEvent({ event: GridEvent.TogglePlaying, playing: !grid.playing, gridId: grid.id });
+		onEvent({ event: GridEvent.TogglePlaying, playing: !gridUi.playing, gridId: gridUi.id });
 	}
 	function onBpmChange() {
 		bpm = Math.round(Math.min(maxBpm, Math.max(minBpm, bpm)));
 		onEvent({
 			event: GridEvent.BpmChanged,
 			bpm: bpm,
-			gridId: grid.id
+			gridId: gridUi.id
 		});
 	}
 	function onBarsChange() {
@@ -51,7 +51,7 @@
 		onEvent({
 			event: GridEvent.BarsChanged,
 			bars: bars,
-			gridId: grid.id
+			gridId: gridUi.id
 		});
 	}
 	function onBeatsPerBarChange() {
@@ -60,7 +60,7 @@
 			event: GridEvent.GridSizeChanged,
 			beats_per_bar: beatsPerBar,
 			beat_divisions: beatNoteFraction,
-			gridId: grid.id
+			gridId: gridUi.id
 		});
 	}
 	function onBeatNoteFractionChange() {
@@ -69,7 +69,7 @@
 			event: GridEvent.GridSizeChanged,
 			beats_per_bar: beatsPerBar,
 			beat_divisions: beatNoteFraction,
-			gridId: grid.id
+			gridId: gridUi.id
 		});
 	}
 </script>
@@ -77,7 +77,7 @@
 <div class="flex break-after-avoid flex-wrap items-center gap-2 p-2">
 	<div class="flex flex-col items-center gap-2 sm:flex-row">
 		<button onclick={togglePlaying} class="btn btn-outline btn-sm my-2 print:invisible">
-			{grid.playing ? 'Stop' : 'Play'}
+			{gridUi.playing ? 'Stop' : 'Play'}
 		</button>
 
 		<input bind:value={gridName} class="input input-sm input-bordered" />

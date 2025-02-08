@@ -1,18 +1,32 @@
-import type { CellLocator, GridId } from "$lib";
+import type { CellLocator, GridConfig, GridId } from "$lib";
 
 // UI Models
+export type GridUis = {
+    grids: GridUi[]
+}
 export type GridUi = {
+    id: GridId
+    config: GridConfig
     // This represents how a grid is split vertically into sections to make long phrases easier to read
     notationSections: NotationSection[],
+    msPerBeatDivision: number,
+    gridCols: number,
+    playing: boolean,
+    currentlyPlayingColumn: number
 };
 
 // This represents how a grid is split vertically into sections to make long phrases easier to read
 export type NotationSection = {
-    // Total number of columns in this section
-    columns: number,
-    // The cell numbers this section handles
-    columnRange: number[],
+    columns: number
+    // A list of booleans indicating whether the column is currently playing
+    beatIndicator: BeatIndicator[]
     sectionRows: GridRowUi[]
+}
+
+export type BeatIndicator = {
+    playing: boolean
+    darken: boolean
+    text: string
 }
 
 export type GridRowUi = {
