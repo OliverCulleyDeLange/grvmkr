@@ -1,12 +1,5 @@
 <script lang="ts">
-	import {
-		AppStateStore,
-		GridEvent,
-		mapGridUi,
-		mapToolbarUi,
-		UiEvent,
-		type GridUis
-	} from '$lib';
+	import { AppStateStore, GridEvent, mapGridUi, mapToolbarUi, UiEvent, type GridUis } from '$lib';
 	import type { AppEvent } from '$lib/types/event';
 	import { onMount } from 'svelte';
 	import Button from './ui_elements/Button.svelte';
@@ -14,11 +7,15 @@
 	import Instruments from './ui_elements/Instruments.svelte';
 	import Toolbar from './ui_elements/Toolbar.svelte';
 	import Grid from './ui_elements/Grid.svelte';
+	import ContextMenu from './ui_elements/ContextMenu.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
 
-	onMount(() => onEvent({ event: UiEvent.Mounted }));
+	onMount(() => {
+		onEvent({ event: UiEvent.Mounted });
+        document.addEventListener("click", () => onEvent({event: UiEvent.DocumentClick}));
+	});
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));
 	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentManager));
@@ -30,7 +27,7 @@
 		<div class="flex flex-col gap-8">
 			{#each gridsUi.grids as gridUi}
 				<div>
-					<GridConfig gridUi={gridUi} {onEvent} />
+					<GridConfig {gridUi} {onEvent} />
 					<Grid {gridUi} instrumentManager={appStateStore.instrumentManager} {onEvent} />
 				</div>
 			{/each}
@@ -49,3 +46,7 @@
 		</div>
 	{/if}
 </div>
+
+{#if appStateStore.contextMenu}
+	<ContextMenu contextMenu={appStateStore.contextMenu} {onEvent}/>
+{/if}

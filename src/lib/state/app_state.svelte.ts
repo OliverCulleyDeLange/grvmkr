@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ErrorId, type Grid, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -17,6 +17,7 @@ export class AppStateStore {
 
     // Main state
     public file: GrvMkrFile = $state(defaultFile)
+    public contextMenu: ContextMenu | undefined = $state()
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
     public errors: SvelteMap<ErrorId, AppError> = new SvelteMap();
@@ -25,10 +26,16 @@ export class AppStateStore {
     public msPerBeatDivision = $derived(this.currentlyPlayingGrid?.msPerBeatDivision);
 
     onEvent(event: AppEvent) {
-        console.log('Event:', event.event, event);
+        this.logEvent(event)
         switch (event.event) {
             case UiEvent.Mounted:
                 this.initialise();
+                break;
+            case UiEvent.DocumentClick:
+                this.contextMenu = undefined
+                break;
+            case ContextMenuEvent.MergeCells:
+                this.mergeCells(event.locator, event.side)
                 break;
             case ToolbarEvent.FileNameChanged:
                 this.updateFile((file) => { file.name = event.fileName })
@@ -38,6 +45,9 @@ export class AppStateStore {
                 break;
             case GridEvent.ToggleGridHit:
                 this.toggleGridHit(event.locator);
+                break;
+            case GridEvent.RightClick:
+                this.showContextMenu(event)
                 break;
             case GridEvent.RemoveGrid:
                 this.removeGrid(event);
@@ -106,6 +116,24 @@ export class AppStateStore {
                 }
                 break;
         }
+    }
+
+    private mergeCells(locator: CellLocator, side: string) {
+        this.updateGrid(locator.grid, (grid) => {
+            console.log(`Merging grid cell ${side}`, $state.snapshot(locator))
+
+        })
+    }
+
+    // Filters chatty events, and logs
+    private logEvent(event: AppEvent) {
+        if (event.event != UiEvent.DocumentClick) {
+            console.log('Event:', event.event, event);
+        }
+    }
+
+    private showContextMenu(event: RightClick) {
+        this.contextMenu = { x: event.x, y: event.y, locator: event.locator }
     }
 
     private removeGrid(event: RemoveGrid) {

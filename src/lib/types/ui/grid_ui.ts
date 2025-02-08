@@ -46,11 +46,12 @@ export type GridCellUi = {
 
 // Grid UI Events
 export type GridEvents = TogglePlaying | ToggleGridHit | RemoveGrid | AddGrid | 
-    BpmChanged | BarsChanged | GridSizeChanged | NameChanged
+    BpmChanged | BarsChanged | GridSizeChanged | NameChanged | RightClick
 
 export enum GridEvent {
     TogglePlaying = "TogglePlaying",
     ToggleGridHit = "ToggleGridHit",
+    RightClick = "RightClick",
     AddGrid = "AddGrid",
     RemoveGrid = "RemoveGrid",
     BpmChanged = "BpmChanged",
@@ -66,6 +67,12 @@ export type TogglePlaying = {
 }
 export type ToggleGridHit = {
     event: GridEvent.ToggleGridHit
+    locator: CellLocator
+}
+export type RightClick = {
+    event: GridEvent.RightClick
+    x: number
+    y: number
     locator: CellLocator
 }
 export type RemoveGrid = {

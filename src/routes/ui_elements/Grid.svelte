@@ -52,6 +52,7 @@
 						isBeat={cell.isBeat}
 						isFirstBeatOfBar={cell.isFirstBeatOfBar}
 						onTap={() => onEvent({ event: GridEvent.ToggleGridHit, locator: cell.locator })}
+						onRightTap={(x, y) => onEvent({event: GridEvent.RightClick, x, y, locator: cell.locator})}
 					/>
 				{/each}
 			{/each}
