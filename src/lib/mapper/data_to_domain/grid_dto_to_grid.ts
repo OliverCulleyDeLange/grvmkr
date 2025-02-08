@@ -8,7 +8,7 @@ export function mapGridDtoToGrid(gridDto: GridDto, instrumentManager: Instrument
         currentlyPlayingColumn: gridDto.currentlyPlayingColumn,
         msPerBeatDivision: gridDto.msPerBeatDivision,
         gridCols: gridDto.gridCols,
-        playing: gridDto.playing,
+        playing: false, // Ignore whatever play state from the db 
     };
 }
 
