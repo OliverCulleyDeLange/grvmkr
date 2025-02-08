@@ -1,4 +1,4 @@
-import type { HitId, HitTypeWithId, InstrumentHit } from "$lib";
+import type { HitId, HitTypeWithId, InstrumentHit, InstrumentWithId } from "$lib";
 import { AudioDb, AudioPlayer } from "$lib";
 
 // Maintains a collection of playable 'hits',
@@ -15,26 +15,29 @@ export class AudioManager {
         return player != undefined && player.isLoaded()
     }
 
+    async ensureAllAudioInitialised(hits: HitTypeWithId[]) {
+        this.ensureAudioContext()
+        for (let hit of hits) {
+            let audioPlayer = this.hits.get(hit.id)
+            if (!audioPlayer) {
+                await this.initialiseHit(hit)
+            } else {
+                if (!audioPlayer.isLoaded()) {
+                    await audioPlayer.loadAudio(this.audioContext!)
+                } 
+            }
+        }
+    }
+    
     // Loads the sample from the DB and initialises an Audio Player with the blob URL
     async initialiseHit(hit: HitTypeWithId) {
         this.ensureAudioContext()
-
+        
         let audioFileName = hit.audioFileName;
         let fileName = await this.audioDb.loadAudio(audioFileName)
         let player = new AudioPlayer(fileName)
-        
-        if (!player.isLoaded()) {
-            await player.loadAudio(this.audioContext!);
-        }
-
+        await player.loadAudio(this.audioContext!);
         this.hits.set(hit.id, player)
-    }
-
-    async ensureAllAudioInitialised() {
-        this.ensureAudioContext()
-        for (let [hit, player] of this.hits) {
-            if (!player.isLoaded()) await player.loadAudio(this.audioContext!);
-        }
     }
 
     playHit(hit: InstrumentHit) {

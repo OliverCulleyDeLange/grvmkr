@@ -40,6 +40,7 @@ export class InstrumentManager {
     async playHit(hit: InstrumentHit | undefined) {
         if (hit) {
             if (!this.audioManager.isHitInitialised(hit)) {
+                console.log("Hit not init'd")
                 let instrument = this.instruments.get(hit.instrumentId)
                 let hitType = instrument?.hitTypes.get(hit.hitId)
                 if (hitType) {
@@ -67,8 +68,10 @@ export class InstrumentManager {
         await this.playHit({ instrumentId, hitId })
     }
 
-    ensureInstrumentsInitialised() {
-        this.audioManager.ensureAllAudioInitialised()
+    async ensureInstrumentsInitialised() {
+        const allHits = [...this.instruments.values()]
+        .flatMap((hit) => [...hit.hitTypes.values()])
+        return await this.audioManager.ensureAllAudioInitialised(allHits)
     }
 
     onChangeName(name: string, id: InstrumentId): any {

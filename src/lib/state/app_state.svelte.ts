@@ -321,9 +321,9 @@ export class AppStateStore {
             currentlyPlayingGrid.config.beatsPerBar;
         let beatDivision = count % currentlyPlayingGrid.config.beatDivisions;
 
-        // console.log(
-        //     `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
-        // );
+        console.log(
+            `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
+        );
 
         currentlyPlayingGrid.rows.forEach((row, rowI) => {
             let locator: CellLocator = {
