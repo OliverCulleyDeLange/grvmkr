@@ -7,7 +7,7 @@ export function buildDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId
         id: `grid_${crypto.randomUUID()}`,
         index: index,
         config: {
-            name: "Groove " + index + 1,
+            name: `Groove ${index + 1}`,
             bpm: 120,
             bars: 1,
             beatsPerBar: 4,
