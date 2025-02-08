@@ -37,15 +37,13 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
                 let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
                     let cellContent = ""
                     if (division.hit) {
-                        // console.log(`getting instrument ${division.hit.instrumentId} from `,instruments)
                         let instrument: InstrumentWithId | undefined = instruments.get(division.hit.instrumentId)
-                        // console.log(`getting hit ${division.hit.hitId} from instrument:`, instrument)
                         let hit = instrument?.hitTypes.get(division.hit.hitId)
-                        // console.log(`got hit `, hit)
                         cellContent = hit?.key ?? ""
                     }
                     let row: GridCellUi = {
-                        darken: divisionI == 0,
+                        isBeat: divisionI == 0,
+                        isFirstBeatOfBar: divisionI == 0 && beatI == 0,
                         content: cellContent,
                         locator: {
                             grid: grid.id,
@@ -67,10 +65,13 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
     }).sort((a, b) => a.index - b.index)
 }
 
-// Splits the grid UI into manageable 32 cell sections which stack vertically
+// Splits the grid UI into manageable 2 bar cell sections which stack vertically
 function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: number, currentlyPlayingColumn: number): NotationSection[] {
     const sections: NotationSection[] = [];
-    const chunkSize = 32;
+    let chunkSize = (gridCols / config.bars) * 2; // Start with 2 bars per section
+    if (chunkSize > 32){
+        chunkSize = gridCols / config.bars // But downsize to 1 bar per section if > 32 cells
+    }
     const numSections = Math.ceil(gridCols / chunkSize);
 
     for (let i = 0; i < numSections; i++) {
@@ -83,17 +84,17 @@ function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: 
 
         let cols = sectionRows[0].gridCells.length
         const beatIndicator: BeatIndicator[] = Array.from({ length: cols }, (_, i) => {
-            let index = min + i
-            let darken = index % config.beatDivisions == 0
-            const playing = index == currentlyPlayingColumn
-
             let text = "";
+            let index = min + i
+            
+            const playing = index == currentlyPlayingColumn
             const divisionModulo = index % config.beatDivisions
-            const isFirstBeatOfBar = divisionModulo == 0
+            const isBeat = divisionModulo == 0
+            const isFirstBeatOfBar = isBeat && index % (config.beatsPerBar * config.beatDivisions) == 0;
             const isAndBeatOfBar = divisionModulo == (config.beatDivisions * 0.5)
             const isEBeatOfBar = divisionModulo == (config.beatDivisions * 0.25)
             const isABeatOfBar = divisionModulo == (config.beatDivisions * 0.75)
-            if (isFirstBeatOfBar) {
+            if (isBeat) {
                 text = `${((index / config.beatDivisions) % config.beatsPerBar) + 1}`
             } else if (isAndBeatOfBar) {
                 text = "&"
@@ -102,7 +103,7 @@ function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: 
             } else if (isABeatOfBar) {
                 text = "a"
             }
-            const indicator: BeatIndicator = { darken, playing, text }
+            const indicator: BeatIndicator = { isFirstBeatOfBar, isBeat, playing, text }
             return indicator
         })
         sections.push({

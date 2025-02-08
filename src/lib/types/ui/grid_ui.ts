@@ -25,7 +25,8 @@ export type NotationSection = {
 
 export type BeatIndicator = {
     playing: boolean
-    darken: boolean
+    isBeat: boolean
+    isFirstBeatOfBar: boolean
     text: string
 }
 
@@ -36,7 +37,8 @@ export type GridRowUi = {
 };
 
 export type GridCellUi = {
-    darken: boolean
+    isBeat: boolean
+    isFirstBeatOfBar: boolean
     content: string
     locator: CellLocator
 }

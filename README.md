@@ -21,7 +21,6 @@
     - How to set two cells as joined?
     - How to deal with the uneven timing. Can't use static ms between beat divisions anymore.
       - Probably need to calculate a msDelta between the phrase start time, and all the required notes ahead of time, and use setTimeout instead of setInterval to play the sounds
-- Delineate bars more visually
 - Sample packs - Samba, Classics kits
 
 ### Unimplemented

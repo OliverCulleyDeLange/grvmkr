@@ -1,12 +1,13 @@
 <script lang="ts">
-	let { text, darken, onTap } = $props();
+	let { text, isBeat, isFirstBeatOfBar, onTap } = $props();
 </script>
 
 <button
 	onclick={onTap}
-	class="flex h-8 text-gray-800 font-bold items-center justify-center border border-gray-400 bg-gray-100 {darken
-		? 'brightness-[0.8]'
-		: ''}"
+	class="flex h-8 items-center justify-center font-bold text-gray-800"
+	class:bg-gray-100={!isBeat && !isFirstBeatOfBar}
+	class:bg-gray-300={isBeat && !isFirstBeatOfBar}
+	class:bg-gray-400={isFirstBeatOfBar}
 >
 	{text}
 </button>
