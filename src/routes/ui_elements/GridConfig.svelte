@@ -18,9 +18,6 @@
 	});
 
 	let gridName: string = $state(gridUi.config.name);
-	$effect(() => {
-		onEvent({ event: GridEvent.NameChanged, gridId: gridUi.id, name: gridName });
-	});
 
 	const minBpm = 20;
 	const maxBpm = 200;
@@ -37,6 +34,9 @@
 
 	function togglePlaying() {
 		onEvent({ event: GridEvent.TogglePlaying, playing: !gridUi.playing, gridId: gridUi.id });
+	}
+	function onNameChange() {
+		onEvent({ event: GridEvent.NameChanged, gridId: gridUi.id, name: gridName });
 	}
 	function onBpmChange() {
 		bpm = Math.round(Math.min(maxBpm, Math.max(minBpm, bpm)));
@@ -80,7 +80,7 @@
 			{gridUi.playing ? 'Stop' : 'Play'}
 		</button>
 
-		<input bind:value={gridName} class="input input-sm input-bordered" />
+		<input bind:value={gridName} onchange={onNameChange} class="input input-sm input-bordered" />
 	</div>
 	<div class="flex flex-col items-start gap-2 sm:flex-row">
 		<div class="mx-4 flex flex-nowrap items-center gap-2">

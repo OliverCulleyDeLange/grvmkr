@@ -122,7 +122,7 @@ export class AppStateStore {
         }
         this.updateGrid(gridId, (grid) => {
             grid.playing = newPlaying;
-        });
+        }, false);
     }
 
     // Toggle the hit in the cell when the user clicks the cell
@@ -417,11 +417,11 @@ export class AppStateStore {
     }
 
     // Updates grid in state and DB
-    updateGrid(id: GridId, withGrid: (grid: Grid) => void) {
+    updateGrid(id: GridId, withGrid: (grid: Grid) => void, persist: boolean = true) {
         let grid = this.grids.get(id);
         if (grid) {
             withGrid(grid);
-            this.trySaveGrid(grid)
+            if (persist) this.trySaveGrid(grid)
         } else {
             console.error("Couldn't find grid to update with id ", id);
         }
