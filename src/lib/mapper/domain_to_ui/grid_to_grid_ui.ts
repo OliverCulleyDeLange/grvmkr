@@ -37,11 +37,13 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
             return bar.beats.flatMap((beat, beatI) => {
                 let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
                     let cellContent = ""
-                    if (division.hits) {
-                        let instrument: InstrumentWithId | undefined = instruments.get(division.hits.instrumentId)
-                        let hit = instrument?.hitTypes.get(division.hits.hitId)
-                        cellContent = hit?.key ?? ""
-                    }
+                    division.hits.forEach((instrumentHit) => {
+                        let instrument: InstrumentWithId | undefined = instruments.get(instrumentHit.instrumentId)
+                        let hit = instrument?.hitTypes.get(instrumentHit.hitId)
+                        if (hit) {
+                            cellContent += hit.key
+                        }
+                    })
                     let row: GridCellUi = {
                         isBeat: divisionI == 0,
                         isFirstBeatOfBar: divisionI == 0 && beatI == 0,
@@ -83,12 +85,12 @@ function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: 
             let gridRowUi = {
                 ...row,
                 gridCells: (row.gridCells.reduce((acc, cell, index, arr) => {
-                    if (acc.cnt >= min && acc.cnt < max){
+                    if (acc.cnt >= min && acc.cnt < max) {
                         acc.acc.push(cell)
                     }
                     acc.cnt += cell.cellsOccupied
                     return acc
-                }, {cnt: 0, acc: [] as GridCellUi[]})).acc
+                }, { cnt: 0, acc: [] as GridCellUi[] })).acc
             }
             return gridRowUi
         });

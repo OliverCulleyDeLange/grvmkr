@@ -54,7 +54,8 @@ export function beatFromDto(beatDto: BeatDto): Beat {
 
 export function divisionFromDto(divisionDto: BeatDivisionDto): BeatDivision {
     return {
-        hits: divisionDto.hit ? hitFromDto(divisionDto.hit) : undefined
+        hits: divisionDto.hits.map((hit) => hitFromDto(hit)),
+        cellsOccupied: divisionDto.cellsOccupied
     };
 }
 

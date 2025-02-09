@@ -30,6 +30,8 @@
 	class:bg-gray-400={isFirstBeatOfBar}
 	class:no-print-adjust={isBeat}
 	class:merged-cells-2={columnsOccupied==2}
+	class:merged-cells-3={columnsOccupied==3}
+	class:merged-cells-4={columnsOccupied==4}
 >
 	{text}
 </button>
@@ -43,6 +45,16 @@
 	.merged-cells-2 {
 		display: grid;
 		grid-column: span 2;
+		grid-template-columns: subgrid;
+	}
+	.merged-cells-3 {
+		display: grid;
+		grid-column: span 3;
+		grid-template-columns: subgrid;
+	}
+	.merged-cells-4 {
+		display: grid;
+		grid-column: span 4;
 		grid-template-columns: subgrid;
 	}
 </style>

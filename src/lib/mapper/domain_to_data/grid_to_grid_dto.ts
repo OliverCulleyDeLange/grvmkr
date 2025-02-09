@@ -50,7 +50,7 @@ export function mapBeatToBeatDto(beat: Beat): BeatDto {
 
 export function mapBeatDivisionToBeatDivisionDto(division: BeatDivision): BeatDivisionDto {
     return {
-        hit: division.hits ? mapInstrumentHitToInstrumentHitDto(division.hits) : undefined
+        hits: division.hits ? mapInstrumentHitToInstrumentHitDto(division.hits) : undefined
     };
 }
 

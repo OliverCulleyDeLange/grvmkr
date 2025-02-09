@@ -120,15 +120,17 @@ export class AppStateStore {
 
     private mergeCells(locator: CellLocator, side: "left" | "right") {
         this.updateGrid(locator.grid, (grid) => {
-            console.log(`Merging grid cell ${side}`, $state.snapshot(locator))
+            console.log(`Merging grid cell ${side}`, $state.snapshot(locator.notationLocator))
             let cell = this.getGridCell(grid, locator)
             let mergeCellLocator = getCellLocatorTo(side, locator, grid.config)
             let cellToMerge = this.getGridCell(grid, mergeCellLocator)
-            if (cell && cellToMerge) {
-                console.log("Cells to merge", locator, mergeCellLocator)
+            if (cell && cellToMerge && cell != cellToMerge) {
+                // console.log("Cells to merge", $state.snapshot(locator.notationLocator), $state.snapshot(mergeCellLocator.notationLocator))
                 cell.cellsOccupied++
                 cell.hits.push(...cellToMerge.hits)
                 this.removeGridCell(grid, mergeCellLocator)
+                console.log("Cell after merge", $state.snapshot(cell))
+                console.log("Grid after merge", $state.snapshot(grid))
             } else {
                 console.error("Couldn't find grid cell to merge with locator ", locator);
             }
@@ -178,7 +180,7 @@ export class AppStateStore {
             let newInstrumentHit: InstrumentHit | undefined = this.nextHitType(row, currentValue?.hitId);
             // console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
             this.updateGridCell(locator, (cell) => {
-                cell.hits = newInstrumentHit;
+                cell.hits = newInstrumentHit ? [newInstrumentHit] : [];
             })
             this.instrumentManager?.playHit(newInstrumentHit);
         } else {
@@ -553,7 +555,7 @@ function getCellLocatorTo(side: 'left' | 'right', locator: CellLocator, config: 
                             ...locator, notationLocator: {
                                 bar: locator.notationLocator.bar - 1,
                                 beat: config.beatsPerBar,
-                                division: config.beatDivisions
+                                division: config.beatDivisions -1
                             }
                         }
                     }
@@ -563,7 +565,7 @@ function getCellLocatorTo(side: 'left' | 'right', locator: CellLocator, config: 
                         ...locator, notationLocator: {
                             bar: locator.notationLocator.bar,
                             beat: locator.notationLocator.beat - 1,
-                            division: config.beatDivisions
+                            division: config.beatDivisions -1
                         }
                     }
                 }
@@ -578,9 +580,9 @@ function getCellLocatorTo(side: 'left' | 'right', locator: CellLocator, config: 
                 }
             }
         case "right":
-            if (locator.notationLocator.division == config.beatDivisions) {
-                if (locator.notationLocator.beat == config.beatsPerBar) {
-                    if (locator.notationLocator.bar == config.bars) {
+            if (locator.notationLocator.division == config.beatDivisions -1) {
+                if (locator.notationLocator.beat == config.beatsPerBar -1) {
+                    if (locator.notationLocator.bar == config.bars -1) {
                         // If last division, beat and bar, we can't merge right! This is an error and shouldn't be possible.
                         console.error("Trying to merge right on last division, of last beat of lsat bar. This shouldn't be possible.")
                         return locator

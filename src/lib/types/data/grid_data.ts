@@ -39,7 +39,8 @@ export type BeatDto = {
 };
 
 export type BeatDivisionDto = {
-    hit: InstrumentHitDto | undefined
+    hits: InstrumentHitDto[]
+    cellsOccupied: number
 };
 
 export type InstrumentHitDto = {
