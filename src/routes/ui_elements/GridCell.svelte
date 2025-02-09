@@ -7,7 +7,7 @@
 		onTap,
 		onRightTap
 	}: {
-		columnsOccupied: number
+		columnsOccupied: number;
 		text: string;
 		isFirstBeatOfBar: boolean;
 		isBeat: boolean;
@@ -24,16 +24,18 @@
 <button
 	onclick={onTap}
 	oncontextmenu={handleRightClick}
-	class="right-click-area flex h-8 items-center justify-center font-bold text-gray-800 print:border print:border-gray-400"
+	class="right-click-area flex h-8 items-center justify-evenly font-bold text-gray-800 print:border print:border-gray-400"
 	class:bg-gray-100={!isBeat && !isFirstBeatOfBar}
 	class:bg-gray-300={isBeat && !isFirstBeatOfBar}
 	class:bg-gray-400={isFirstBeatOfBar}
 	class:no-print-adjust={isBeat}
-	class:merged-cells-2={columnsOccupied==2}
-	class:merged-cells-3={columnsOccupied==3}
-	class:merged-cells-4={columnsOccupied==4}
+	class:merged-cells-2={columnsOccupied == 2}
+	class:merged-cells-3={columnsOccupied == 3}
+	class:merged-cells-4={columnsOccupied == 4}
 >
-	{text}
+	{#each text.split('') as char}
+		<div>{char}</div>
+	{/each}
 </button>
 
 <style>
