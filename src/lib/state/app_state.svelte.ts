@@ -6,6 +6,7 @@ import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
+import type GridCell from "../../routes/ui_elements/GridCell.svelte";
 
 export class AppStateStore {
     // TODO make private
@@ -176,13 +177,24 @@ export class AppStateStore {
     toggleGridHit(locator: CellLocator) {
         let row = this.grids.get(locator.grid)?.rows[locator.row];
         if (row) {
-            let currentValue = this.currentHit(locator);
-            let newInstrumentHit: InstrumentHit | undefined = this.nextHitType(row, currentValue?.hitId);
+            let cell = this.getCell(locator);
+            if (cell == undefined) return
+            let nextHit = this.nextHit(row, cell?.hits[0]?.hitId);
+            let nextHits: InstrumentHit[];
+            if (nextHit == undefined) {
+                nextHits = []
+            }
+            else if (cell.hits.length == 0) {
+                const hitCount = (2 * cell.cellsOccupied) - 1
+                nextHits = Array.from({ length: hitCount, }, () => nextHit)
+            } else {
+                nextHits = cell.hits.map((h) => nextHit)
+            }
             // console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
             this.updateGridCell(locator, (cell) => {
-                cell.hits = newInstrumentHit ? [newInstrumentHit] : [];
+                cell.hits = nextHits
             })
-            this.instrumentManager?.playHit(newInstrumentHit);
+            this.instrumentManager?.playHit(nextHits[0]);
         } else {
             console.error(
                 `Can't toggle grid cell hit as can't find the row. Locator: `,
@@ -193,9 +205,9 @@ export class AppStateStore {
         }
     }
 
-    currentHit(locator: CellLocator): InstrumentHit | undefined {
+    getCell(locator: CellLocator): BeatDivision | undefined {
         let grid = this.grids.get(locator.grid)
-        return grid ? this.getGridCell(grid, locator)?.hits[0] : undefined
+        return grid ? this.getGridCell(grid, locator) : undefined
     }
 
     resizeGrid(grid: Grid) {
@@ -438,20 +450,21 @@ export class AppStateStore {
     // Returns the next cyclic hit type.
     // Clicking a cell cycles through all the available hit types
     // TODO Would maybe be better to use right clicking or long pressing or something
-    nextHitType(row: GridRow, hitId: HitId | undefined): InstrumentHit | undefined {
-        let hits = Array.from(row.instrument.hitTypes.values());
+    nextHit(row: GridRow, hitId: HitId | undefined): InstrumentHit | undefined {
+        let allInstrumentHits = Array.from(row.instrument.hitTypes.values());
         let instrumentHit = {
             instrumentId: row.instrument.id,
-            hitId: hits[0].id
+            hitId: allInstrumentHits[0].id
         };
+
         if (hitId == undefined) return instrumentHit;
-        let currentIndex = hits.findIndex((ht) => {
-            return ht.id == hitId;
+        let currentIndex = allInstrumentHits.findIndex((hit) => {
+            return hit.id == hitId;
         });
-        if (currentIndex + 1 >= hits.length) {
+        if (currentIndex + 1 >= allInstrumentHits.length) {
             return undefined;
         } else {
-            instrumentHit.hitId = hits[currentIndex + 1].id;
+            instrumentHit.hitId = allInstrumentHits[currentIndex + 1].id;
             return instrumentHit;
         }
     }
@@ -555,7 +568,7 @@ function getCellLocatorTo(side: 'left' | 'right', locator: CellLocator, config: 
                             ...locator, notationLocator: {
                                 bar: locator.notationLocator.bar - 1,
                                 beat: config.beatsPerBar,
-                                division: config.beatDivisions -1
+                                division: config.beatDivisions - 1
                             }
                         }
                     }
@@ -565,7 +578,7 @@ function getCellLocatorTo(side: 'left' | 'right', locator: CellLocator, config: 
                         ...locator, notationLocator: {
                             bar: locator.notationLocator.bar,
                             beat: locator.notationLocator.beat - 1,
-                            division: config.beatDivisions -1
+                            division: config.beatDivisions - 1
                         }
                     }
                 }
@@ -580,9 +593,9 @@ function getCellLocatorTo(side: 'left' | 'right', locator: CellLocator, config: 
                 }
             }
         case "right":
-            if (locator.notationLocator.division == config.beatDivisions -1) {
-                if (locator.notationLocator.beat == config.beatsPerBar -1) {
-                    if (locator.notationLocator.bar == config.bars -1) {
+            if (locator.notationLocator.division == config.beatDivisions - 1) {
+                if (locator.notationLocator.beat == config.beatsPerBar - 1) {
+                    if (locator.notationLocator.bar == config.bars - 1) {
                         // If last division, beat and bar, we can't merge right! This is an error and shouldn't be possible.
                         console.error("Trying to merge right on last division, of last beat of lsat bar. This shouldn't be possible.")
                         return locator
