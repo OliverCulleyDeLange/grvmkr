@@ -50,7 +50,8 @@ export function mapBeatToBeatDto(beat: Beat): BeatDto {
 
 export function mapBeatDivisionToBeatDivisionDto(division: BeatDivision): BeatDivisionDto {
     return {
-        hits: division.hits ? mapInstrumentHitToInstrumentHitDto(division.hits) : undefined
+        cellsOccupied: division.cellsOccupied,
+        hits: division.hits.map((hit) => mapInstrumentHitToInstrumentHitDto(hit))
     };
 }
 

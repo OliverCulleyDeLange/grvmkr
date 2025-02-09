@@ -40,6 +40,7 @@ export * from "./types/ui/context_menu"
 export * from "./types/serialisation/savefile"
 export * from "./types/serialisation/savefile_v1"
 export * from "./types/serialisation/savefile_v2"
+export * from "./types/serialisation/savefile_v3"
 
 // Mappers
 export * from "./mapper/domain_to_ui/grid_to_grid_ui"
@@ -57,6 +58,6 @@ export * from "./mapper/misc_mapper_funcs"
 
 // Serialisation
 export * from "./serialisation/to_save_file_v1"
-export * from "./serialisation/to_save_file_v2"
+export * from "./serialisation/to_save_file_v3"
 export * from "./serialisation/from_save_file_v1"
 export * from "./serialisation/from_save_file_v2"

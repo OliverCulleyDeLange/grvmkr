@@ -1,4 +1,4 @@
-import { buildDefaultGrid, buildTestGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV2, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridConfig, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2 } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridConfig, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -195,7 +195,7 @@ export class AppStateStore {
 
     currentHit(locator: CellLocator): InstrumentHit | undefined {
         let grid = this.grids.get(locator.grid)
-        return grid ? this.getGridCell(grid, locator)?.hits : undefined
+        return grid ? this.getGridCell(grid, locator)?.hits[0] : undefined
     }
 
     resizeGrid(grid: Grid) {
@@ -270,7 +270,7 @@ export class AppStateStore {
     }
 
     save() {
-        let saveFile: SaveFileV2 = serialiseToSaveFileV2(
+        let saveFile: SaveFileV3 = serialiseToSaveFileV3(
             this.file.name,
             [...this.grids.values()],
             [...this.instrumentManager.instruments.values()]
@@ -391,7 +391,7 @@ export class AppStateStore {
         locator: CellLocator
     ): InstrumentHit | undefined {
         if (!currentlyPlayingGrid) return undefined;
-        return this.getGridCell(currentlyPlayingGrid, locator).hits;
+        return this.getGridCell(currentlyPlayingGrid, locator).hits[0];
     }
 
     // Initialises the app 

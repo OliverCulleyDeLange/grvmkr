@@ -96,7 +96,6 @@ function splitRowsIntoSections(rows: GridRowUi[], config: GridConfig, gridCols: 
         });
 
         let sectionColumns = sectionRows[0].gridCells.reduce((acc, cell) => acc + cell.cellsOccupied, 0)
-        console.log(sectionColumns)
         const beatIndicator: BeatIndicator[] = Array.from({ length: sectionColumns }, (_, i) => {
             let text = "";
             let index = min + i

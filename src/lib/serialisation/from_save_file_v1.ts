@@ -64,14 +64,15 @@ function mapSavedInstrumentHitV1sToBeat(barHits: SavedInstrumentHitV1[], config:
     return beats
 }
 
-function mapSavedInstrumentHitV1sToBeatDivisions(beatHits: SavedInstrumentHitV1[]): BeatDivision[] {
-    return beatHits.map((beatHit) => {
+function mapSavedInstrumentHitV1sToBeatDivisions(instrumentHits: SavedInstrumentHitV1[]): BeatDivision[] {
+    return instrumentHits.map((beatHit) => {
         let hit = beatHit.hit_id && beatHit.instrument_id ? {
             hitId: beatHit.hit_id,
             instrumentId: beatHit.instrument_id
         } : undefined
         let beatDivision: BeatDivision = {
-            hits: hit
+            cellsOccupied: 1, // V1 doesn't support divisions
+            hits: hit ? [hit] : []
         }
         return beatDivision
     })
