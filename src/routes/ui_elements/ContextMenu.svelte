@@ -1,30 +1,30 @@
 <script lang="ts">
-	import { ContextMenuEvent, type ContextMenu, type OnUiEvent } from "$lib";
-
+	import { ContextMenuEvent, type ContextMenuUi, type OnUiEvent } from '$lib';
 
 	let {
-        contextMenu,
+		ui,
 		onEvent
 	}: {
-        contextMenu: ContextMenu;
+		ui: ContextMenuUi;
 		onEvent: OnUiEvent;
 	} = $props();
 
-    function onTripletRight() {
-        onEvent({event: ContextMenuEvent.MergeCells, side: 'right', locator: contextMenu.locator})
-    }
-    function onTripletLeft() {
-        onEvent({event: ContextMenuEvent.MergeCells, side: 'left', locator: contextMenu.locator})
-    }
+	function onTripletRight() {
+		onEvent({ event: ContextMenuEvent.MergeCells, side: 'right', locator: ui.locator });
+	}
+	function onTripletLeft() {
+		onEvent({ event: ContextMenuEvent.MergeCells, side: 'left', locator: ui.locator });
+	}
 </script>
 
-{#if contextMenu}
-	<div
-		class="context-menu flex flex-row"
-		style="top: {contextMenu.y}px; left: {contextMenu.x}px;"
-	>
-		<button class="menu-item" onclick={onTripletLeft}>← Merge</button>
-		<button class="menu-item" onclick={onTripletRight}>Merge →</button>
+{#if ui}
+	<div class="context-menu flex flex-row" style="top: {ui.y}px; left: {ui.x}px;">
+		{#if ui.showMergeLeft}
+			<button class="menu-item" onclick={onTripletLeft}>← Merge</button>
+		{/if}
+		{#if ui.showMergeRight}
+			<button class="menu-item" onclick={onTripletRight}>Merge →</button>
+		{/if}
 	</div>
 {/if}
 
@@ -33,7 +33,7 @@
 		position: absolute;
 		background: white;
 		border: 1px solid black;
-		transform: translate(-50%, -50%); 
+		transform: translate(-50%, -50%);
 	}
 
 	.menu-item {

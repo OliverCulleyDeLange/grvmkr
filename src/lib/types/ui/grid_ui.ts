@@ -75,6 +75,7 @@ export type RightClick = {
     x: number
     y: number
     locator: CellLocator
+    gridId: GridId
 }
 export type RemoveGrid = {
     event: GridEvent.RemoveGrid

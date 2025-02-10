@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { AppStateStore, GridEvent, mapGridUi, mapToolbarUi, UiEvent, type GridUis } from '$lib';
+	import {
+		AppStateStore,
+		GridEvent,
+		mapContextMenu as mapContextMenuUi,
+		mapGridUi,
+		mapToolbarUi,
+		UiEvent,
+		type ContextMenuUi,
+		type GridUis
+	} from '$lib';
 	import type { AppEvent } from '$lib/types/event';
 	import { onMount } from 'svelte';
 	import Button from './ui_elements/Button.svelte';
@@ -14,11 +23,14 @@
 
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
-        document.addEventListener("click", () => onEvent({event: UiEvent.DocumentClick}));
+		document.addEventListener('click', () => onEvent({ event: UiEvent.DocumentClick }));
 	});
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));
 	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentManager));
+	let contextMenuUi: ContextMenuUi | undefined = $derived(
+		appStateStore.contextMenu ? mapContextMenuUi(appStateStore.contextMenu) : undefined
+	);
 </script>
 
 <div class="p-4">
@@ -47,6 +59,6 @@
 	{/if}
 </div>
 
-{#if appStateStore.contextMenu}
-	<ContextMenu contextMenu={appStateStore.contextMenu} {onEvent}/>
+{#if contextMenuUi}
+	<ContextMenu ui={contextMenuUi} {onEvent} />
 {/if}

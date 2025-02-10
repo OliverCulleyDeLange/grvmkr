@@ -45,6 +45,7 @@ export * from "./types/serialisation/savefile_v3"
 // Mappers
 export * from "./mapper/domain_to_ui/grid_to_grid_ui"
 export * from "./mapper/domain_to_ui/to_toolbar_ui"
+export * from "./mapper/domain_to_ui/to_context_menu_ui"
 
 export * from "./mapper/domain_to_data/grid_to_grid_dto"
 export * from "./mapper/domain_to_data/file_to_file_dto"

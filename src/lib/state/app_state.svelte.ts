@@ -155,8 +155,29 @@ export class AppStateStore {
     }
 
     private showContextMenu(event: RightClick) {
-        this.contextMenu = { x: event.x, y: event.y, locator: event.locator }
+        let config = this.grids.get(event.gridId)?.config
+        let isLastCell = config ? this.isLastCell(event.locator, config) : false
+        this.contextMenu = {
+            x: event.x,
+            y: event.y,
+            locator: event.locator,
+            isFirstCell: this.isFirstCell(event.locator),
+            isLastCell
+        }
     }
+
+    private isFirstCell(locator: CellLocator): boolean {
+        return locator.notationLocator.bar == 0 &&
+            locator.notationLocator.beat == 0 &&
+            locator.notationLocator.division == 0
+    }
+
+    private isLastCell(locator: CellLocator, config: GridConfig): boolean {
+        return locator.notationLocator.bar == config.bars -1 &&
+            locator.notationLocator.beat == config.beatsPerBar -1 &&
+            locator.notationLocator.division == config.beatDivisions -1
+    }
+
 
     private removeGrid(event: RemoveGrid) {
         this.grids.delete(event.gridId);
@@ -346,7 +367,7 @@ export class AppStateStore {
         this.file.name = saveFile.name
         console.log(`Filename ${this.file.name}`)
     }
-    
+
     async loadSaveFileV3(saveFileContent: string) {
         let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
         await this.instrumentManager.replaceInstruments(saveFile.instruments);
@@ -421,7 +442,7 @@ export class AppStateStore {
                 notationLocator: { bar: bar, beat: beat, division: beatDivision }
             };
             let cell = this.getGridCell(currentlyPlayingGrid, locator);
-            if (cell == undefined || cell.hits.length == 0 ) {
+            if (cell == undefined || cell.hits.length == 0) {
                 return
             }
             else if (cell == undefined || cell.hits.length == 0 || cell.gridIndex != beatDivision) {

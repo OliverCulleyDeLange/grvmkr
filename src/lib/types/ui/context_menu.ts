@@ -11,3 +11,11 @@ export type MergeCells = {
     side: 'left' | 'right'
     locator: CellLocator
 }
+
+export type ContextMenuUi = {
+    x: number
+    y: number
+    locator: CellLocator
+    showMergeLeft: boolean
+    showMergeRight: boolean
+}  
