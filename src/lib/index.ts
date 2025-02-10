@@ -58,6 +58,8 @@ export * from "./mapper/misc_mapper_funcs"
 
 // Serialisation
 export * from "./serialisation/to_save_file_v1"
+export * from "./serialisation/to_save_file_v2"
 export * from "./serialisation/to_save_file_v3"
 export * from "./serialisation/from_save_file_v1"
 export * from "./serialisation/from_save_file_v2"
+export * from "./serialisation/from_save_file_v3"

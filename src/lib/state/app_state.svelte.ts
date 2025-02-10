@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridConfig, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3 } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridConfig, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -315,6 +315,9 @@ export class AppStateStore {
             case 2:
                 this.loadSaveFileV2(fileText)
                 break;
+            case 3:
+                this.loadSaveFileV3(fileText)
+                break;
         }
     }
 
@@ -338,6 +341,20 @@ export class AppStateStore {
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
             let gridModel: Grid = mapSavedGridV2ToGrid(grid, this.instrumentManager);
+            this.addGrid(gridModel)
+        });
+        this.file.name = saveFile.name
+        console.log(`Filename ${this.file.name}`)
+    }
+    
+    async loadSaveFileV3(saveFileContent: string) {
+        let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
+        await this.instrumentManager.replaceInstruments(saveFile.instruments);
+
+        this.gridService.deleteAllGrids()
+        this.grids.clear();
+        saveFile.grids.forEach((grid) => {
+            let gridModel: Grid = mapSavedGridV3ToGrid(grid, this.instrumentManager);
             this.addGrid(gridModel)
         });
         this.file.name = saveFile.name
