@@ -88,5 +88,5 @@ export function defaultBeat(divisions: number): Beat {
 }
 
 export function defaultBeatDivision(gridIndex: number): BeatDivision {
-    return { hits: [], cellsOccupied: 1, gridIndex }
+    return { hits: [], cellsOccupied: 1, beatIndex: gridIndex }
 }

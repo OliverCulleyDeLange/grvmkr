@@ -55,7 +55,7 @@ function mapSavedInstrumentHitV1sToBeat(beats: SavedBeatV3[], config: SavedGridC
 function mapSavedInstrumentHitV1sToBeatDivisions(beats: SavedBeatV3): BeatDivision[] {
     return beats.divisions.map((division) => {
         let beatDivision: BeatDivision = {
-            gridIndex: division.gridIndex,
+            beatIndex: division.gridIndex,
             cellsOccupied: division.cellsOccupied,
             hits: division.hits.map((hit) => {
                 return {

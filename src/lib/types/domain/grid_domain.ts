@@ -39,10 +39,10 @@ export type Beat = {
 };
 
 export type BeatDivision = {
-    // gridIndex represents where in the Grid's beat the BeatDivision starts
+    // beatIndex represents where in the Grid's beat the BeatDivision starts
     // If a 4 division beat contains two BeatDivisions, each occupying 2 cells,
-    // The grid indexes would be 0 and 2
-    gridIndex: number
+    // The beatIndexes would be 0 and 2
+    beatIndex: number
     cellsOccupied: number
     hits: InstrumentHit[]
 };

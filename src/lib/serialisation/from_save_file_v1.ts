@@ -71,7 +71,7 @@ function mapSavedInstrumentHitV1sToBeatDivisions(instrumentHits: SavedInstrument
             instrumentId: beatHit.instrument_id
         } : undefined
         let beatDivision: BeatDivision = {
-            gridIndex: i,
+            beatIndex: i,
             cellsOccupied: 1, // V1 doesn't support divisions
             hits: hit ? [hit] : []
         }

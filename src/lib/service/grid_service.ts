@@ -13,7 +13,7 @@ export class GridService {
     async saveGrid(grid: Grid): Promise<void> {
         const gridDto = mapGridToGridDto(grid);
         await this.gridTable.saveGrid(gridDto);
-        console.log("Saved Grid to DB", grid, gridDto)
+        console.log("Saved Grid to DB", gridDto)
     }
 
     async getGrid(id: GridId): Promise<Grid | null> {
