@@ -72,6 +72,7 @@ function mapBeatToSavedBeatV3(beat: Beat): SavedBeatV3 {
 
 function mapDivisionToSavedDivisionV3(division: BeatDivision): SavedBeatDivisionV3 {
     return {
+        gridIndex: division.gridIndex,
         cellsOccupied: division.cellsOccupied,
         hits: division.hits.map((hit) => mapHitToSavedInstrumentHitV1(hit))
     };

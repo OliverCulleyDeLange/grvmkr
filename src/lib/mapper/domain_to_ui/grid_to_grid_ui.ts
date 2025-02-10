@@ -51,7 +51,7 @@ function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): 
                         locator: {
                             grid: grid.id,
                             row: rowI,
-                            notationLocator: { bar: barI, beat: beatI, division: divisionI }
+                            notationLocator: { bar: barI, beat: beatI, division: division.gridIndex }
                         },
                         cellsOccupied: division.cellsOccupied
                     }

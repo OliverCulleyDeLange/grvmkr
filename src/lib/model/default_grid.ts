@@ -22,9 +22,9 @@ export function buildTestGrid(instruments: Map<InstrumentId, InstrumentWithId>, 
                                 beats: Array.from({ length: 4 }, () => {
                                     return {
                                         divisions: [
-                                            { hits: [], cellsOccupied: 1 },
-                                            { hits: [], cellsOccupied: 1 },
-                                            { hits: [], cellsOccupied: 2 },
+                                            { hits: [], cellsOccupied: 1, gridIndex: 0 },
+                                            { hits: [], cellsOccupied: 1, gridIndex: 1 },
+                                            { hits: [], cellsOccupied: 2, gridIndex: 2 },
                                         ]
                                     }
                                 })
@@ -83,10 +83,10 @@ export function defaultBar(beats: number, divisions: number): Bar {
 
 export function defaultBeat(divisions: number): Beat {
     return {
-        divisions: Array.from({ length: divisions }, () => defaultBeatDivision())
+        divisions: Array.from({ length: divisions }, (_, i) => defaultBeatDivision(i))
     }
 }
 
-export function defaultBeatDivision(): BeatDivision {
-    return { hits: [], cellsOccupied: 1 }
+export function defaultBeatDivision(gridIndex: number): BeatDivision {
+    return { hits: [], cellsOccupied: 1, gridIndex }
 }

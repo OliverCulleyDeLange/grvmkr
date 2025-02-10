@@ -39,6 +39,7 @@ export type BeatDto = {
 };
 
 export type BeatDivisionDto = {
+    gridIndex: number
     hits: InstrumentHitDto[]
     cellsOccupied: number
 };

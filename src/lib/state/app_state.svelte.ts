@@ -126,15 +126,15 @@ export class AppStateStore {
             let mergeCellLocator = getCellLocatorTo(side, locator, grid.config)
             let cellToMerge = this.getGridCell(grid, mergeCellLocator)
             if (cell && cellToMerge && cell != cellToMerge) {
-                // console.log("Cells to merge", $state.snapshot(locator.notationLocator), $state.snapshot(mergeCellLocator.notationLocator))
+                console.log("Cells to merge", $state.snapshot(locator.notationLocator), $state.snapshot(mergeCellLocator.notationLocator))
+                this.removeGridCell(grid, mergeCellLocator)
                 cell.cellsOccupied++
                 cell.hits.push(...cellToMerge.hits)
-                this.removeGridCell(grid, mergeCellLocator)
                 console.log("Cell after merge", $state.snapshot(cell))
                 console.log("Grid after merge", $state.snapshot(grid))
             } else {
-                console.error("Couldn't find grid cells to merge. Locator", 
-                    $state.snapshot(locator.notationLocator), 
+                console.error("Couldn't find grid cells to merge. Locator",
+                    $state.snapshot(locator.notationLocator),
                     "gave cell",
                     $state.snapshot(cell),
                     ", mergeCellLocator",
@@ -247,7 +247,7 @@ export class AppStateStore {
                     } else {
                         let newDivisions = Array.from(
                             { length: beatNoteFraction - beat.divisions.length },
-                            () => defaultBeatDivision()
+                            (_, i) => defaultBeatDivision(i)
                         );
                         beat.divisions.push(...newDivisions);
                     }
@@ -378,9 +378,9 @@ export class AppStateStore {
         let currentlyPlayingGrid = this.currentlyPlayingGrid
         let count = this.nextCount++;
 
-        let cell = count % currentlyPlayingGrid.gridCols;
+        let playingCell = count % currentlyPlayingGrid.gridCols;
         // Update 
-        currentlyPlayingGrid.currentlyPlayingColumn = cell;
+        currentlyPlayingGrid.currentlyPlayingColumn = playingCell;
 
         let repetition = Math.floor(count / currentlyPlayingGrid.gridCols);
         let bar =
@@ -394,7 +394,7 @@ export class AppStateStore {
         let beatDivision = count % currentlyPlayingGrid.config.beatDivisions;
 
         console.log(
-            `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, gridCells; ${currentlyPlayingGrid.gridCols})`
+            `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, playingCell: ${playingCell}, gridCells; ${currentlyPlayingGrid.gridCols})`
         );
 
         currentlyPlayingGrid.rows.forEach((row, rowI) => {
@@ -404,7 +404,11 @@ export class AppStateStore {
                 notationLocator: { bar: bar, beat: beat, division: beatDivision }
             };
             let cell = this.getGridCell(currentlyPlayingGrid, locator);
-            if (cell == undefined || cell?.hits.length == 0) {
+            if (cell == undefined || cell.hits.length == 0 ) {
+                return
+            }
+            else if (cell == undefined || cell.hits.length == 0 || cell.gridIndex != beatDivision) {
+                console.log(`cell.gridIndex ${cell?.gridIndex}, playingCell ${playingCell}`)
                 return
             }
             if (cell.hits.length == 1) {
@@ -571,7 +575,11 @@ export class AppStateStore {
     removeGridCell(grid: Grid, locator: CellLocator) {
         let divisions = grid.rows[locator.row].notation.bars[locator.notationLocator.bar]
             .beats[locator.notationLocator.beat].divisions
-        divisions.splice(locator.notationLocator.division, 1);
+        let cell = this.getGridCell(grid, locator)
+        if (cell) {
+            let i = divisions.indexOf(cell)
+            divisions.splice(i, 1);
+        }
     }
 
 }

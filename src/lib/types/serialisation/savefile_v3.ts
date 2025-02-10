@@ -41,6 +41,7 @@ export type SavedBeatV3 = {
 };
 
 export type SavedBeatDivisionV3 = {
+    gridIndex: number
     cellsOccupied: number
     hits: SavedInstrumentHitV1[]
 };
