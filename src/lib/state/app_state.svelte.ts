@@ -133,7 +133,16 @@ export class AppStateStore {
                 console.log("Cell after merge", $state.snapshot(cell))
                 console.log("Grid after merge", $state.snapshot(grid))
             } else {
-                console.error("Couldn't find grid cell to merge with locator ", locator);
+                console.error("Couldn't find grid cells to merge. Locator", 
+                    $state.snapshot(locator.notationLocator), 
+                    "gave cell",
+                    $state.snapshot(cell),
+                    ", mergeCellLocator",
+                    $state.snapshot(mergeCellLocator.notationLocator),
+                    "gave cell",
+                    $state.snapshot(cellToMerge),
+
+                );
             }
         })
     }
@@ -370,6 +379,9 @@ export class AppStateStore {
         let count = this.nextCount++;
 
         let cell = count % currentlyPlayingGrid.gridCols;
+        // Update 
+        currentlyPlayingGrid.currentlyPlayingColumn = cell;
+
         let repetition = Math.floor(count / currentlyPlayingGrid.gridCols);
         let bar =
             Math.floor(
@@ -391,19 +403,22 @@ export class AppStateStore {
                 row: rowI,
                 notationLocator: { bar: bar, beat: beat, division: beatDivision }
             };
-            let currentHit = this.getCurrentHit(currentlyPlayingGrid, locator);
-            this.instrumentManager.playHit(currentHit);
+            let cell = this.getGridCell(currentlyPlayingGrid, locator);
+            if (cell == undefined || cell?.hits.length == 0) {
+                return
+            }
+            if (cell.hits.length == 1) {
+                this.instrumentManager.playHit(cell.hits[0]);
+            } else {
+                let mergedCellTime = currentlyPlayingGrid.msPerBeatDivision * cell.cellsOccupied
+                let timeout = mergedCellTime / cell.hits.length
+                cell.hits.forEach((hit, i) => {
+                    setTimeout(() => {
+                        this.instrumentManager.playHit(hit);
+                    }, timeout * i)
+                })
+            }
         });
-
-        currentlyPlayingGrid.currentlyPlayingColumn = cell;
-    }
-
-    getCurrentHit(
-        currentlyPlayingGrid: Grid | undefined,
-        locator: CellLocator
-    ): InstrumentHit | undefined {
-        if (!currentlyPlayingGrid) return undefined;
-        return this.getGridCell(currentlyPlayingGrid, locator).hits[0];
     }
 
     // Initialises the app 
@@ -539,9 +554,18 @@ export class AppStateStore {
         })
     }
 
-    getGridCell(grid: Grid, locator: CellLocator): BeatDivision {
-        return grid.rows[locator.row].notation.bars[locator.notationLocator.bar]
-            .beats[locator.notationLocator.beat].divisions[locator.notationLocator.division]
+    getGridCell(grid: Grid, locator: CellLocator): BeatDivision | undefined {
+        let beat = grid.rows[locator.row]
+            .notation
+            .bars[locator.notationLocator.bar]
+            .beats[locator.notationLocator.beat]
+        let count = 0
+        for (let d of beat.divisions) {
+            if (locator.notationLocator.division <= count) {
+                return d
+            }
+            count += d.cellsOccupied
+        }
     }
 
     removeGridCell(grid: Grid, locator: CellLocator) {
