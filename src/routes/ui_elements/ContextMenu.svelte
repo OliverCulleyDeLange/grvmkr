@@ -25,11 +25,11 @@
 		{#if ui.showMergeLeft}
 			<button class="menu-item" onclick={onTripletLeft}>← Merge</button>
 		{/if}
-		{#if ui.showMergeRight}
-			<button class="menu-item" onclick={onTripletRight}>Merge →</button>
-		{/if}
 		{#if ui.showUnmerge}
 			<button class="menu-item" onclick={onUnmerge}>Unmerge</button>
+		{/if}
+		{#if ui.showMergeRight}
+			<button class="menu-item" onclick={onTripletRight}>Merge →</button>
 		{/if}
 	</div>
 {/if}
