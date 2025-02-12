@@ -29,9 +29,8 @@
 	});
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));
-	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentManager));
+	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentManager, appStateStore.cellTools));
 	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenu));
-	let cellToolsUi: CellToolsUi = $derived(mapCellToolsUi(appStateStore.cellTools));
 </script>
 
 <div class="p-4">
@@ -42,7 +41,7 @@
 				<div>
 					<GridConfig {gridUi} {onEvent} />
 					<Grid {gridUi} instrumentManager={appStateStore.instrumentManager} {onEvent} />
-					<CellTools ui={cellToolsUi} {onEvent} />
+					<CellTools ui={gridUi.cellTools} {onEvent} />
 				</div>
 			{/each}
 		</div>

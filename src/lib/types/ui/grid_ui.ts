@@ -1,4 +1,4 @@
-import type { CellLocator, GridConfig, GridId } from "$lib";
+import type { CellLocator, CellToolsUi, GridConfig, GridId } from "$lib";
 
 // UI Models
 export type GridUis = {
@@ -14,6 +14,7 @@ export type GridUi = {
     gridCols: number
     playing: boolean
     currentlyPlayingColumn: number
+    cellTools: CellToolsUi
 };
 
 // This represents how a grid is split vertically into sections to make long phrases easier to read

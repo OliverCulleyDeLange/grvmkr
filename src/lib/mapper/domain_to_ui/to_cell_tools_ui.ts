@@ -1,7 +1,8 @@
-import type { CellTools, CellToolsUi, InstrumentHit } from "$lib";
+import type { CellTools, CellToolsUi, GridId, InstrumentHit } from "$lib";
 
 export function mapCellToolsUi(
-    cellTools: CellTools | undefined
+    cellTools: CellTools | undefined,
+    gridId: GridId
 ): CellToolsUi {
     let options: Map<string, InstrumentHit[]> = new Map([[" ", []]])
 
@@ -13,7 +14,7 @@ export function mapCellToolsUi(
         showUnMerge: false,
     }
 
-    if (cellTools == undefined) return ui
+    if (cellTools == undefined || cellTools.gridId != gridId) return ui
 
     ui.show = true
     cellTools?.hits.forEach((hit) => {

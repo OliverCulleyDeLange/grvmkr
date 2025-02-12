@@ -310,6 +310,7 @@ export class AppStateStore {
 
             if (instrument) {
                 this.cellTools = {
+                    gridId: grid.id,
                     instrument: instrument,
                     hits: [...instrument?.hitTypes.values() ?? []],
                     cellsOccupied: currentCell?.cells_occupied ?? 0,
