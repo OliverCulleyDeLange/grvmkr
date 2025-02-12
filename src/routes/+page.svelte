@@ -23,7 +23,7 @@
 
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
-		document.addEventListener('click', () => onEvent({ event: UiEvent.DocumentClick }));
+		document.addEventListener('mousedown', () => onEvent({ event: UiEvent.DocumentClick }));
 	});
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));

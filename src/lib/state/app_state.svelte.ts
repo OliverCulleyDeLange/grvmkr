@@ -124,16 +124,16 @@ export class AppStateStore {
     private unMergeCells(locator: CellLocator) {
         this.updateGrid(locator.grid, (grid) => {
             console.log(`Unmerging cell`, $state.snapshot(locator.cell));
-    
+
             let row = grid.rows[locator.row];
             let cell = row.cells[locator.cell];
-    
+
             // If the cell is not merged, do nothing
             if (cell.cells_occupied <= 1) {
                 console.warn("Cell is not merged, skipping unmerge.");
                 return;
             }
-    
+
             // Determine the starting index of the merged cells
             let startIndex = locator.cell;
             for (let i = locator.cell; i >= 0; i--) {
@@ -142,12 +142,12 @@ export class AppStateStore {
                     break;
                 }
             }
-    
+
             let mergedCell = row.cells[startIndex];
             let originalSize = mergedCell.cells_occupied;
-    
+
             console.log("Splitting cell at index", startIndex, "which spans", originalSize, "cells");
-    
+
             // Restore individual cells
             for (let i = 0; i < originalSize; i++) {
                 row.cells[startIndex + i] = {
@@ -155,11 +155,11 @@ export class AppStateStore {
                     cells_occupied: 1
                 };
             }
-    
+
             console.log("Grid after unmerge", $state.snapshot(grid));
         });
     }
-    
+
     private mergeCells(locator: CellLocator, side: "left" | "right") {
         this.updateGrid(locator.grid, (grid) => {
             console.log(`Merging grid cell ${side} of cell`, $state.snapshot(locator.cell))
@@ -183,7 +183,7 @@ export class AppStateStore {
                 const cellToEmpty = (side === "left") ? clickedCell : cellNextToClickedCell;
 
                 cellToExtend.cells_occupied += cellToEmpty.cells_occupied;
-                if (cellToExtend.hits.length > 0){
+                if (cellToExtend.hits.length > 0) {
                     cellToExtend.hits = Array.from({ length: cellToExtend.cells_occupied + 1 }, () => cellToExtend.hits[0]);
                 }
                 // Empty cell
@@ -206,9 +206,7 @@ export class AppStateStore {
 
     // Filters chatty events, and logs
     private logEvent(event: AppEvent) {
-        if (event.event != UiEvent.DocumentClick) {
-            console.log('Event:', event.event, event);
-        }
+        console.log('Event:', event.event, event);
     }
 
     private showContextMenu(event: RightClick) {
@@ -224,7 +222,6 @@ export class AppStateStore {
             isLastCell: gridCols ? locator.cell == gridCols - 1 : false,
             isMergedCell: cell ? cell.cells_occupied > 1 : false
         }
-        console.log(this.contextMenu)
     }
 
     private removeGrid(event: RemoveGrid) {
@@ -391,7 +388,7 @@ export class AppStateStore {
         this.file.name = saveFile.name
         console.log(`Filename ${this.file.name}`)
     }
-    
+
     async loadSaveFileV3(saveFileContent: string) {
         let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
         await this.instrumentManager.replaceInstruments(saveFile.instruments);
