@@ -43,8 +43,9 @@
 	ontouchstart={startTouch}
 	ontouchend={cancelPress}
 	oncontextmenu={handleRightClick}
-	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-evenly font-bold
-	text-gray-800 print:border print:border-gray-400" style="grid-column: span {ui.cellsOccupied}"
+	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-between  font-bold
+	text-gray-800 print:border print:border-gray-400" 
+	style="grid-column: span {ui.cellsOccupied}"
 	class:bg-gray-100={!ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-300={ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-400={ui.isFirstBeatOfBar}
@@ -54,8 +55,9 @@
 	class:border-2={ui.selected}
 	>
 	{#each ui.content.split('') as char}
-		<div>{char}</div>
+		<div style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>{char}</div>
 	{/each}
+	<div id="spacer"></div>
 	<div
 		class="absolute left-px top-px text-[8px]"
 		class:text-gray-500={ui.isFirstBeatOfBar}

@@ -529,17 +529,18 @@ export class AppStateStore {
             if (cell == undefined || cell.hits.length == 0 || cell.cells_occupied < 1) {
                 return
             }
-            if (cell.hits.length == 1) {
+            if (cell.hits.length === 1) {
                 this.instrumentManager.playHit(cell.hits[0]);
             } else {
-                let mergedCellTime = currentlyPlayingGrid.msPerBeatDivision * cell.cells_occupied
-                let timeout = mergedCellTime / cell.hits.length
+                let mergedCellTime = currentlyPlayingGrid.msPerBeatDivision * cell.cells_occupied;
+                
                 cell.hits.forEach((hit, i) => {
+                    let delay = (i / cell.hits.length) * mergedCellTime;
                     setTimeout(() => {
                         this.instrumentManager.playHit(hit);
-                    }, timeout * i)
-                })
-            }
+                    }, delay);
+                });
+            }            
         });
     }
 

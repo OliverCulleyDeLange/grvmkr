@@ -203,9 +203,6 @@ export class InstrumentManager {
         })
     }
 
-    getHitsFor() {
-    }
-
     async reset() {
         await this.instrumentService.deleteAllInstruments()
         this.instruments.clear()
