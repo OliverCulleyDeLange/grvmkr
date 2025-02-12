@@ -20,6 +20,7 @@
 	import Grid from './ui_elements/Grid.svelte';
 	import ContextMenu from './ui_elements/ContextMenu.svelte';
 	import CellTools from './ui_elements/CellTools.svelte';
+	import Legend from './ui_elements/Legend.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
@@ -40,8 +41,8 @@
 			{#each gridsUi.grids as gridUi}
 				<div>
 					<GridConfig {gridUi} {onEvent} />
-					<Grid {gridUi} instrumentManager={appStateStore.instrumentManager} {onEvent} />
-					<CellTools ui={gridUi.cellTools} {onEvent} />
+					<Legend instrumentManager={appStateStore.instrumentManager} />
+					<Grid {gridUi} {onEvent} />
 				</div>
 			{/each}
 		</div>

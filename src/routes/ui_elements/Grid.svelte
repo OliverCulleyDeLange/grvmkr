@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { GridEvent, type GridUi, type InstrumentManager, type OnUiEvent } from '$lib';
+	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
-	import Legend from './Legend.svelte';
 
 	let {
 		gridUi,
-		instrumentManager,
 		onEvent
 	}: {
 		gridUi: GridUi;
-		instrumentManager: InstrumentManager;
 		onEvent: OnUiEvent;
 	} = $props();
 </script>
@@ -29,7 +27,9 @@
 					<div
 						class="flex h-6 items-center justify-center print:border print:border-gray-400"
 						class:bg-green-300={indicator.playing}
-						class:bg-gray-100={!indicator.playing && !indicator.isBeat && !indicator.isFirstBeatOfBar}
+						class:bg-gray-100={!indicator.playing &&
+							!indicator.isBeat &&
+							!indicator.isFirstBeatOfBar}
 						class:bg-gray-300={!indicator.playing && indicator.isBeat}
 						class:bg-gray-400={!indicator.playing && indicator.isFirstBeatOfBar}
 						class:text-gray-800={!indicator.playing && indicator.isFirstBeatOfBar}
@@ -50,7 +50,14 @@
 					<GridCell
 						ui={cell}
 						onTap={() => onEvent({ event: GridEvent.TappedGridCell, locator: cell.locator })}
-						onRightTap={(x, y) => onEvent({event: GridEvent.RightClick, x, y, locator: cell.locator, gridId: gridUi.id})}
+						onRightTap={(x, y) =>
+							onEvent({
+								event: GridEvent.RightClick,
+								x,
+								y,
+								locator: cell.locator,
+								gridId: gridUi.id
+							})}
 					/>
 				{/each}
 			{/each}
@@ -58,7 +65,7 @@
 	{/each}
 </div>
 
-<Legend {instrumentManager} />
+<CellTools ui={gridUi.cellTools} {onEvent} />
 
 <style>
 	.grid {

@@ -12,26 +12,30 @@
 	} = $props();
 </script>
 
-{#if ui.show}
-	<div class="flex justify-start print:hidden">
-		{#if ui.showMergeLeft}
-			<Button onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'left' })}>
-				← Merge
-			</Button>
-		{/if}
-		{#if ui.showMergeRight}
-			<Button onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'right' })}>
-				→ Merge
-			</Button>
-		{/if}
-		{#if ui.showUnMerge}
-			<Button onClick={() => onEvent({ event: CellToolsEvent.UnMerge })}>Un-Merge</Button>
-		{/if}
-		
-		{#each ui.hitOptions as [displayString, hits]}
-			<Button onClick={() => onEvent({ event: CellToolsEvent.SelectHitOption, instrumentHits: hits })}>
-				{displayString}
-			</Button>
-		{/each}
-	</div>
-{/if}
+<div class="min-h-12">
+	{#if ui.show}
+		<div class="flex justify-start print:hidden">
+			{#if ui.showMergeLeft}
+				<Button onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'left' })}>
+					← Merge
+				</Button>
+			{/if}
+			{#if ui.showMergeRight}
+				<Button onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'right' })}>
+					→ Merge
+				</Button>
+			{/if}
+			{#if ui.showUnMerge}
+				<Button onClick={() => onEvent({ event: CellToolsEvent.UnMerge })}>Un-Merge</Button>
+			{/if}
+
+			{#each ui.hitOptions as [displayString, hits]}
+				<Button
+					onClick={() => onEvent({ event: CellToolsEvent.SelectHitOption, instrumentHits: hits })}
+				>
+					{displayString}
+				</Button>
+			{/each}
+		</div>
+	{/if}
+</div>
