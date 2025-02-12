@@ -49,7 +49,7 @@
 				{#each row.gridCells as cell}
 					<GridCell
 						ui={cell}
-						onTap={() => onEvent({ event: GridEvent.ToggleGridHit, locator: cell.locator })}
+						onTap={() => onEvent({ event: GridEvent.TappedGridCell, locator: cell.locator })}
 						onRightTap={(x, y) => onEvent({event: GridEvent.RightClick, x, y, locator: cell.locator, gridId: gridUi.id})}
 					/>
 				{/each}

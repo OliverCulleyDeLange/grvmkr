@@ -34,6 +34,7 @@ export function defaultGridRow(instrument: InstrumentWithId, bars: number, beats
             return {
                 hits: [],
                 cells_occupied: 1,
+                selected: false
             } as GridCell
         })
     }

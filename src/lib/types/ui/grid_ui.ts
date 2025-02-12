@@ -45,15 +45,16 @@ export type GridCellUi = {
     locator: CellLocator
     cellsOccupied: number
     cellDescription: string
+    selected: boolean
 }
 
 // Grid UI Events
-export type GridEvents = TogglePlaying | ToggleGridHit | RemoveGrid | AddGrid | 
+export type GridEvents = TogglePlaying | TappedGridCell | RemoveGrid | AddGrid | 
     BpmChanged | BarsChanged | GridSizeChanged | NameChanged | RightClick
 
 export enum GridEvent {
     TogglePlaying = "TogglePlaying",
-    ToggleGridHit = "ToggleGridHit",
+    TappedGridCell = "TappedGridCell",
     RightClick = "RightClick",
     AddGrid = "AddGrid",
     RemoveGrid = "RemoveGrid",
@@ -68,8 +69,8 @@ export type TogglePlaying = {
     playing: boolean
     gridId: GridId
 }
-export type ToggleGridHit = {
-    event: GridEvent.ToggleGridHit
+export type TappedGridCell = {
+    event: GridEvent.TappedGridCell
     locator: CellLocator
 }
 export type RightClick = {

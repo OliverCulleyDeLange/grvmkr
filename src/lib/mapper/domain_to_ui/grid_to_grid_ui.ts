@@ -84,7 +84,8 @@ function mapCellToCellUi(
             cell: cellIndex
         },
         cellsOccupied: cell.cells_occupied,
-        cellDescription: `${bar+1}.${beat+1}.${beat_division+1}`
+        cellDescription: `${bar+1}.${beat+1}.${beat_division+1}`,
+        selected: cell.selected,
     }
     return cellUi
 }

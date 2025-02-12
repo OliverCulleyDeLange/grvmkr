@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3 } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -20,6 +20,7 @@ export class AppStateStore {
     public contextMenu: ContextMenu | undefined = $state()
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
+    public currentlySelectedCell: CellLocator | undefined = $state();
     public errors: SvelteMap<ErrorId, AppError> = new SvelteMap();
 
     // Derived state
@@ -46,8 +47,8 @@ export class AppStateStore {
             case GridEvent.TogglePlaying:
                 this.onTogglePlaying(event.playing, event.gridId);
                 break;
-            case GridEvent.ToggleGridHit:
-                this.toggleGridHit(event.locator);
+            case GridEvent.TappedGridCell:
+                this.onTapGridCell(event)
                 break;
             case GridEvent.RightClick:
                 this.showContextMenu(event)
@@ -152,7 +153,8 @@ export class AppStateStore {
             for (let i = 0; i < originalSize; i++) {
                 row.cells[startIndex + i] = {
                     hits: mergedCell.hits.length > 0 ? [mergedCell.hits[0]] : [],
-                    cells_occupied: 1
+                    cells_occupied: 1,
+                    selected: false
                 };
             }
 
@@ -247,8 +249,26 @@ export class AppStateStore {
         }, false);
     }
 
-    // Toggle the hit in the cell when the user clicks the cell
-    // Also plays the sound
+
+    // Combined all actions to be complete when a cell is clicked:
+    // - Toggle the hit
+    // - Play the new hit
+    // - Update the selected state
+    onTapGridCell(event: TappedGridCell) {
+        this.toggleGridHit(event.locator);
+        this.instrumentManager?.playHit(this.getCell(event.locator)?.hits[0]);
+        if (this.currentlySelectedCell) {
+            this.updateGridCell(this.currentlySelectedCell, (cell) => {
+                cell.selected = false
+            })
+        }
+        this.updateGridCell(event.locator, (cell) => {
+            cell.selected = true
+        })
+        this.currentlySelectedCell = event.locator
+    }
+
+    // Toggle the hit in the cell 
     toggleGridHit(locator: CellLocator) {
         let row = this.grids.get(locator.grid)?.rows[locator.row];
         if (row) {
@@ -269,7 +289,6 @@ export class AppStateStore {
             this.updateGridCell(locator, (cell) => {
                 cell.hits = nextHits
             })
-            this.instrumentManager?.playHit(nextHits[0]);
         } else {
             console.error(
                 `Can't toggle grid cell hit as can't find the row. Locator: `,
@@ -297,7 +316,8 @@ export class AppStateStore {
             } else {
                 const emptyCell: GridCell = {
                     hits: [],
-                    cells_occupied: 1
+                    cells_occupied: 1,
+                    selected: false
                 }
                 const newCells: GridCell[] = new Array(expectedCells - currentCellCount).fill(emptyCell)
                 row.cells.push(...newCells)

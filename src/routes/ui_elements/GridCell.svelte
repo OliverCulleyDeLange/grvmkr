@@ -49,6 +49,9 @@
 	class:bg-gray-300={ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-400={ui.isFirstBeatOfBar}
 	class:no-print-adjust={ui.isBeat}
+	class:border={ui.selected}
+	class:border-green-500={ui.selected}
+	class:border-2={ui.selected}
 	>
 	{#each ui.content.split('') as char}
 		<div>{char}</div>

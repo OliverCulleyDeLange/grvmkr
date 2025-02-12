@@ -44,7 +44,8 @@ function mapSavedCellToGridCell(savedCell: SavedGridCellV3): GridCell {
                 hitId: hit.hit_id,
                 instrumentId: hit.instrument_id
             }
-        })
+        }),
+        selected: false
     }
     return gridCell
 }
