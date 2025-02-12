@@ -18,7 +18,7 @@
 	{#each gridUi.notationSections as section}
 		<div class="grid" style="--cells: {section.columns};">
 			<button
-				class="btn btn-outline btn-xs print:hidden"
+				class="btn btn-outline btn-xs print:invisible"
 				onclick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}
 			>
 				X
