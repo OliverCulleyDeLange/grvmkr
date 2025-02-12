@@ -182,6 +182,7 @@ export class AppStateStore {
 
             console.log("Grid after unmerge", $state.snapshot(grid));
         });
+        this.currentlySelectedCell = undefined
     }
 
     private mergeCells(locator: CellLocator, side: "left" | "right") {
@@ -190,12 +191,15 @@ export class AppStateStore {
             let clickedCell = grid.rows[locator.row].cells[locator.cell]
             let cellIndexAddition: number
             if (side == "left") { cellIndexAddition = -1 } else { cellIndexAddition = 1 }
+            // We have to find the next cell which hasn't already been merged to the left or right
             let cellNextToClickedCell: GridCell | undefined
+            let cellNextToClickedCellIndex: number = locator.cell
             for (let i = locator.cell + cellIndexAddition; i >= 0 || i < grid.rows[locator.row].cells.length; i += cellIndexAddition) {
                 console.log("Getting cell ", i)
                 let cell = grid.rows[locator.row].cells[i]
                 if (cell.cells_occupied > 0) {
                     cellNextToClickedCell = cell
+                    cellNextToClickedCellIndex = i
                     break
                 }
             }
@@ -206,14 +210,18 @@ export class AppStateStore {
                 const cellToExtend = (side === "left") ? cellNextToClickedCell : clickedCell;
                 const cellToEmpty = (side === "left") ? clickedCell : cellNextToClickedCell;
 
+                // Extend cell
                 cellToExtend.cells_occupied += cellToEmpty.cells_occupied;
-                if (cellToExtend.hits.length > 0) {
-                    cellToExtend.hits = Array.from({ length: cellToExtend.cells_occupied + 1 }, () => cellToExtend.hits[0]);
-                }
+                cellToExtend.selected = cellToEmpty.selected || cellToExtend.selected
+                cellToExtend.hits = []
                 // Empty cell
                 cellToEmpty.cells_occupied = 0;
                 cellToEmpty.hits = [];
-
+                cellToEmpty.selected = false
+                // Update currently selected cell. if we merge left we should select the cell we merged into
+                if (side == "left"){
+                    this.currentlySelectedCell = {...locator, cell: cellNextToClickedCellIndex}
+                }
                 console.log("Cells after merge", $state.snapshot(clickedCell), " & ", $state.snapshot(cellNextToClickedCell))
                 console.log("Grid after merge", $state.snapshot(grid))
             } else {

@@ -26,8 +26,8 @@ export function mapCellToolsUi(
             ui.hitOptions.set(hit.key.repeat(count), Array(count).fill(instrumentHit))
         })
     })
-    ui.showMergeRight = !cellTools.isLastCell
-    ui.showMergeLeft = !cellTools.isFirstCell
+    ui.showMergeRight = !cellTools.isLastCell && cellTools.cellsOccupied < 8
+    ui.showMergeLeft = !cellTools.isFirstCell  && cellTools.cellsOccupied < 8
     ui.showUnMerge = cellTools.cellsOccupied > 1
     return ui
 }
@@ -44,7 +44,15 @@ function getHitCountsForCellOccupation(cellsOccupied: number): number[] {
         case 3:
             return [2, 4]
         case 4:
-            return [3, 5]
+            return [1, 3, 5]
+        case 5:
+            return [2, 4, 6]
+        case 6:
+            return [1, 3, 5, 7]
+        case 7:
+            return [2, 4, 6, 7]
+        case 8:
+            return [1, 3, 5, 7, 9]
     }
     return [1]
 }
