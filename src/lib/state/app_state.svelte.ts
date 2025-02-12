@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type CellTools, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type HitTypeWithId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -18,6 +18,7 @@ export class AppStateStore {
     // Main state
     public file: GrvMkrFile = $state(defaultFile)
     public contextMenu: ContextMenu | undefined = $state()
+    public cellTools: CellTools | undefined = $state()
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
     public currentlySelectedCell: CellLocator | undefined = $state();
@@ -37,9 +38,30 @@ export class AppStateStore {
                 break;
             case ContextMenuEvent.MergeCells:
                 this.mergeCells(event.locator, event.side)
+                this.updateCellTools()
                 break;
             case ContextMenuEvent.UnMerge:
                 this.unMergeCells(event.locator)
+                this.updateCellTools()
+                break;
+            case CellToolsEvent.Merge:
+                if (this.currentlySelectedCell) {
+                    this.mergeCells(this.currentlySelectedCell, event.side)
+                    this.updateCellTools()
+                }
+                break;
+            case CellToolsEvent.UnMerge:
+                if (this.currentlySelectedCell) {
+                    this.unMergeCells(this.currentlySelectedCell)
+                    this.updateCellTools()
+                }
+                break;
+            case CellToolsEvent.SelectHitOption:
+                if (this.currentlySelectedCell) {
+                    this.updateGridCell(this.currentlySelectedCell, (cell) => {
+                        cell.hits = event.instrumentHits
+                    })
+                }
                 break;
             case ToolbarEvent.FileNameChanged:
                 this.updateFile((file) => { file.name = event.fileName })
@@ -254,6 +276,7 @@ export class AppStateStore {
     // - Toggle the hit
     // - Play the new hit
     // - Update the selected state
+    // - Update cell tools
     onTapGridCell(event: TappedGridCell) {
         this.toggleGridHit(event.locator);
         this.instrumentManager?.playHit(this.getCell(event.locator)?.hits[0]);
@@ -266,6 +289,31 @@ export class AppStateStore {
             cell.selected = true
         })
         this.currentlySelectedCell = event.locator
+        this.updateCellTools()
+    }
+
+    updateCellTools() {
+        if (this.currentlySelectedCell) {
+            const locator = this.currentlySelectedCell
+            const grid = this.grids.get(locator.grid)
+            const instrument = grid?.rows[locator.row].instrument
+            const currentCell = this.getCell(this.currentlySelectedCell)
+            let gridCols = grid?.gridCols
+
+            if (instrument) {
+                this.cellTools = {
+                    instrument: instrument,
+                    hits: [...instrument?.hitTypes.values() ?? []],
+                    cellsOccupied: currentCell?.cells_occupied ?? 0,
+                    isFirstCell: locator.cell == 0,
+                    isLastCell: gridCols ? locator.cell == gridCols - 1 : false,
+                }
+            } else {
+                console.error("Can't display cell tools - instrument not found")
+            }
+        } else {
+            this.cellTools = undefined
+        }
     }
 
     // Toggle the hit in the cell 

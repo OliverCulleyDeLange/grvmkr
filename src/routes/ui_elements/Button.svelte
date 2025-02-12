@@ -1,16 +1,19 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
+
 	let {
-		onClick, classes, text
+		onClick, classes = "",
+		children
 	}: {
-        text: string;
-        classes: string;
+        classes?: string;
 		onClick: () => void;
+		children: Snippet
 	} = $props();
 </script>
 
 <button
 	onclick={onClick}
-	class={`btn btn-outline btn-xs m-2 ml-auto ${classes}`}
+	class={`btn btn-outline btn-xs m-2 ${classes}`}
 >
-	{text}
+	{@render children()}
 </button>

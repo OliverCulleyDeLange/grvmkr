@@ -1,7 +1,7 @@
 
 export type InstrumentId = string
 export type HitId = string
-export type HitTypeKey = string | undefined
+export type HitTypeKey = string
 
 // Uninitialised instrument config. 
 export type InstrumentConfig = {

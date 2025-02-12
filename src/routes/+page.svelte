@@ -2,10 +2,12 @@
 	import {
 		AppStateStore,
 		GridEvent,
+		mapCellToolsUi,
 		mapContextMenu as mapContextMenuUi,
 		mapGridUi,
 		mapToolbarUi,
 		UiEvent,
+		type CellToolsUi,
 		type ContextMenuUi,
 		type GridUis
 	} from '$lib';
@@ -17,6 +19,7 @@
 	import Toolbar from './ui_elements/Toolbar.svelte';
 	import Grid from './ui_elements/Grid.svelte';
 	import ContextMenu from './ui_elements/ContextMenu.svelte';
+	import CellTools from './ui_elements/CellTools.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
@@ -27,9 +30,8 @@
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));
 	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentManager));
-	let contextMenuUi: ContextMenuUi | undefined = $derived(
-		appStateStore.contextMenu ? mapContextMenuUi(appStateStore.contextMenu) : undefined
-	);
+	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenu));
+	let cellToolsUi: CellToolsUi = $derived(mapCellToolsUi(appStateStore.cellTools));
 </script>
 
 <div class="p-4">
@@ -40,16 +42,15 @@
 				<div>
 					<GridConfig {gridUi} {onEvent} />
 					<Grid {gridUi} instrumentManager={appStateStore.instrumentManager} {onEvent} />
+					<CellTools ui={cellToolsUi} {onEvent} />
 				</div>
 			{/each}
 		</div>
 
 		<div class="flex">
-			<Button
-				text="Add Grid"
-				onClick={() => onEvent({ event: GridEvent.AddGrid })}
-				classes="print:hidden"
-			/>
+			<Button onClick={() => onEvent({ event: GridEvent.AddGrid })} classes="ml-auto print:hidden">
+				Add Grid
+			</Button>
 		</div>
 
 		<div class="print:hidden">

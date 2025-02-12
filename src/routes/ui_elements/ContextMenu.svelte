@@ -23,24 +23,19 @@
 	}
 </script>
 
-{#if ui}
-	<div 
-	class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-30"
-	onclick={dismiss}
-	>
-		<div class="context-menu flex flex-row" style="top: {ui.y}px; left: {ui.x}px;">
-			{#if ui.showMergeLeft}
-				<button class="menu-item" onclick={onTripletLeft}>← Merge</button>
-			{/if}
-			{#if ui.showUnmerge}
-				<button class="menu-item" onclick={onUnmerge}>Unmerge</button>
-			{/if}
-			{#if ui.showMergeRight}
-				<button class="menu-item" onclick={onTripletRight}>Merge →</button>
-			{/if}
-		</div>
+<div class="fixed left-0 top-0 h-full w-full bg-black bg-opacity-30" onclick={dismiss}>
+	<div class="context-menu flex flex-row" style="top: {ui.y}px; left: {ui.x}px;">
+		{#if ui.showMergeLeft}
+			<button class="menu-item" onclick={onTripletLeft}>← Merge</button>
+		{/if}
+		{#if ui.showUnmerge}
+			<button class="menu-item" onclick={onUnmerge}>Unmerge</button>
+		{/if}
+		{#if ui.showMergeRight}
+			<button class="menu-item" onclick={onTripletRight}>Merge →</button>
+		{/if}
 	</div>
-{/if}
+</div>
 
 <style>
 	.context-menu {
