@@ -31,7 +31,7 @@ export class AppStateStore {
             case UiEvent.Mounted:
                 this.initialise();
                 break;
-            case UiEvent.DocumentClick:
+            case ContextMenuEvent.Dismiss:
                 this.contextMenu = undefined
                 break;
             case ContextMenuEvent.MergeCells:

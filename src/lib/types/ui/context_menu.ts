@@ -1,10 +1,11 @@
 import type { CellLocator } from "../domain/grid_domain"
 
-export type ContextMenuEvents = MergeCells | UnMergeCells
+export type ContextMenuEvents = MergeCells | UnMergeCells | Dismiss
 
 export enum ContextMenuEvent {
     MergeCells = "MergeCells",
-    UnMerge = "UnMerge"
+    UnMerge = "UnMerge",
+    Dismiss = "Dismiss",
 }
 
 export type MergeCells = {
@@ -16,6 +17,10 @@ export type MergeCells = {
 export type UnMergeCells = {
     event: ContextMenuEvent.UnMerge
     locator: CellLocator
+}
+
+export type Dismiss = {
+    event: ContextMenuEvent.Dismiss
 }
 
 export type ContextMenuUi = {
