@@ -15,6 +15,9 @@
 	function onTripletLeft() {
 		onEvent({ event: ContextMenuEvent.MergeCells, side: 'left', locator: ui.locator });
 	}
+	function onUnmerge() {
+		onEvent({ event: ContextMenuEvent.UnMerge, locator: ui.locator });
+	}
 </script>
 
 {#if ui}
@@ -25,13 +28,16 @@
 		{#if ui.showMergeRight}
 			<button class="menu-item" onclick={onTripletRight}>Merge →</button>
 		{/if}
+		{#if ui.showUnmerge}
+			<button class="menu-item" onclick={onUnmerge}>Unmerge</button>
+		{/if}
 	</div>
 {/if}
 
 <style>
 	.context-menu {
 		position: absolute;
-		background: white;
+	   	background: white;
 		border: 1px solid black;
 		transform: translate(-50%, -50%);
 	}

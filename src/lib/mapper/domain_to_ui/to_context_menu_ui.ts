@@ -7,5 +7,6 @@ export function mapContextMenu(contextMenu: ContextMenu): ContextMenuUi {
         locator: contextMenu.locator,
         showMergeLeft: !contextMenu.isFirstCell,
         showMergeRight: !contextMenu.isLastCell,
+        showUnmerge: contextMenu.isMergedCell
     }
 }

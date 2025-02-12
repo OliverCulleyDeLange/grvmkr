@@ -6,4 +6,5 @@ export type ContextMenu = {
     locator: CellLocator
     isFirstCell: boolean
     isLastCell: boolean
+    isMergedCell: boolean
 }

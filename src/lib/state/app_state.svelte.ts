@@ -37,6 +37,9 @@ export class AppStateStore {
             case ContextMenuEvent.MergeCells:
                 this.mergeCells(event.locator, event.side)
                 break;
+            case ContextMenuEvent.UnMerge:
+                this.unMergeCells(event.locator)
+                break;
             case ToolbarEvent.FileNameChanged:
                 this.updateFile((file) => { file.name = event.fileName })
                 break;
@@ -118,6 +121,45 @@ export class AppStateStore {
         }
     }
 
+    private unMergeCells(locator: CellLocator) {
+        this.updateGrid(locator.grid, (grid) => {
+            console.log(`Unmerging cell`, $state.snapshot(locator.cell));
+    
+            let row = grid.rows[locator.row];
+            let cell = row.cells[locator.cell];
+    
+            // If the cell is not merged, do nothing
+            if (cell.cells_occupied <= 1) {
+                console.warn("Cell is not merged, skipping unmerge.");
+                return;
+            }
+    
+            // Determine the starting index of the merged cells
+            let startIndex = locator.cell;
+            for (let i = locator.cell; i >= 0; i--) {
+                if (row.cells[i].cells_occupied > 0) {
+                    startIndex = i;
+                    break;
+                }
+            }
+    
+            let mergedCell = row.cells[startIndex];
+            let originalSize = mergedCell.cells_occupied;
+    
+            console.log("Splitting cell at index", startIndex, "which spans", originalSize, "cells");
+    
+            // Restore individual cells
+            for (let i = 0; i < originalSize; i++) {
+                row.cells[startIndex + i] = {
+                    hits: mergedCell.hits.length > 0 ? [mergedCell.hits[0]] : [],
+                    cells_occupied: 1
+                };
+            }
+    
+            console.log("Grid after unmerge", $state.snapshot(grid));
+        });
+    }
+    
     private mergeCells(locator: CellLocator, side: "left" | "right") {
         this.updateGrid(locator.grid, (grid) => {
             console.log(`Merging grid cell ${side} of cell`, $state.snapshot(locator.cell))
@@ -170,15 +212,19 @@ export class AppStateStore {
     }
 
     private showContextMenu(event: RightClick) {
-        let gridCols = this.grids.get(event.gridId)?.gridCols
-        let isLastCell = gridCols ? event.locator.cell == gridCols - 1 : false
+        const locator = event.locator
+        const grid = this.grids.get(event.gridId)
+        const cell = grid?.rows[locator.row].cells[locator.cell]
+        let gridCols = grid?.gridCols
         this.contextMenu = {
             x: event.x,
             y: event.y,
-            locator: event.locator,
-            isFirstCell: event.locator.cell == 0,
-            isLastCell
+            locator: locator,
+            isFirstCell: locator.cell == 0,
+            isLastCell: gridCols ? locator.cell == gridCols - 1 : false,
+            isMergedCell: cell ? cell.cells_occupied > 1 : false
         }
+        console.log(this.contextMenu)
     }
 
     private removeGrid(event: RemoveGrid) {
@@ -287,13 +333,6 @@ export class AppStateStore {
     // Used to decide when to resize the grid
     notationColumns(grid: Grid): number {
         return grid.config.bars * (grid.config.beatsPerBar * grid.config.beatDivisions)
-        // Not sure what this nonsense was about, pretty sure its not required anymore. 
-        // if (grid.rows.length == 0) return 0;
-        // let notation = grid.rows[0].notation;
-        // let bars = notation.bars;
-        // let beats = bars[0].beats;
-        // let beatDivisions = beats[0].divisions;
-        // return bars.length * (beats.length * beatDivisions.length);
     }
 
     save() {
