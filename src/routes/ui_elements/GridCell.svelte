@@ -1,16 +1,12 @@
 <script lang="ts">
+	import type { GridCellUi } from '$lib';
+
 	let {
-		columnsOccupied,
-		text,
-		isBeat,
-		isFirstBeatOfBar,
+		ui,
 		onTap,
 		onRightTap
 	}: {
-		columnsOccupied: number;
-		text: string;
-		isFirstBeatOfBar: boolean;
-		isBeat: boolean;
+		ui: GridCellUi;
 		onTap: () => void;
 		onRightTap: (x: number, y: number) => void;
 	} = $props();
@@ -24,16 +20,23 @@
 <button
 	onclick={onTap}
 	oncontextmenu={handleRightClick}
-	class="right-click-area flex flex-row flex-nowrap h-8 items-center justify-evenly font-bold text-gray-800 print:border print:border-gray-400"
-	style="grid-column: span {columnsOccupied}"
-	class:bg-gray-100={!isBeat && !isFirstBeatOfBar}
-	class:bg-gray-300={isBeat && !isFirstBeatOfBar}
-	class:bg-gray-400={isFirstBeatOfBar}
-	class:no-print-adjust={isBeat}
+	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-evenly font-bold text-gray-800 print:border print:border-gray-400"
+	style="grid-column: span {ui.cellsOccupied}"
+	class:bg-gray-100={!ui.isBeat && !ui.isFirstBeatOfBar}
+	class:bg-gray-300={ui.isBeat && !ui.isFirstBeatOfBar}
+	class:bg-gray-400={ui.isFirstBeatOfBar}
+	class:no-print-adjust={ui.isBeat}
 >
-	{#each text.split('') as char}
+	{#each ui.content.split('') as char}
 		<div>{char}</div>
 	{/each}
+	<div
+		class="absolute left-px top-px text-[8px]"
+		class:text-gray-500={ui.isFirstBeatOfBar}
+		class:text-gray-400={!ui.isFirstBeatOfBar}
+	>
+		{ui.cellDescription}
+	</div>
 </button>
 
 <style>

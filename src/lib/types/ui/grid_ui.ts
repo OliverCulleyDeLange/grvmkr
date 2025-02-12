@@ -24,6 +24,7 @@ export type NotationSection = {
     sectionRows: GridRowUi[]
 }
 
+// The top row, indicating which beat is playing
 export type BeatIndicator = {
     playing: boolean
     isBeat: boolean
@@ -43,6 +44,7 @@ export type GridCellUi = {
     content: string
     locator: CellLocator
     cellsOccupied: number
+    cellDescription: string
 }
 
 // Grid UI Events

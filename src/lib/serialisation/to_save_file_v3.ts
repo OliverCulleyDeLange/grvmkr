@@ -1,8 +1,8 @@
-import { mapInstrumentsToSavedInstrumentsV1, type Bar, type Beat, type BeatDivision, type Grid, type GridRow, type InstrumentHit, type InstrumentWithId, type Notation, type SaveFileV3, type SavedBarV3, type SavedBeatDivisionV3, type SavedBeatV3, type SavedGridRowV3, type SavedGridV3, type SavedInstrumentHitV1, type SavedInstrumentV1, type SavedNotationV3 } from "$lib";
+import { type Grid, type GridCell, type GridRow, type InstrumentHit, type InstrumentWithId, type SavedGridCellV3, type SavedGridRowV3, type SavedGridV3, type SavedHitV1, type SavedInstrumentHitV1, type SavedInstrumentV1, type SavedInstrumentV3, type SaveFileV3 } from "$lib";
 
 // Serialises the grid model state into a SaveFileV2 for reloading later
 export function serialiseToSaveFileV3(name: string, grids: Grid[], instruments: InstrumentWithId[]): SaveFileV3 {
-    let savedInstruments: SavedInstrumentV1[] = mapInstrumentsToSavedInstrumentsV1(instruments);
+    let savedInstruments: SavedInstrumentV3[] = mapInstrumentsToSavedInstrumentsV3(instruments);
     let savedGrids: SavedGridV3[] = mapGridsToSavedGridV3(grids)
 
     let saveFile: SaveFileV3 = {
@@ -37,46 +37,28 @@ function mapGridsToSavedGridV3(grids: Grid[]): SavedGridV3[] {
 
 
 export function mapGridToSavedGridRowsV3(grid: Grid): SavedGridRowV3[] {
-    let savedGridRows: SavedGridRowV3[] = [...grid.rows.values()].map((row) => {
+    let savedGridRows: SavedGridRowV3[] = grid.rows.map((row) => {
         return mapRowToSavedGridRowV3(row);
     })
     return savedGridRows
 }
 
 function mapRowToSavedGridRowV3(row: GridRow): SavedGridRowV3 {
-    let notation: SavedNotationV3 = mapNotationToSavedNotationV3(row.notation)
+    let cells: SavedGridCellV3[] = row.cells.map((cell) => mapCellToSavedCellV3(cell))
     let savedGridRow: SavedGridRowV3 = {
         instrument_id: row.instrument.id,
-        notation
+        cells
     };
     return savedGridRow;
 }
 
-function mapNotationToSavedNotationV3(notation: Notation): SavedNotationV3 {
+function mapCellToSavedCellV3(cell: GridCell): SavedGridCellV3 {
     return {
-        bars: notation.bars.map((bar) => mapBarToSavedBarV3(bar))
-    }
-}
-
-function mapBarToSavedBarV3(bar: Bar): SavedBarV3 {
-    return {
-        beats: bar.beats.map((beat) => mapBeatToSavedBeatV3(beat))
-    }
-}
-
-function mapBeatToSavedBeatV3(beat: Beat): SavedBeatV3 {
-    return {
-        divisions: beat.divisions.map((division) => mapDivisionToSavedDivisionV3(division))
-    }
-}
-
-function mapDivisionToSavedDivisionV3(division: BeatDivision): SavedBeatDivisionV3 {
-    return {
-        gridIndex: division.beatIndex,
-        cellsOccupied: division.cellsOccupied,
-        hits: division.hits.map((hit) => mapHitToSavedInstrumentHitV1(hit))
+        cells_occupied: cell.cells_occupied,
+        hits: cell.hits.map((hit) => mapHitToSavedInstrumentHitV1(hit))
     };
 }
+
 
 function mapHitToSavedInstrumentHitV1(hit: InstrumentHit): SavedInstrumentHitV1 {
     let savedHit: SavedInstrumentHitV1 = {
@@ -84,4 +66,34 @@ function mapHitToSavedInstrumentHitV1(hit: InstrumentHit): SavedInstrumentHitV1 
         hit_id: hit.hitId ?? ""
     };
     return savedHit;
+}
+
+function mapInstrumentsToSavedInstrumentsV3(instruments: InstrumentWithId[]): SavedInstrumentV3[] {
+    return instruments.map((instrument) => {
+        let savedHits: SavedHitV1[] = mapInstrumentToSavedHitsV1(instrument);
+
+        let savedInstrument: SavedInstrumentV3 = {
+            type: "instrument",
+            version: 3,
+            id: instrument.id,
+            name: instrument.name,
+            hits: savedHits,
+            gridIndex: instrument.gridIndex
+        };
+        return savedInstrument;
+    });
+}
+
+function mapInstrumentToSavedHitsV1(instrument: InstrumentWithId): SavedHitV1[] {
+    return [...instrument.hitTypes.values()].map((hit) => {
+        let savedHit: SavedHitV1 = {
+            type: "hit",
+            version: 1,
+            id: hit.id,
+            key: hit.key as string,
+            description: hit.description ?? "",
+            audio_file_name: hit.audioFileName
+        };
+        return savedHit;
+    });
 }

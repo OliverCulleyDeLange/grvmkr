@@ -1,5 +1,5 @@
 import { SvelteMap } from "svelte/reactivity";
-import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1 } from "$lib";
+import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1, SavedInstrumentV3 } from "$lib";
 import { AudioManager, InstrumentService } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
@@ -187,9 +187,9 @@ export class InstrumentManager {
     }
 
     // When loading from file, replace all instruments
-    async replaceInstruments(instruments: SavedInstrumentV1[]) {
+    async replaceInstruments(instruments: SavedInstrumentV3[]) {
         await this.reset()
-        instruments.forEach((instrument, index) => {
+        instruments.forEach((instrument) => {
             let hitMap = new SvelteMap(instrument.hits.map((hit) => {
                 let hitType: HitType = {
                     key: hit.key,
@@ -199,7 +199,7 @@ export class InstrumentManager {
                 let hitWithId: HitTypeWithId = this.createHitWithId(hit.id, hitType);
                 return [hitWithId.id, hitWithId];
             }));
-            this.addInstrument(instrument.id, hitMap, instrument.name, index);
+            this.addInstrument(instrument.id, hitMap, instrument.name, instrument.gridIndex);
         })
     }
 

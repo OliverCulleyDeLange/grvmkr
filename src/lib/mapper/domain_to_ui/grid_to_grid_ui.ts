@@ -1,4 +1,4 @@
-import type { Grid, GridCellUi, GridUi, InstrumentId, InstrumentManager, InstrumentWithId, NotationSection, GridConfig, GridRowUi, GridId, GridUis, BeatIndicator } from "$lib"
+import type { Grid, GridCellUi, GridUi, InstrumentId, InstrumentManager, InstrumentWithId, NotationSection, GridConfig, GridRowUi, GridId, GridUis, BeatIndicator, GridRow, GridCell } from "$lib"
 
 export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: InstrumentManager): GridUis {
     let gridUis: GridUi[] = [...grids.values()].map((grid) =>
@@ -30,43 +30,63 @@ export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentManager
 
 // Maps a domain grids rows into a list of GridRowUI 
 function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): GridRowUi[] {
-    return grid.rows.map((row, rowI) => {
-        // Map each grid row into one or more UI rows
-        // One grid row becomes multiple rows if it spans more than the threshold for being easy to read
-        let gridCells: GridCellUi[] = row.notation.bars.flatMap((bar, barI) => {
-            return bar.beats.flatMap((beat, beatI) => {
-                let cells: GridCellUi[] = beat.divisions.map((division, divisionI) => {
-                    let cellContent = ""
-                    division.hits.forEach((instrumentHit) => {
-                        let instrument: InstrumentWithId | undefined = instruments.get(instrumentHit.instrumentId)
-                        let hit = instrument?.hitTypes.get(instrumentHit.hitId)
-                        if (hit) {
-                            cellContent += hit.key
-                        }
-                    })
-                    let row: GridCellUi = {
-                        isBeat: divisionI == 0,
-                        isFirstBeatOfBar: divisionI == 0 && beatI == 0,
-                        content: cellContent,
-                        locator: {
-                            grid: grid.id,
-                            row: rowI,
-                            notationLocator: { bar: barI, beat: beatI, division: division.beatIndex }
-                        },
-                        cellsOccupied: division.cellsOccupied
-                    }
-                    return row
-                })
-                return cells
-            })
-        })
-        let notationGridRowUi: GridRowUi = {
-            index: row.instrument.gridIndex,
-            instrumentName: instruments.get(row.instrument.id)?.name ?? "error",
-            gridCells
+    return grid.rows.map((row, rowI) => mapRow(row, rowI, instruments, grid.config, grid.id)).sort((a, b) => a.index - b.index)
+}
+
+function mapRow(
+    row: GridRow,
+    rowIndex: number,
+    instruments: Map<string, InstrumentWithId>,
+    config: GridConfig,
+    gridId: string
+): GridRowUi {
+    let gridCells: GridCellUi[] = row.cells.map((cell, cellIndex) => {
+        if (cell.cells_occupied < 1) {
+            return
+        } else {
+            return mapCellToCellUi(cell, instruments, cellIndex, config, gridId, rowIndex)
         }
-        return notationGridRowUi
-    }).sort((a, b) => a.index - b.index)
+    }).filter((x) => x != undefined)
+    let rowUi: GridRowUi = {
+        index: row.instrument.gridIndex,
+        instrumentName: instruments.get(row.instrument.id)?.name ?? "error",
+        gridCells
+    }
+    return rowUi
+}
+
+function mapCellToCellUi(
+    cell: GridCell,
+    instruments: Map<string, InstrumentWithId>,
+    cellIndex: number,
+    config: GridConfig,
+    gridId: string,
+    rowIndex: number
+): GridCellUi {
+    let cellContent = ""
+    cell.hits.forEach((instrumentHit) => {
+        let instrument: InstrumentWithId | undefined = instruments.get(instrumentHit.instrumentId)
+        let hit = instrument?.hitTypes.get(instrumentHit.hitId)
+        if (hit) {
+            cellContent += hit.key
+        }
+    })
+    let bar = Math.floor((cellIndex / (config.beatDivisions * config.beatsPerBar)) % config.bars);
+    let beat = Math.floor((cellIndex / config.beatDivisions) % config.beatsPerBar);
+    let beat_division = cellIndex % config.beatDivisions;
+    let cellUi: GridCellUi = {
+        isBeat: cellIndex % config.beatDivisions == 0,
+        isFirstBeatOfBar: cellIndex % (config.beatsPerBar * config.beatDivisions) == 0,
+        content: cellContent,
+        locator: {
+            grid: gridId,
+            row: rowIndex,
+            cell: cellIndex
+        },
+        cellsOccupied: cell.cells_occupied,
+        cellDescription: `${bar+1}.${beat+1}.${beat_division+1}`
+    }
+    return cellUi
 }
 
 // Splits the grid UI into manageable 2 bar cell sections which stack vertically

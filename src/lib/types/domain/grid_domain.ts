@@ -23,28 +23,12 @@ export type GridConfig = {
 
 export type GridRow = {
     instrument: InstrumentWithId
-    notation: Notation
+    cells: GridCell[]
 };
 
-export type Notation = {
-    bars: Array<Bar>
-}
-
-export type Bar = {
-    beats: Array<Beat>
-};
-
-export type Beat = {
-    divisions: Array<BeatDivision>
-};
-
-export type BeatDivision = {
-    // beatIndex represents where in the Grid's beat the BeatDivision starts
-    // If a 4 division beat contains two BeatDivisions, each occupying 2 cells,
-    // The beatIndexes would be 0 and 2
-    beatIndex: number
-    cellsOccupied: number
+export type GridCell = {
     hits: InstrumentHit[]
+    cells_occupied: number
 };
 
 export type InstrumentHit = {
@@ -55,11 +39,5 @@ export type InstrumentHit = {
 export type CellLocator = {
     grid: GridId
     row: number
-    notationLocator: NotationLocator
-};
-
-export type NotationLocator = {
-    bar: number
-    beat: number
-    division: number
+    cell: number
 };

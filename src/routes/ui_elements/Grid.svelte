@@ -48,10 +48,7 @@
 
 				{#each row.gridCells as cell}
 					<GridCell
-						columnsOccupied={cell.cellsOccupied}
-						text={cell.content}
-						isBeat={cell.isBeat}
-						isFirstBeatOfBar={cell.isFirstBeatOfBar}
+						ui={cell}
 						onTap={() => onEvent({ event: GridEvent.ToggleGridHit, locator: cell.locator })}
 						onRightTap={(x, y) => onEvent({event: GridEvent.RightClick, x, y, locator: cell.locator, gridId: gridUi.id})}
 					/>

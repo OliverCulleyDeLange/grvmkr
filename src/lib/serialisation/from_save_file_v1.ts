@@ -1,4 +1,4 @@
-import { calculateMsPerBeatDivision, type Bar, type Beat, type BeatDivision, type Grid, type GridRow, type InstrumentManager, type SavedGridConfigV1, type SavedGridRowV1, type SavedGridV1, type SavedInstrumentHitV1 } from "$lib";
+import { calculateMsPerBeatDivision, type GridCell, type Grid, type GridRow, type InstrumentManager, type SavedGridConfigV1, type SavedGridRowV1, type SavedGridV1, type SavedInstrumentHitV1 } from "$lib";
 
 // Maps a saved grid from a save file to grid models
 export function mapSavedGridV1ToGrid(savedGrid: SavedGridV1, instrumentManager: InstrumentManager): Grid {
@@ -7,9 +7,7 @@ export function mapSavedGridV1ToGrid(savedGrid: SavedGridV1, instrumentManager: 
         if (instrument) {
             let gridRow: GridRow = {
                 instrument: instrument,
-                notation: {
-                    bars: mapSavedGridRowV1ToBars(row, savedGrid.config)
-                }
+                cells: row.hits.map((hit, i) => mapSavedInstrumentHitV1ToGridCell(hit, i, savedGrid.config))
             }
             return gridRow
         } else {
@@ -36,45 +34,15 @@ export function mapSavedGridV1ToGrid(savedGrid: SavedGridV1, instrumentManager: 
     return grid
 }
 
-function mapSavedGridRowV1ToBars(row: SavedGridRowV1, config: SavedGridConfigV1): Bar[] {
-    const bars: Bar[] = [];
-    let barSplit = row.hits.length / config.bars
-    for (let i = 0; i < row.hits.length; i += barSplit) {
-        let barHits = row.hits.slice(i, i + barSplit)
-        // console.log(`bar slice ${i} - ${i + barSplit}`, barHits)
-        let bar: Bar = {
-            beats: mapSavedInstrumentHitV1sToBeat(barHits, config)
-        }
-        bars.push(bar);
-    }
-    return bars
-}
 
-function mapSavedInstrumentHitV1sToBeat(barHits: SavedInstrumentHitV1[], config: SavedGridConfigV1): Beat[] {
-    const beats: Beat[] = [];
-    let beatSplit = barHits.length / config.beats_per_bar
-    for (let i = 0; i < barHits.length; i += beatSplit) {
-        let beatHits = barHits.slice(i, i + beatSplit);
-        // console.log(`beat slice ${i} - ${i + beatSplit}`, beatHits)
-        let beat: Beat = {
-            divisions: mapSavedInstrumentHitV1sToBeatDivisions(beatHits)
-        }
-        beats.push(beat)
+export function mapSavedInstrumentHitV1ToGridCell(savedHit: SavedInstrumentHitV1, hitIndex: number, config: SavedGridConfigV1): GridCell {
+    let hit = savedHit.hit_id && savedHit.instrument_id ? {
+        hitId: savedHit.hit_id,
+        instrumentId: savedHit.instrument_id
+    } : undefined
+    let beatDivision: GridCell = {
+        cells_occupied: 1, // V1 doesn't support merging
+        hits: hit ? [hit] : [],
     }
-    return beats
-}
-
-function mapSavedInstrumentHitV1sToBeatDivisions(instrumentHits: SavedInstrumentHitV1[]): BeatDivision[] {
-    return instrumentHits.map((beatHit, i) => {
-        let hit = beatHit.hit_id && beatHit.instrument_id ? {
-            hitId: beatHit.hit_id,
-            instrumentId: beatHit.instrument_id
-        } : undefined
-        let beatDivision: BeatDivision = {
-            beatIndex: i,
-            cellsOccupied: 1, // V1 doesn't support divisions
-            hits: hit ? [hit] : []
-        }
-        return beatDivision
-    })
+    return beatDivision 
 }

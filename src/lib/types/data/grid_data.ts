@@ -23,25 +23,12 @@ export type GridConfigDto = {
 
 export type GridRowDto = {
     instrumentId: InstrumentDtoId
-    notation: NotationDto
+    cells: GridCellDto[]
 };
 
-export type NotationDto = {
-    bars: Array<BarDto>
-}
-
-export type BarDto = {
-    beats: Array<BeatDto>
-};
-
-export type BeatDto = {
-    divisions: Array<BeatDivisionDto>
-};
-
-export type BeatDivisionDto = {
-    gridIndex: number
+export type GridCellDto = {
     hits: InstrumentHitDto[]
-    cellsOccupied: number
+    cells_occupied: number
 };
 
 export type InstrumentHitDto = {

@@ -1,45 +1,4 @@
-import type { Grid, GridRow, Bar, Beat, BeatDivision } from "$lib"
-import type { InstrumentId, InstrumentWithId } from "$lib"
-
-export function buildTestGrid(instruments: Map<InstrumentId, InstrumentWithId>, index: number): Grid {
-    const grid: Grid = {
-        id: "testgrid",
-        index: index,
-        config: {
-            name: "test",
-            bpm: 60,
-            bars: 1,
-            beatsPerBar: 4,
-            beatDivisions: 4
-        },
-        rows: Array.from(instruments.values())
-            .map((instrument) => {
-                return {
-                    instrument,
-                    notation: {
-                        bars: Array.from({ length: 1 }, () => {
-                            return {
-                                beats: Array.from({ length: 4 }, () => {
-                                    return {
-                                        divisions: [
-                                            { hits: [], cellsOccupied: 1, gridIndex: 0 },
-                                            { hits: [], cellsOccupied: 1, gridIndex: 1 },
-                                            { hits: [], cellsOccupied: 2, gridIndex: 2 },
-                                        ]
-                                    }
-                                })
-                            }
-                        })
-                    }
-                }
-            }),
-        msPerBeatDivision: 250,
-        gridCols: 8,
-        playing: false,
-        currentlyPlayingColumn: 0
-    }
-    return grid
-}
+import type { Grid, GridCell, GridRow, InstrumentId, InstrumentWithId } from "$lib"
 
 
 // The values here are pre calculated
@@ -69,24 +28,13 @@ export function buildGridRows(instruments: Map<InstrumentId, InstrumentWithId>, 
 }
 
 export function defaultGridRow(instrument: InstrumentWithId, bars: number, beats: number, divisions: number): GridRow {
-    let notation = {
-        bars: Array.from({ length: bars }, () => defaultBar(beats, divisions))
-    }
-    return { instrument, notation }
-}
-
-export function defaultBar(beats: number, divisions: number): Bar {
     return {
-        beats: Array.from({ length: beats }, () => defaultBeat(divisions))
+        instrument,
+        cells: Array.from({ length: bars * beats * divisions }, (_, i) => {
+            return {
+                hits: [],
+                cells_occupied: 1,
+            } as GridCell
+        })
     }
-}
-
-export function defaultBeat(divisions: number): Beat {
-    return {
-        divisions: Array.from({ length: divisions }, (_, i) => defaultBeatDivision(i))
-    }
-}
-
-export function defaultBeatDivision(gridIndex: number): BeatDivision {
-    return { hits: [], cellsOccupied: 1, beatIndex: gridIndex }
 }

@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultBar, defaultBeat, defaultBeatDivision, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type BeatDivision, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridConfig, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3 } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3 } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -6,7 +6,6 @@ import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
-import type GridCell from "../../routes/ui_elements/GridCell.svelte";
 
 export class AppStateStore {
     // TODO make private
@@ -121,22 +120,40 @@ export class AppStateStore {
 
     private mergeCells(locator: CellLocator, side: "left" | "right") {
         this.updateGrid(locator.grid, (grid) => {
-            console.log(`Merging grid cell ${side} of `, $state.snapshot(locator.notationLocator))
-            let clickedCell = this.getGridCell(grid, locator)
-            let cellNextToClickedCell = getCellNextTo(side, locator, grid)
+            console.log(`Merging grid cell ${side} of cell`, $state.snapshot(locator.cell))
+            let clickedCell = grid.rows[locator.row].cells[locator.cell]
+            let cellIndexAddition: number
+            if (side == "left") { cellIndexAddition = -1 } else { cellIndexAddition = 1 }
+            let cellNextToClickedCell: GridCell | undefined
+            for (let i = locator.cell + cellIndexAddition; i >= 0 || i < grid.rows[locator.row].cells.length; i += cellIndexAddition) {
+                console.log("Getting cell ", i)
+                let cell = grid.rows[locator.row].cells[i]
+                if (cell.cells_occupied > 0) {
+                    cellNextToClickedCell = cell
+                    break
+                }
+            }
 
             if (clickedCell && cellNextToClickedCell && clickedCell != cellNextToClickedCell) {
-                console.log("Cells to merge", $state.snapshot(clickedCell), " <- ", $state.snapshot(cellNextToClickedCell))
-                clickedCell.cellsOccupied += cellNextToClickedCell.cellsOccupied
-                clickedCell.hits.push(...cellNextToClickedCell.hits)
-                console.log("Division after merge", $state.snapshot(cellNextToClickedCell))
+                console.log("Cells to merge", $state.snapshot(clickedCell), " & ", $state.snapshot(cellNextToClickedCell))
+                // Update the left most cell with the cell occupation
+                const cellToExtend = (side === "left") ? cellNextToClickedCell : clickedCell;
+                const cellToEmpty = (side === "left") ? clickedCell : cellNextToClickedCell;
+
+                cellToExtend.cells_occupied += cellToEmpty.cells_occupied;
+                if (cellToExtend.hits.length > 0){
+                    cellToExtend.hits = Array.from({ length: cellToExtend.cells_occupied + 1 }, () => cellToExtend.hits[0]);
+                }
+                // Empty cell
+                cellToEmpty.cells_occupied = 0;
+                cellToEmpty.hits = [];
+
+                console.log("Cells after merge", $state.snapshot(clickedCell), " & ", $state.snapshot(cellNextToClickedCell))
                 console.log("Grid after merge", $state.snapshot(grid))
             } else {
-                console.error("Couldn't find grid cells to merge. Locator",
-                    $state.snapshot(locator.notationLocator),
-                    "gave division",
+                console.error(`Couldn't find grid cells to merge. Index ${$state.snapshot(locator.cell)} gave cell`,
                     $state.snapshot(clickedCell),
-                    `, with division to the ${side} `,
+                    `, with cel to the ${side} `,
                     $state.snapshot(cellNextToClickedCell),
                     ", grid:",
                     $state.snapshot(grid)
@@ -153,29 +170,16 @@ export class AppStateStore {
     }
 
     private showContextMenu(event: RightClick) {
-        let config = this.grids.get(event.gridId)?.config
-        let isLastCell = config ? this.isLastCell(event.locator, config) : false
+        let gridCols = this.grids.get(event.gridId)?.gridCols
+        let isLastCell = gridCols ? event.locator.cell == gridCols - 1 : false
         this.contextMenu = {
             x: event.x,
             y: event.y,
             locator: event.locator,
-            isFirstCell: this.isFirstCell(event.locator),
+            isFirstCell: event.locator.cell == 0,
             isLastCell
         }
     }
-
-    private isFirstCell(locator: CellLocator): boolean {
-        return locator.notationLocator.bar == 0 &&
-            locator.notationLocator.beat == 0 &&
-            locator.notationLocator.division == 0
-    }
-
-    private isLastCell(locator: CellLocator, config: GridConfig): boolean {
-        return locator.notationLocator.bar == config.bars - 1 &&
-            locator.notationLocator.beat == config.beatsPerBar - 1 &&
-            locator.notationLocator.division == config.beatDivisions - 1
-    }
-
 
     private removeGrid(event: RemoveGrid) {
         this.grids.delete(event.gridId);
@@ -213,7 +217,7 @@ export class AppStateStore {
                 nextHits = []
             }
             else if (cell.hits.length == 0) {
-                const hitCount = (2 * cell.cellsOccupied) - 1
+                const hitCount = (2 * cell.cells_occupied) - 1
                 nextHits = Array.from({ length: hitCount, }, () => nextHit)
             } else {
                 nextHits = cell.hits.map((h) => nextHit)
@@ -233,45 +237,28 @@ export class AppStateStore {
         }
     }
 
-    getCell(locator: CellLocator): BeatDivision | undefined {
+    getCell(locator: CellLocator): GridCell | undefined {
         let grid = this.grids.get(locator.grid)
-        return grid ? this.getGridCell(grid, locator) : undefined
+        return grid ? grid.rows[locator.row]?.cells[locator.cell] : undefined
     }
 
     resizeGrid(grid: Grid) {
-        // TODO Tidy this deeply nested fucktion up
+        const { bars, beatsPerBar, beatDivisions } = grid.config;
+        const expectedCells = bars * beatsPerBar * beatDivisions
+
         grid.rows.forEach((row) => {
-            if (grid.config.bars < row.notation.bars.length) {
-                row.notation.bars.length = grid.config.bars;
+            const currentCellCount = row.cells.length
+            if (expectedCells < currentCellCount) {
+                // Trim cell array
+                row.cells.length = expectedCells
             } else {
-                let newBars = Array.from({ length: grid.config.bars - row.notation.bars.length }, () =>
-                    defaultBar(grid.config.beatsPerBar, grid.config.beatDivisions)
-                );
-                row.notation.bars.push(...newBars);
-            }
-            row.notation.bars.forEach((bar) => {
-                let beatsPerBar = grid.config.beatsPerBar;
-                if (beatsPerBar < bar.beats.length) {
-                    bar.beats.length = beatsPerBar;
-                } else {
-                    let newBeats = Array.from({ length: beatsPerBar - bar.beats.length }, () =>
-                        defaultBeat(grid.config.beatDivisions)
-                    );
-                    bar.beats.push(...newBeats);
+                const emptyCell: GridCell = {
+                    hits: [],
+                    cells_occupied: 1
                 }
-                bar.beats.forEach((beat) => {
-                    let beatNoteFraction = grid.config.beatDivisions;
-                    if (beatNoteFraction < beat.divisions.length) {
-                        beat.divisions.length = beatNoteFraction;
-                    } else {
-                        let newDivisions = Array.from(
-                            { length: beatNoteFraction - beat.divisions.length },
-                            (_, i) => defaultBeatDivision(i)
-                        );
-                        beat.divisions.push(...newDivisions);
-                    }
-                });
-            });
+                const newCells: GridCell[] = new Array(expectedCells - currentCellCount).fill(emptyCell)
+                row.cells.push(...newCells)
+            }
         });
     }
 
@@ -365,7 +352,7 @@ export class AppStateStore {
         this.file.name = saveFile.name
         console.log(`Filename ${this.file.name}`)
     }
-
+    
     async loadSaveFileV3(saveFileContent: string) {
         let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
         await this.instrumentManager.replaceInstruments(saveFile.instruments);
@@ -434,23 +421,14 @@ export class AppStateStore {
         );
 
         currentlyPlayingGrid.rows.forEach((row, rowI) => {
-            let locator: CellLocator = {
-                grid: currentlyPlayingGrid!.id,
-                row: rowI,
-                notationLocator: { bar: bar, beat: beat, division: beatDivision }
-            };
-            let cell = this.getGridCell(currentlyPlayingGrid, locator);
-            if (cell == undefined || cell.hits.length == 0) {
-                return
-            }
-            else if (cell == undefined || cell.hits.length == 0 || cell.beatIndex != beatDivision) {
-                console.log(`cell.gridIndex ${cell?.beatIndex}, playingCell ${playingCell}`)
+            let cell = currentlyPlayingGrid.rows[rowI]?.cells[playingCell]
+            if (cell == undefined || cell.hits.length == 0 || cell.cells_occupied < 1) {
                 return
             }
             if (cell.hits.length == 1) {
                 this.instrumentManager.playHit(cell.hits[0]);
             } else {
-                let mergedCellTime = currentlyPlayingGrid.msPerBeatDivision * cell.cellsOccupied
+                let mergedCellTime = currentlyPlayingGrid.msPerBeatDivision * cell.cells_occupied
                 let timeout = mergedCellTime / cell.hits.length
                 cell.hits.forEach((hit, i) => {
                     setTimeout(() => {
@@ -469,8 +447,13 @@ export class AppStateStore {
             if (file) {
                 this.file.name = file.name
             }
-        } catch (e) {
-
+        } catch (e: any) {
+            console.error("Error getting file", e)
+            this.onEvent({
+                event: DomainEvent.DatabaseError,
+                doingWhat: "initialising file name",
+                error: e.target.error
+            })
         }
         try {
             let grids = await this.gridService.getAllGrids()
@@ -498,7 +481,6 @@ export class AppStateStore {
 
     getNextGridIndex(): number {
         let indexes = [...this.grids.values()].map((grid) => grid.index).filter((i) => i >= 0)
-        console.log(`indexes`, indexes)
         return Math.max(...indexes, -1) + 1
     }
 
@@ -584,9 +566,9 @@ export class AppStateStore {
     }
 
     // Updates grid cell in state and DB
-    updateGridCell(locator: CellLocator, withGridCell: (division: BeatDivision) => void) {
+    updateGridCell(locator: CellLocator, withGridCell: (division: GridCell) => void) {
         this.updateGrid(locator.grid, (grid) => {
-            let cell = this.getGridCell(grid, locator)
+            let cell = grid.rows[locator.row].cells[locator.cell]
             if (cell) {
                 withGridCell(cell)
             } else {
@@ -594,69 +576,4 @@ export class AppStateStore {
             }
         })
     }
-
-    getGridCell(grid: Grid, locator: CellLocator, remove: boolean = false): BeatDivision | undefined {
-        let beat = grid.rows[locator.row]
-            .notation
-            .bars[locator.notationLocator.bar]
-            .beats[locator.notationLocator.beat]
-        let count = 0
-        for (let [i, d] of beat.divisions.entries()) {
-            if (locator.notationLocator.division <= count) {
-                if (remove) {
-                    return beat.divisions.splice(i, 1)[0]
-                }
-                return d
-            }
-            count += d.cellsOccupied
-        }
-    }
-}
-
-// This function takes a 'locator', and returns the GridCell to the 'side' (left or right) of the locator. 
-function getCellNextTo(side: 'left' | 'right', locator: CellLocator, grid: Grid): BeatDivision | null {
-    const { row, notationLocator } = locator;
-    let { bar, beat, division } = notationLocator;
-    const rowData = grid.rows[row];
-
-    if (!rowData) return null; // Row doesn't exist
-
-    const notation = rowData.notation;
-    if (!notation.bars[bar]) return null; // Bar doesn't exist
-    const barData = notation.bars[bar];
-
-    if (!barData.beats[beat]) return null; // Beat doesn't exist
-    const beatData = barData.beats[beat];
-
-    if (!beatData.divisions[division]) return null; // Division doesn't exist
-
-    let targetDivision: BeatDivision | null = null;
-
-    // Move left or right within the beat's divisions
-    if (side === 'left') {
-        if (division > 0) {
-            targetDivision = beatData.divisions.splice(division - 1, 1)[0]; // Remove and return left division
-        } else if (beat > 0) {
-            // Move to the last division of the previous beat
-            const prevBeat = barData.beats[beat - 1];
-            targetDivision = prevBeat.divisions.splice(prevBeat.divisions.length - 1, 1)[0];
-        } else if (bar > 0) {
-            // Move to the last beat of the previous bar
-            const prevBar = notation.bars[bar - 1];
-            const lastBeat = prevBar.beats[prevBar.beats.length - 1];
-            targetDivision = lastBeat.divisions.splice(lastBeat.divisions.length - 1, 1)[0];
-        }
-    } else if (side === 'right') {
-        if (division < beatData.divisions.length - 1) {
-            targetDivision = beatData.divisions.splice(division + 1, 1)[0]; // Remove and return right division
-        } else if (beat < barData.beats.length - 1) {
-            // Move to the first division of the next beat
-            targetDivision = barData.beats[beat + 1].divisions.splice(0, 1)[0];
-        } else if (bar < notation.bars.length - 1) {
-            // Move to the first beat of the next bar
-            targetDivision = notation.bars[bar + 1].beats[0].divisions.splice(0, 1)[0];
-        }
-    }
-
-    return targetDivision || null;
 }

@@ -1,4 +1,4 @@
-import type { Bar, BarDto, Beat, BeatDivision, BeatDivisionDto, BeatDto, Grid, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto, InstrumentManager, Notation, NotationDto } from "$lib";
+import type { Grid, GridCell, GridCellDto, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto, InstrumentManager } from "$lib";
 
 export function mapGridDtoToGrid(gridDto: GridDto, instrumentManager: InstrumentManager): Grid {
     return {
@@ -30,38 +30,20 @@ export function rowFromDto(gridRowDto: GridRowDto, instrumentManager: Instrument
     }
     return {
         instrument: instrument!,
-        notation: notationFromDto(gridRowDto.notation)
+        cells: gridRowDto.cells.map((cell) => mapGridCellDtoToGridCell(cell))
     };
 }
 
-export function notationFromDto(notationDto: NotationDto): Notation {
-    return {
-        bars: notationDto.bars.map(bar => barFromDto(bar))
+
+export function mapGridCellDtoToGridCell(divisionDto: GridCellDto): GridCell {
+    let cell: GridCell = {
+        hits: divisionDto.hits.map((hit) => mapInstrumentHitDtoToInstrumentHit(hit)),
+        cells_occupied: divisionDto.cells_occupied,
     };
+    return cell
 }
 
-export function barFromDto(barDto: BarDto): Bar {
-    return {
-        beats: barDto.beats.map(beat => beatFromDto(beat))
-    };
-}
-
-export function beatFromDto(beatDto: BeatDto): Beat {
-    return {
-        divisions: beatDto.divisions.map(div => divisionFromDto(div))
-    };
-}
-
-export function divisionFromDto(divisionDto: BeatDivisionDto): BeatDivision {
-    return {
-        beatIndex: divisionDto.gridIndex,
-        hits: divisionDto.hits.map((hit) => hitFromDto(hit)),
-        cellsOccupied: divisionDto.cellsOccupied
-        
-    };
-}
-
-export function hitFromDto(hitDto: InstrumentHitDto): InstrumentHit {
+export function mapInstrumentHitDtoToInstrumentHit(hitDto: InstrumentHitDto): InstrumentHit {
     return {
         instrumentId: hitDto.instrumentId,
         hitId: hitDto.hitId
