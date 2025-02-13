@@ -2,25 +2,22 @@
 	import {
 		AppStateStore,
 		GridEvent,
-		mapCellToolsUi,
 		mapContextMenu as mapContextMenuUi,
 		mapGridUi,
 		mapToolbarUi,
 		UiEvent,
-		type CellToolsUi,
 		type ContextMenuUi,
 		type GridUis
 	} from '$lib';
 	import type { AppEvent } from '$lib/types/event';
 	import { onMount } from 'svelte';
 	import Button from './ui_elements/Button.svelte';
+	import ContextMenu from './ui_elements/ContextMenu.svelte';
+	import Grid from './ui_elements/Grid.svelte';
 	import GridConfig from './ui_elements/GridConfig.svelte';
 	import Instruments from './ui_elements/Instruments.svelte';
-	import Toolbar from './ui_elements/Toolbar.svelte';
-	import Grid from './ui_elements/Grid.svelte';
-	import ContextMenu from './ui_elements/ContextMenu.svelte';
-	import CellTools from './ui_elements/CellTools.svelte';
 	import Legend from './ui_elements/Legend.svelte';
+	import Toolbar from './ui_elements/Toolbar.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
@@ -29,7 +26,7 @@
 		onEvent({ event: UiEvent.Mounted });
 	});
 
-	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));
+	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errorStore.errors));
 	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentStore, appStateStore.cellTools));
 	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenu));
 </script>

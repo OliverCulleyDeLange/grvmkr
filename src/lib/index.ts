@@ -4,12 +4,13 @@ export * from "./audio/default_instruments"
 export * from "./audio/audio_player"
 
 export * from "./manager/audio_manager"
-export * from "./state/instrument_store.svelte"
 
 export * from "./model/default_grid"
 export * from "./model/default_file"
 
 export * from "./state/app_state.svelte"
+export * from "./state/error_store"
+export * from "./state/instrument_store.svelte"
 export * from "./state/date"
 
 export * from "./service/instrument_service"

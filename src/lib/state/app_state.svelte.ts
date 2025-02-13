@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentStore, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type CellTools, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type HitTypeWithId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, createErrorStore, defaultFile, defaultGridRow, GridEvent, InstrumentStore, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type CellTools, type ContextMenu, type ErrorId, type ErrorStore, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type HitTypeWithId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -10,6 +10,8 @@ import { SvelteMap } from "svelte/reactivity";
 export class AppStateStore {
     // TODO make private
     public instrumentStore: InstrumentStore = new InstrumentStore();
+    public errorStore: ErrorStore = createErrorStore()
+
     private gridService: GridService = new GridService(this.instrumentStore)
     private fileService: FileService = new FileService(this.instrumentStore)
     private playingIntervalId: number | undefined = undefined;
@@ -22,7 +24,6 @@ export class AppStateStore {
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
     public currentlySelectedCell: CellLocator | undefined = $state();
-    public errors: SvelteMap<ErrorId, AppError> = new SvelteMap();
 
     // Derived state
     public msPerBeatDivision = $derived(this.currentlyPlayingGrid?.msPerBeatDivision);
@@ -135,11 +136,7 @@ export class AppStateStore {
                 this.reset()
                 break;
             case DomainEvent.DatabaseError:
-                if (event.error == "UnknownError: The user denied permission to access the database.") {
-                    this.errors.set("DB Permissions", { message: "You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page" })
-                } else {
-                    this.errors.set(event.doingWhat, { message: `Error ${event.doingWhat}: [${event.error}]` })
-                }
+                this.errorStore.addError(event)
                 break;
         }
     }
@@ -482,16 +479,21 @@ export class AppStateStore {
 
     // Clears the DBs and resets all state, then reinitialises
     async reset() {
-        await this.instrumentStore.reset()
+        // Clear DBs
         await this.gridService.deleteAllGrids()
         await this.fileService.deleteFile('default file')
+
+        // Clear state
         this.grids.clear()
         this.file = defaultFile
         this.currentlyPlayingGrid = undefined
         this.currentlySelectedCell = undefined
         this.contextMenu = undefined
         this.cellTools = undefined
-        this.errors.clear()
+        
+        // Recreate stores
+        this.instrumentStore = new InstrumentStore()
+        this.errorStore = createErrorStore()
 
         this.initialise()
     }
