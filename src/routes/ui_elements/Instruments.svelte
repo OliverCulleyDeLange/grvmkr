@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { HitId, InstrumentId, InstrumentManager, OnUiEvent } from '$lib';
+	import type { HitId, InstrumentId, InstrumentStore, OnUiEvent } from '$lib';
 	import { defaultHitConfig } from '$lib/audio/default_instruments';
 	import { InstrumentEvent } from '$lib/types/ui/instruments';
 
@@ -8,7 +8,7 @@
 		instrumentManager,
 		onEvent
 	}: {
-		instrumentManager: InstrumentManager;
+		instrumentManager: InstrumentStore;
 		onEvent: OnUiEvent;
 	} = $props();
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GridEvent, type GridUi, type InstrumentManager, type OnUiEvent } from '$lib';
+	import { GridEvent, type GridUi, type InstrumentStore, type OnUiEvent } from '$lib';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
 

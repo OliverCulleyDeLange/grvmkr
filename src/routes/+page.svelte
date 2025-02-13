@@ -30,18 +30,18 @@
 	});
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errors));
-	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentManager, appStateStore.cellTools));
+	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentStore, appStateStore.cellTools));
 	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenu));
 </script>
 
 <div class="p-4">
 	<Toolbar {onEvent} {toolbarUi} />
-	{#if appStateStore.instrumentManager != undefined}
+	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">
 			{#each gridsUi.grids as gridUi}
 				<div>
 					<GridConfig {gridUi} {onEvent} />
-					<Legend instrumentManager={appStateStore.instrumentManager} />
+					<Legend instrumentManager={appStateStore.instrumentStore} />
 					<Grid {gridUi} {onEvent} />
 				</div>
 			{/each}
@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="print:hidden">
-			<Instruments instrumentManager={appStateStore.instrumentManager} {onEvent} />
+			<Instruments instrumentManager={appStateStore.instrumentStore} {onEvent} />
 		</div>
 	{/if}
 </div>

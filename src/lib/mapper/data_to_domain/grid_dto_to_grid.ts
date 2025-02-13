@@ -1,6 +1,6 @@
-import type { Grid, GridCell, GridCellDto, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto, InstrumentManager } from "$lib";
+import type { Grid, GridCell, GridCellDto, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto, InstrumentStore } from "$lib";
 
-export function mapGridDtoToGrid(gridDto: GridDto, instrumentManager: InstrumentManager): Grid {
+export function mapGridDtoToGrid(gridDto: GridDto, instrumentManager: InstrumentStore): Grid {
     return {
         id: gridDto.id,
         index: gridDto.index,
@@ -23,7 +23,7 @@ export function configFromDto(configDto: GridConfigDto): GridConfig {
     };
 }
 
-export function rowFromDto(gridRowDto: GridRowDto, instrumentManager: InstrumentManager): GridRow {
+export function rowFromDto(gridRowDto: GridRowDto, instrumentManager: InstrumentStore): GridRow {
     let instrument = instrumentManager.instruments.get(gridRowDto.instrumentId)
     if (!instrument) {
         console.error(`Can't find instrument with id [${gridRowDto.instrumentId}] from db. Domain obj will have no instrument!`, instrument)

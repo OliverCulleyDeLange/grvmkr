@@ -4,7 +4,7 @@ export * from "./audio/default_instruments"
 export * from "./audio/audio_player"
 
 export * from "./manager/audio_manager"
-export * from "./manager/instrument_manager.svelte"
+export * from "./state/instrument_store.svelte"
 
 export * from "./model/default_grid"
 export * from "./model/default_file"

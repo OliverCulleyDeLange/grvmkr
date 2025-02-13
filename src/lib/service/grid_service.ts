@@ -1,10 +1,10 @@
-import { GridTable, InstrumentManager, mapGridDtoToGrid, mapGridToGridDto, type Grid, type GridId } from "$lib";
+import { GridTable, InstrumentStore, mapGridDtoToGrid, mapGridToGridDto, type Grid, type GridId } from "$lib";
 
 export class GridService {
 
-    private instrumentManager: InstrumentManager
+    private instrumentManager: InstrumentStore
 
-    constructor(instrumentManager: InstrumentManager) {
+    constructor(instrumentManager: InstrumentStore) {
         this.instrumentManager = instrumentManager
     }
 

@@ -1,13 +1,13 @@
-import { GridTable, FileTable, mapGridDtoToGrid, InstrumentManager, mapFileDtoToFile, mapToDto } from "$lib";
+import { GridTable, FileTable, mapGridDtoToGrid, InstrumentStore, mapFileDtoToFile, mapToDto } from "$lib";
 import type { GrvMkrFile, GrvMkrFileId, FileDto, Grid, GridId } from "$lib";
 
 export class FileService {
-    private instrumentManager: InstrumentManager
+    private instrumentManager: InstrumentStore
 
     private fileTable: FileTable = new FileTable()
     private gridTable: GridTable = new GridTable()
 
-    constructor(instrumentManager: InstrumentManager) {
+    constructor(instrumentManager: InstrumentStore) {
         this.instrumentManager = instrumentManager
     }
 

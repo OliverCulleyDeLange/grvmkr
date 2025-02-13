@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentManager, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type CellTools, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type HitTypeWithId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, defaultFile, defaultGridRow, GridEvent, InstrumentStore, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type CellTools, type ContextMenu, type ErrorId, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type HitTypeWithId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -9,9 +9,9 @@ import { SvelteMap } from "svelte/reactivity";
 
 export class AppStateStore {
     // TODO make private
-    public instrumentManager: InstrumentManager = new InstrumentManager();
-    private gridService: GridService = new GridService(this.instrumentManager)
-    private fileService: FileService = new FileService(this.instrumentManager)
+    public instrumentStore: InstrumentStore = new InstrumentStore();
+    private gridService: GridService = new GridService(this.instrumentStore)
+    private fileService: FileService = new FileService(this.instrumentStore)
     private playingIntervalId: number | undefined = undefined;
     private nextCount: number = 0;
 
@@ -110,19 +110,19 @@ export class AppStateStore {
                 })
                 break;
             case InstrumentEvent.RemoveInstrument:
-                this.instrumentManager.removeInstrument(event.instrumentId);
+                this.instrumentStore.removeInstrument(event.instrumentId);
                 this.syncInstruments();
                 break;
             case InstrumentEvent.AddInstrument:
-                this.instrumentManager.addInstrumentFromConfig(defaultInstrumentConfig);
+                this.instrumentStore.addInstrumentFromConfig(defaultInstrumentConfig);
                 this.syncInstruments();
                 break;
             case InstrumentEvent.MoveUp:
-                this.instrumentManager.moveInstrument(event.event, event.instrumentId)
+                this.instrumentStore.moveInstrument(event.event, event.instrumentId)
                 this.syncInstruments();
                 break;
             case InstrumentEvent.MoveDown:
-                this.instrumentManager.moveInstrument(event.event, event.instrumentId)
+                this.instrumentStore.moveInstrument(event.event, event.instrumentId)
                 this.syncInstruments();
                 break;
             case ToolbarEvent.Save:
@@ -266,7 +266,7 @@ export class AppStateStore {
             this.currentlyPlayingGrid.playing = false;
         }
         if (newPlaying) {
-            await this.instrumentManager.ensureInstrumentsInitialised();
+            await this.instrumentStore.ensureInstrumentsInitialised();
             this.currentlyPlayingGrid = this.grids.get(gridId);
             this.stop()
             this.play()
@@ -287,7 +287,7 @@ export class AppStateStore {
     // - Update cell tools
     onTapGridCell(event: TappedGridCell) {
         this.toggleGridHit(event.locator);
-        this.instrumentManager?.playHit(this.getCell(event.locator)?.hits[0]);
+        this.instrumentStore?.playHit(this.getCell(event.locator)?.hits[0]);
         if (this.currentlySelectedCell) {
             this.updateGridCell(this.currentlySelectedCell, (cell) => {
                 cell.selected = false
@@ -387,12 +387,12 @@ export class AppStateStore {
         this.updateGrids((grid) => {
             // First remove all rows where the instrument is removed
             let filteredRows = grid.rows.filter((row) => {
-                return this.instrumentManager.instruments.has(row.instrument.id);
+                return this.instrumentStore.instruments.has(row.instrument.id);
             });
             // console.log("Filtered rows -", filteredRows)
             // Now add any new instruments
-            if (filteredRows.length < this.instrumentManager.instruments.size) {
-                let instrument = [...this.instrumentManager.instruments.values()].pop();
+            if (filteredRows.length < this.instrumentStore.instruments.size) {
+                let instrument = [...this.instrumentStore.instruments.values()].pop();
                 if (instrument) {
                     filteredRows.push(defaultGridRow(instrument, grid.config.bars, grid.config.beatsPerBar, grid.config.beatDivisions));
                 }
@@ -412,7 +412,7 @@ export class AppStateStore {
         let saveFile: SaveFileV3 = serialiseToSaveFileV3(
             this.file.name,
             [...this.grids.values()],
-            [...this.instrumentManager.instruments.values()]
+            [...this.instrumentStore.instruments.values()]
         );
         const text = JSON.stringify(saveFile);
         const blob = new Blob([text], { type: 'application/json' });
@@ -442,24 +442,24 @@ export class AppStateStore {
 
     async loadSaveFileV1(saveFileContent: string) {
         let saveFile: SaveFileV1 = JSON.parse(saveFileContent);
-        await this.instrumentManager.replaceInstruments(saveFile.instruments);
+        await this.instrumentStore.replaceInstruments(saveFile.instruments);
 
         this.gridService.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
-            let gridModel: Grid = mapSavedGridV1ToGrid(grid, this.instrumentManager);
+            let gridModel: Grid = mapSavedGridV1ToGrid(grid, this.instrumentStore);
             this.addGrid(gridModel)
         });
     }
 
     async loadSaveFileV2(saveFileContent: string) {
         let saveFile: SaveFileV2 = JSON.parse(saveFileContent);
-        await this.instrumentManager.replaceInstruments(saveFile.instruments);
+        await this.instrumentStore.replaceInstruments(saveFile.instruments);
 
         this.gridService.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
-            let gridModel: Grid = mapSavedGridV2ToGrid(grid, this.instrumentManager);
+            let gridModel: Grid = mapSavedGridV2ToGrid(grid, this.instrumentStore);
             this.addGrid(gridModel)
         });
         this.file.name = saveFile.name
@@ -468,12 +468,12 @@ export class AppStateStore {
 
     async loadSaveFileV3(saveFileContent: string) {
         let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
-        await this.instrumentManager.replaceInstruments(saveFile.instruments);
+        await this.instrumentStore.replaceInstruments(saveFile.instruments);
 
         this.gridService.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
-            let gridModel: Grid = mapSavedGridV3ToGrid(grid, this.instrumentManager);
+            let gridModel: Grid = mapSavedGridV3ToGrid(grid, this.instrumentStore);
             this.addGrid(gridModel)
         });
         this.file.name = saveFile.name
@@ -482,7 +482,7 @@ export class AppStateStore {
 
     // Clears the DBs and resets all state, then reinitialises
     async reset() {
-        await this.instrumentManager.reset()
+        await this.instrumentStore.reset()
         await this.gridService.deleteAllGrids()
         await this.fileService.deleteFile('default file')
         this.grids.clear()
@@ -546,14 +546,14 @@ export class AppStateStore {
                 return
             }
             if (cell.hits.length === 1) {
-                this.instrumentManager.playHit(cell.hits[0]);
+                this.instrumentStore.playHit(cell.hits[0]);
             } else {
                 let mergedCellTime = currentlyPlayingGrid.msPerBeatDivision * cell.cells_occupied;
                 
                 cell.hits.forEach((hit, i) => {
                     let delay = (i / cell.hits.length) * mergedCellTime;
                     setTimeout(() => {
-                        this.instrumentManager.playHit(hit);
+                        this.instrumentStore.playHit(hit);
                     }, delay);
                 });
             }            
@@ -562,7 +562,7 @@ export class AppStateStore {
 
     // Initialises the app 
     async initialise() {
-        await this.instrumentManager.initialise()
+        await this.instrumentStore.initialise()
         try {
             let file = await this.fileService.getFile('default file')
             if (file) {
@@ -596,7 +596,7 @@ export class AppStateStore {
 
     addDefaultGrid() {
         const index = this.getNextGridIndex()
-        let grid: Grid = $state(buildDefaultGrid(this.instrumentManager.instruments, index));
+        let grid: Grid = $state(buildDefaultGrid(this.instrumentStore.instruments, index));
         this.addGrid(grid)
     }
 

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { InstrumentManager, LegendInstrument } from '$lib';
+	import type { InstrumentStore, LegendInstrument } from '$lib';
 	import type { LegendUi } from '$lib';
 
 	let {
 		instrumentManager
 	}: {
-		instrumentManager: InstrumentManager;
+		instrumentManager: InstrumentStore;
 	} = $props();
 
 	let ui: LegendUi = $derived.by(() => {

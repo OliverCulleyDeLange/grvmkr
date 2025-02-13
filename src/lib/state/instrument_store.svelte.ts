@@ -5,8 +5,8 @@ import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 
-// Responsible for modifying and playing instruments
-export class InstrumentManager {
+// Responsible for storing, modifying and playing instruments
+export class InstrumentStore {
 
     private audioManager = new AudioManager()
     private audioDb: AudioDb = new AudioDb();
@@ -25,8 +25,7 @@ export class InstrumentManager {
                 instruments.forEach((instrument) => this.saveInstrumentToStateAndDb(instrument))
             }
         } catch (e: any) {
-            let error = e.target.error
-            console.error("Error initialising instruments", error, e)
+            console.error("Error initialising instruments", e)
             this.setupDefaultInstruments();
         }
         return this.instruments

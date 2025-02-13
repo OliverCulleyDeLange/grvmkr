@@ -1,7 +1,7 @@
-import { calculateMsPerBeatDivision, type GridCell, type Grid, type GridRow, type InstrumentManager, type SavedGridConfigV1, type SavedGridRowV1, type SavedGridV1, type SavedInstrumentHitV1 } from "$lib";
+import { calculateMsPerBeatDivision, type GridCell, type Grid, type GridRow, type InstrumentStore, type SavedGridConfigV1, type SavedGridRowV1, type SavedGridV1, type SavedInstrumentHitV1 } from "$lib";
 
 // Maps a saved grid from a save file to grid models
-export function mapSavedGridV1ToGrid(savedGrid: SavedGridV1, instrumentManager: InstrumentManager): Grid {
+export function mapSavedGridV1ToGrid(savedGrid: SavedGridV1, instrumentManager: InstrumentStore): Grid {
     let newRows: GridRow[] = savedGrid.rows.map((row, i) => {
         let instrument = instrumentManager.instruments.get(row.instrument_id)
         if (instrument) {

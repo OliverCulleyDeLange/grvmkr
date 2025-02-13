@@ -1,6 +1,6 @@
-import { type Grid, type GridCellUi, type GridUi, type InstrumentId, type InstrumentManager, type InstrumentWithId, type NotationSection, type GridConfig, type GridRowUi, type GridId, type GridUis, type BeatIndicator, type GridRow, type GridCell, mapCellToolsUi, type CellToolsUi, type OnUiEvent, type CellTools } from "$lib"
+import { type Grid, type GridCellUi, type GridUi, type InstrumentId, type InstrumentStore, type InstrumentWithId, type NotationSection, type GridConfig, type GridRowUi, type GridId, type GridUis, type BeatIndicator, type GridRow, type GridCell, mapCellToolsUi, type CellToolsUi, type OnUiEvent, type CellTools } from "$lib"
 
-export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: InstrumentManager, cellTools: CellTools | undefined): GridUis {
+export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: InstrumentStore, cellTools: CellTools | undefined): GridUis {
     let gridUis: GridUi[] = [...grids.values()].map((grid) =>
         mapRowsToGridUi(grid, instrumentManager, cellTools)
     );
@@ -10,7 +10,7 @@ export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: Instrumen
     return ui
 }
 
-export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentManager, cellTools: CellTools | undefined): GridUi {
+export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentStore, cellTools: CellTools | undefined): GridUi {
     let instruments = instrumentManager.instruments
     let rows = mapRows(grid, instruments)
     let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols, grid.currentlyPlayingColumn)
