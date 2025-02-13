@@ -424,6 +424,7 @@ export class AppStateStore {
     }
 
     async loadFile(file: File) {
+        this.stop()
         let fileText = await file.text()
         let saveFileBase: SaveFile = JSON.parse(fileText)
         switch (saveFileBase.version) {
