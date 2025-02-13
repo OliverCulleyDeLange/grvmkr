@@ -1,4 +1,4 @@
-import { buildDefaultGrid, calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, createErrorStore, defaultFile, defaultGridRow, GridEvent, InstrumentStore, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type CellTools, type ContextMenu, type ErrorId, type ErrorStore, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type HitTypeWithId, type InstrumentHit, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { buildDefaultGrid, calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, createErrorStore, createPlaybackStore, defaultFile, defaultGridRow, GridEvent, InstrumentStore, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type AppError, type CellLocator, type CellTools, type ContextMenu, type ErrorId, type ErrorStore, type Grid, type GridCell, type GridId, type GridRow, type GrvMkrFile, type HitId, type HitTypeWithId, type InstrumentHit, type PlaybackStore, type RemoveGrid, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -11,11 +11,10 @@ export class AppStateStore {
     // TODO make private
     public instrumentStore: InstrumentStore = new InstrumentStore();
     public errorStore: ErrorStore = createErrorStore()
+    public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
 
     private gridService: GridService = new GridService(this.instrumentStore)
     private fileService: FileService = new FileService(this.instrumentStore)
-    private playingIntervalId: number | undefined = undefined;
-    private nextCount: number = 0;
 
     // Main state
     public file: GrvMkrFile = $state(defaultFile)
@@ -24,9 +23,6 @@ export class AppStateStore {
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
     public currentlySelectedCell: CellLocator | undefined = $state();
-
-    // Derived state
-    public msPerBeatDivision = $derived(this.currentlyPlayingGrid?.msPerBeatDivision);
 
     onEvent(event: AppEvent) {
         this.logEvent(event)
@@ -87,7 +83,7 @@ export class AppStateStore {
                     grid.config.bpm = event.bpm;
                     grid.msPerBeatDivision = calculateMsPerBeatDivision(event.bpm, grid.config.beatDivisions);
                 });
-                this.restartInterval()
+                this.playbackStore.restartInterval()
                 break;
             case GridEvent.BarsChanged:
                 this.updateGrid(event.gridId, (grid: Grid) => {
@@ -265,11 +261,13 @@ export class AppStateStore {
         if (newPlaying) {
             await this.instrumentStore.ensureInstrumentsInitialised();
             this.currentlyPlayingGrid = this.grids.get(gridId);
-            this.stop()
-            this.play()
+            this.playbackStore.stop()
+            if (this.currentlyPlayingGrid){
+                this.playbackStore.play(this.currentlyPlayingGrid)
+            }
         } else {
             this.currentlyPlayingGrid = undefined;
-            this.stop()
+            this.playbackStore.stop()
         }
         this.updateGrid(gridId, (grid) => {
             grid.playing = newPlaying;
@@ -421,7 +419,7 @@ export class AppStateStore {
     }
 
     async loadFile(file: File) {
-        this.stop()
+        this.playbackStore.stop()
         let fileText = await file.text()
         let saveFileBase: SaveFile = JSON.parse(fileText)
         switch (saveFileBase.version) {
@@ -494,73 +492,12 @@ export class AppStateStore {
         // Recreate stores
         this.instrumentStore = new InstrumentStore()
         this.errorStore = createErrorStore()
+        this.playbackStore = createPlaybackStore(this.instrumentStore)
 
         this.initialise()
     }
 
-    play() {
-        this.onBeat();
-        this.playingIntervalId = setInterval(() => {
-            this.onBeat();
-        }, this.msPerBeatDivision);
-    }
 
-    stop() {
-        clearInterval(this.playingIntervalId);
-        this.playingIntervalId = undefined;
-        this.nextCount = 0;
-    }
-
-    restartInterval() {
-        clearInterval(this.playingIntervalId);
-        this.playingIntervalId = setInterval(() => {
-            this.onBeat();
-        }, this.msPerBeatDivision);
-    }
-
-    async onBeat() {
-        if (!this.currentlyPlayingGrid) return;
-        let currentlyPlayingGrid = this.currentlyPlayingGrid
-        let count = this.nextCount++;
-
-        let playingCell = count % currentlyPlayingGrid.gridCols;
-        // Update 
-        currentlyPlayingGrid.currentlyPlayingColumn = playingCell;
-
-        let repetition = Math.floor(count / currentlyPlayingGrid.gridCols);
-        let bar =
-            Math.floor(
-                count /
-                (currentlyPlayingGrid.config.beatsPerBar * currentlyPlayingGrid.config.beatDivisions)
-            ) % currentlyPlayingGrid.config.bars;
-        let beat =
-            Math.floor(count / currentlyPlayingGrid.config.beatDivisions) %
-            currentlyPlayingGrid.config.beatsPerBar;
-        let beatDivision = count % currentlyPlayingGrid.config.beatDivisions;
-
-        console.log(
-            `Repetition (${currentlyPlayingGrid.msPerBeatDivision}ms): ${repetition}, Bar ${bar}, Beat ${beat}, Division ${beatDivision} (cell: ${count}, playingCell: ${playingCell}, gridCells; ${currentlyPlayingGrid.gridCols})`
-        );
-
-        currentlyPlayingGrid.rows.forEach((row, rowI) => {
-            let cell = currentlyPlayingGrid.rows[rowI]?.cells[playingCell]
-            if (cell == undefined || cell.hits.length == 0 || cell.cells_occupied < 1) {
-                return
-            }
-            if (cell.hits.length === 1) {
-                this.instrumentStore.playHit(cell.hits[0]);
-            } else {
-                let mergedCellTime = currentlyPlayingGrid.msPerBeatDivision * cell.cells_occupied;
-                
-                cell.hits.forEach((hit, i) => {
-                    let delay = (i / cell.hits.length) * mergedCellTime;
-                    setTimeout(() => {
-                        this.instrumentStore.playHit(hit);
-                    }, delay);
-                });
-            }            
-        });
-    }
 
     // Initialises the app 
     async initialise() {
