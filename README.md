@@ -15,13 +15,7 @@
 - ✅ Saving progress automatically so you don't lose everything if you refresh the page
 
 ### Coming soon (maybe)
-- Triplets
-  - Visually, join two cells in the grid, and put 3 markers in there
-    - How to set different markers?
-    - How to set two cells as joined?
-    - How to deal with the uneven timing. Can't use static ms between beat divisions anymore.
-      - Probably need to calculate a msDelta between the phrase start time, and all the required notes ahead of time, and use setTimeout instead of setInterval to play the sounds
-- Sample packs - Samba, Classics kits
+- Multi select + copy and paste
 
 ### Unimplemented
 Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful. 

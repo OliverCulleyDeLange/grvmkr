@@ -31,4 +31,57 @@ export const defaultInstruments: Array<InstrumentConfig> = [
             { key: "X", description: "", audioFileName: 'kick.wav' },
         ], 
     },
+    { 
+        name: "Surdo L", 
+        hitTypes: [
+            { key: "X", description: "", audioFileName: 'surdo_l.wav' },
+        ], 
+    },
+    { 
+        name: "Surdo M", 
+        hitTypes: [
+            { key: "X", description: "", audioFileName: 'surdo_m.wav' },
+        ], 
+    },
+    { 
+        name: "Surdo H", 
+        hitTypes: [
+            { key: "X", description: "", audioFileName: 'surdo_h.wav' },
+        ], 
+    },
+    { 
+        name: "Repinique", 
+        hitTypes: [
+            { key: "X", description: "", audioFileName: 'repinique_hit.wav' },
+            { key: "r", description: "", audioFileName: 'repinique_rim.wav' },
+            { key: "H", description: "", audioFileName: 'repinique_hand.wav' },
+        ], 
+    },
+    { 
+        name: "Caixa", 
+        hitTypes: [
+            { key: "X", description: "", audioFileName: 'caixa.wav' },
+            { key: "x", description: "", audioFileName: 'caixa_ghost.wav' },
+        ], 
+    },
+    { 
+        name: "Tamborim", 
+        hitTypes: [
+            { key: "X", description: "", audioFileName: 'tamborim.wav' },
+        ], 
+    },
+    { 
+        name: "Timba", 
+        hitTypes: [
+            { key: "S", description: "Slap", audioFileName: 'timba_slap.wav' },
+            { key: "O", description: "Open", audioFileName: 'timba_open.wav' },
+        ], 
+    },
+    { 
+        name: "Shaker", 
+        hitTypes: [
+            { key: "X", description: "", audioFileName: 'shaker_a.wav' },
+            { key: "x", description: "", audioFileName: 'shaker_g.wav' },
+        ], 
+    },
 ];

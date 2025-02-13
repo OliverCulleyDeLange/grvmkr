@@ -63,7 +63,7 @@
 		class:text-gray-500={ui.isFirstBeatOfBar}
 		class:text-gray-400={!ui.isFirstBeatOfBar}
 	>
-		{ui.cellDescription}
+		<!-- {ui.cellDescription} -->
 	</div>
 </button>
 
