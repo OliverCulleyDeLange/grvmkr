@@ -7,7 +7,7 @@
 </script>
 
 <dialog open class="modal">
-	<div class="modal-box bg-gray-700 border border-gray-400 border-2">
+	<div class="modal-box border border-gray-400 border-2">
 		<h3 class="text-lg font-bold">What is this?</h3>
 		<p class="py-4">This is GrvMkr (Groove Maker), a percussion grid notation tool. 
             It is designed to easily create grid notation, listen to the patterns, and print or save them as PDFs</p>
