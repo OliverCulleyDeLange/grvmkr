@@ -28,7 +28,7 @@ export function mapCellToolsUi(
         })
     })
     ui.showMergeRight = !cellTools.isLastCell && cellTools.cellsOccupied < 8
-    ui.showMergeLeft = !cellTools.isFirstCell  && cellTools.cellsOccupied < 8
+    ui.showMergeLeft = !cellTools.isFirstCell && cellTools.cellsOccupied < 8
     ui.showUnMerge = cellTools.cellsOccupied > 1
     return ui
 }

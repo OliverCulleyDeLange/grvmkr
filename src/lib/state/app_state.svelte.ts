@@ -6,12 +6,14 @@ import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { SvelteMap } from "svelte/reactivity";
+import { createCellToolsStore, type CellToolsStore } from "./cell_tools_store.svelte";
 
 export class AppStateStore {
     // TODO make private
     public instrumentStore: InstrumentStore = new InstrumentStore();
     public errorStore: ErrorStore = createErrorStore()
     public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
+    public cellToolsStore: CellToolsStore = createCellToolsStore()
 
     private gridService: GridService = new GridService(this.instrumentStore)
     private fileService: FileService = new FileService(this.instrumentStore)
@@ -19,7 +21,6 @@ export class AppStateStore {
     // Main state
     public file: GrvMkrFile = $state(defaultFile)
     public contextMenu: ContextMenu | undefined = $state()
-    public cellTools: CellTools | undefined = $state()
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
     public currentlySelectedCell: CellLocator | undefined = $state();
@@ -136,6 +137,13 @@ export class AppStateStore {
                 break;
         }
     }
+    
+    updateCellTools() {
+        this.cellToolsStore.updateCellTools(
+            this.currentlySelectedCell,
+            this.currentlySelectedCell ? this.grids.get(this.currentlySelectedCell.grid) : undefined
+        )
+    }
 
     private unMergeCells(locator: CellLocator) {
         this.updateGrid(locator.grid, (grid) => {
@@ -212,8 +220,8 @@ export class AppStateStore {
                 cellToEmpty.hits = [];
                 cellToEmpty.selected = false
                 // Update currently selected cell. if we merge left we should select the cell we merged into
-                if (side == "left"){
-                    this.currentlySelectedCell = {...locator, cell: cellNextToClickedCellIndex}
+                if (side == "left") {
+                    this.currentlySelectedCell = { ...locator, cell: cellNextToClickedCellIndex }
                 }
                 console.log("Cells after merge", $state.snapshot(clickedCell), " & ", $state.snapshot(cellNextToClickedCell))
                 console.log("Grid after merge", $state.snapshot(grid))
@@ -262,7 +270,7 @@ export class AppStateStore {
             await this.instrumentStore.ensureInstrumentsInitialised();
             this.currentlyPlayingGrid = this.grids.get(gridId);
             this.playbackStore.stop()
-            if (this.currentlyPlayingGrid){
+            if (this.currentlyPlayingGrid) {
                 this.playbackStore.play(this.currentlyPlayingGrid)
             }
         } else {
@@ -293,31 +301,6 @@ export class AppStateStore {
         })
         this.currentlySelectedCell = event.locator
         this.updateCellTools()
-    }
-
-    updateCellTools() {
-        if (this.currentlySelectedCell) {
-            const locator = this.currentlySelectedCell
-            const grid = this.grids.get(locator.grid)
-            const instrument = grid?.rows[locator.row].instrument
-            const currentCell = this.getCell(this.currentlySelectedCell)
-            const gridCols = grid?.gridCols
-            const cellsOccupied = currentCell?.cells_occupied ?? 0
-            if (instrument) {
-                this.cellTools = {
-                    gridId: grid.id,
-                    instrument: instrument,
-                    hits: [...instrument?.hitTypes.values() ?? []],
-                    cellsOccupied,
-                    isFirstCell: locator.cell == 0,
-                    isLastCell: gridCols ? locator.cell == gridCols - cellsOccupied : false,
-                }
-            } else {
-                console.error("Can't display cell tools - instrument not found")
-            }
-        } else {
-            this.cellTools = undefined
-        }
     }
 
     // Toggle the hit in the cell 
@@ -487,12 +470,12 @@ export class AppStateStore {
         this.currentlyPlayingGrid = undefined
         this.currentlySelectedCell = undefined
         this.contextMenu = undefined
-        this.cellTools = undefined
-        
+
         // Recreate stores
         this.instrumentStore = new InstrumentStore()
         this.errorStore = createErrorStore()
         this.playbackStore = createPlaybackStore(this.instrumentStore)
+        this.cellToolsStore = createCellToolsStore()
 
         this.initialise()
     }

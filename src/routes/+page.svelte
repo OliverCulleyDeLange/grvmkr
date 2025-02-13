@@ -18,6 +18,7 @@
 	import Instruments from './ui_elements/Instruments.svelte';
 	import Legend from './ui_elements/Legend.svelte';
 	import Toolbar from './ui_elements/Toolbar.svelte';
+	import { get } from 'svelte/store';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
@@ -27,8 +28,16 @@
 	});
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errorStore.errors));
-	let gridsUi: GridUis = $derived(mapGridUi(appStateStore.grids, appStateStore.instrumentStore, appStateStore.cellTools));
-	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenu));
+	let gridsUi: GridUis = $derived(
+		mapGridUi(
+			appStateStore.grids,
+			appStateStore.instrumentStore,
+			get(appStateStore.cellToolsStore.cellTools)
+		)
+	);
+	let contextMenuUi: ContextMenuUi | undefined = $derived(
+		mapContextMenuUi(appStateStore.contextMenu)
+	);
 </script>
 
 <div class="p-4">
