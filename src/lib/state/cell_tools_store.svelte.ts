@@ -1,9 +1,10 @@
 import type { CellLocator, CellTools, Grid } from "$lib";
 import { writable, type Writable } from "svelte/store";
+import type { GridStore } from "./grid_store.svelte";
 
 export type CellToolsStore = {
     cellTools: Writable<CellTools | undefined>
-    updateCellTools: (currentlySelectedCell: CellLocator | undefined, grid: Grid | undefined) => void
+    updateCellTools: (gridStore: GridStore) => void
 }
 
 export const createCellToolsStore = (): CellToolsStore => {
@@ -11,9 +12,11 @@ export const createCellToolsStore = (): CellToolsStore => {
     let cellTools: Writable<CellTools | undefined> = writable()
 
     function updateCellTools(
-        currentlySelectedCell: CellLocator | undefined,
-        grid: Grid | undefined
+        gridStore: GridStore
     ) {
+        const currentlySelectedCell = gridStore.currentlySelectedCell
+        const grid = currentlySelectedCell ? gridStore.grids.get(currentlySelectedCell.grid): undefined
+
         if (currentlySelectedCell) {
             const locator = currentlySelectedCell
             const instrument = grid?.rows[locator.row].instrument

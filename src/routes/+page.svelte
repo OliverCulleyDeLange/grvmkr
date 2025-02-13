@@ -30,7 +30,7 @@
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errorStore.errors));
 	let gridsUi: GridUis = $derived(
 		mapGridUi(
-			appStateStore.grids,
+			appStateStore.gridStore.grids,
 			appStateStore.instrumentStore,
 			get(appStateStore.cellToolsStore.cellTools)
 		)
