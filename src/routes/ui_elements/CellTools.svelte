@@ -14,7 +14,7 @@
 
 <div class="min-h-12">
 	{#if ui.show}
-		<div class="flex justify-start print:hidden">
+		<div class="flex flex-wrap items-center justify-start print:hidden">
 			<Button
 				disabled={!ui.showMergeLeft}
 				onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'left' })}
