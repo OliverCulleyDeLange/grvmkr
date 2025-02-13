@@ -306,16 +306,16 @@ export class AppStateStore {
             const grid = this.grids.get(locator.grid)
             const instrument = grid?.rows[locator.row].instrument
             const currentCell = this.getCell(this.currentlySelectedCell)
-            let gridCols = grid?.gridCols
-
+            const gridCols = grid?.gridCols
+            const cellsOccupied = currentCell?.cells_occupied ?? 0
             if (instrument) {
                 this.cellTools = {
                     gridId: grid.id,
                     instrument: instrument,
                     hits: [...instrument?.hitTypes.values() ?? []],
-                    cellsOccupied: currentCell?.cells_occupied ?? 0,
+                    cellsOccupied,
                     isFirstCell: locator.cell == 0,
-                    isLastCell: gridCols ? locator.cell == gridCols - 1 : false,
+                    isLastCell: gridCols ? locator.cell == gridCols - cellsOccupied : false,
                 }
             } else {
                 console.error("Can't display cell tools - instrument not found")
