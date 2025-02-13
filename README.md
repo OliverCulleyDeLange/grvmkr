@@ -15,7 +15,10 @@
 - ✅ Saving progress automatically so you don't lose everything if you refresh the page
 
 ### Coming soon (maybe)
+- Fix context menu position
 - Multi select + copy and paste
+- Undo / Redo? In case you delete something you didn't mean to 
+- Record and trim sample into instrument
 
 ### Unimplemented
 Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful. 

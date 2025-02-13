@@ -13,20 +13,20 @@
 
 	function handleRightClick(event: Event & MouseEvent) {
 		event.preventDefault();
-		onRightTap(event.pageX, event.pageY);
+		onRightTap(event.clientX, event.clientY);
 	}
 
 	let pressTimer: number;
 
 	function startPress(event: Event & MouseEvent) {
 		pressTimer = setTimeout(() => {
-			onRightTap(event.pageX, event.pageY);
+			onRightTap(event.clientX, event.clientY);
 		}, 250);
 	}
 	function startTouch(event: Event & TouchEvent) {
 		pressTimer = setTimeout(() => {
 			const touch = event.touches[0]
-			onRightTap(touch.pageX, touch.pageY);
+			onRightTap(touch.clientX, touch.clientY);
 		}, 250); 
 	}
 
