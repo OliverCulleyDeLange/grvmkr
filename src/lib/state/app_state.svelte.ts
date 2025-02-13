@@ -337,7 +337,7 @@ export class AppStateStore {
                 nextHits = []
             }
             else if (cell.hits.length == 0) {
-                const hitCount = (2 * cell.cells_occupied) - 1
+                const hitCount = cell.cells_occupied + 1
                 nextHits = Array.from({ length: hitCount, }, () => nextHit)
             } else {
                 nextHits = cell.hits.map((h) => nextHit)
