@@ -15,7 +15,6 @@
 - ✅ Saving progress automatically so you don't lose everything if you refresh the page
 
 ### Coming soon (maybe)
-- Fix context menu position
 - Multi select + copy and paste
 - Undo / Redo? In case you delete something you didn't mean to 
 - Record and trim sample into instrument

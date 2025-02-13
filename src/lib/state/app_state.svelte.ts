@@ -480,12 +480,19 @@ export class AppStateStore {
         console.log(`Filename ${this.file.name}`)
     }
 
+    // Clears the DBs and resets all state, then reinitialises
     async reset() {
         await this.instrumentManager.reset()
         await this.gridService.deleteAllGrids()
         await this.fileService.deleteFile('default file')
         this.grids.clear()
         this.file = defaultFile
+        this.currentlyPlayingGrid = undefined
+        this.currentlySelectedCell = undefined
+        this.contextMenu = undefined
+        this.cellTools = undefined
+        this.errors.clear()
+
         this.initialise()
     }
 
