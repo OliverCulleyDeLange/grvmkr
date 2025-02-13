@@ -52,16 +52,16 @@ export const defaultInstruments: Array<InstrumentConfig> = [
     { 
         name: "Repinique", 
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'repinique_hit.wav' },
-            { key: "r", description: "", audioFileName: 'repinique_rim.wav' },
-            { key: "H", description: "", audioFileName: 'repinique_hand.wav' },
+            { key: "X", description: "Hit", audioFileName: 'repinique_hit.wav' },
+            { key: "r", description: "Rim", audioFileName: 'repinique_rim.wav' },
+            { key: "H", description: "Hand", audioFileName: 'repinique_hand.wav' },
         ], 
     },
     { 
         name: "Caixa", 
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'caixa.wav' },
-            { key: "x", description: "", audioFileName: 'caixa_ghost.wav' },
+            { key: "X", description: "Accent", audioFileName: 'caixa.wav' },
+            { key: "x", description: "Ghost", audioFileName: 'caixa_ghost.wav' },
         ], 
     },
     { 
