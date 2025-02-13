@@ -15,19 +15,21 @@
 <div class="min-h-12">
 	{#if ui.show}
 		<div class="flex justify-start print:hidden">
-			{#if ui.showMergeLeft}
-				<Button onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'left' })}>
-					← Merge
-				</Button>
-			{/if}
-			{#if ui.showMergeRight}
-				<Button onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'right' })}>
-					→ Merge
-				</Button>
-			{/if}
-			{#if ui.showUnMerge}
-				<Button onClick={() => onEvent({ event: CellToolsEvent.UnMerge })}>Un-Merge</Button>
-			{/if}
+			<Button
+				disabled={!ui.showMergeLeft}
+				onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'left' })}
+			>
+				← Merge
+			</Button>
+			<Button
+				disabled={!ui.showMergeRight}
+				onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'right' })}
+			>
+				→ Merge
+			</Button>
+			<Button disabled={!ui.showUnMerge} onClick={() => onEvent({ event: CellToolsEvent.UnMerge })}
+				>Un-Merge</Button
+			>
 
 			{#each ui.hitOptions as [displayString, hits]}
 				<Button

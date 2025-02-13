@@ -2,10 +2,13 @@
 	import type { Snippet } from "svelte";
 
 	let {
-		onClick, classes = "",
+		onClick,
+		classes = "",
+		disabled = false,
 		children
 	}: {
         classes?: string;
+		disabled?: boolean;
 		onClick: () => void;
 		children: Snippet
 	} = $props();
@@ -13,7 +16,8 @@
 
 <button
 	onclick={onClick}
-	class={`btn btn-outline btn-xs m-2 ${classes}`}
+	class={`btn btn-outline btn-xs m-2 disabled:cursor-not-allowed ${classes}`}
+	disabled={disabled}
 >
 	{@render children()}
 </button>
