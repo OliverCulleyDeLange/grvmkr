@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
+	import Button from './Button.svelte';
 	import HelpOverlay from './HelpOverlay.svelte';
 
 	let {
@@ -12,6 +13,7 @@
 
 	let showHelp: boolean = $state(false);
 	let fileName: string = $state(toolbarUi.fileName);
+	let showResetConfirmation: boolean = $state(false);
 
 	$effect(() => {
 		fileName = toolbarUi.fileName;
@@ -28,6 +30,15 @@
 
 	function onFilenameChange() {
 		onEvent({ event: ToolbarEvent.FileNameChanged, fileName: fileName });
+	}
+
+	function reset() {
+		if (showResetConfirmation) {
+			showResetConfirmation = false;
+			onEvent({ event: ToolbarEvent.Reset });
+		} else {
+			showResetConfirmation = true;
+		}
 	}
 </script>
 
@@ -49,9 +60,7 @@
 	/>
 	<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
 
-	<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Reset })}
-		>Reset</button
-	>
+	<button class="btn btn-outline btn-sm" onclick={reset}>Reset</button>
 
 	<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}>?</button>
 	{#if showHelp}
@@ -72,3 +81,16 @@
 	oninput={onFilenameChange}
 	class="input-xl input input-bordered w-full flex-grow"
 />
+
+{#if showResetConfirmation}
+	<dialog open class="modal">
+		<div class="modal-box border border-2 border-gray-400">
+			<h3 class="text-lg font-bold">This will reset and delete EVERYTHING</h3>
+			<p class="py-4">R u sure?</p>
+			<button onclick={reset} class={`btn btn-outline m-2`}> Yes, reset and delete everything</button>
+		</div>
+		<form method="dialog" class="modal-backdrop">
+			<button onclick={() => (showResetConfirmation = false)}>close</button>
+		</form>
+	</dialog>
+{/if}
