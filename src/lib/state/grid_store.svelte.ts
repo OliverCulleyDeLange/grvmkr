@@ -6,7 +6,7 @@ import { mapSavedGridV3ToGrid } from "$lib/serialisation/from_save_file_v3";
 import { GridService } from "$lib/service/grid_service";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { CellLocator, Grid, GridCell, GridId, GridRow, InstrumentHit } from "$lib/types/domain/grid_domain";
-import type { HitId, InstrumentId, InstrumentWithId } from "$lib/types/domain/instrument_domain";
+import type { HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from "$lib/types/domain/instrument_domain";
 import type { SaveFileV1 } from "$lib/types/serialisation/savefile_v1";
 import type { SaveFileV2 } from "$lib/types/serialisation/savefile_v2";
 import type { SaveFileV3 } from "$lib/types/serialisation/savefile_v3";
@@ -27,7 +27,8 @@ export class GridStore {
 
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
-    public currentlySelectedCell: CellLocator | undefined = $state();
+    public currentlySelectedCells: CellLocator[] = $state([]);
+    public copiedCells: GridCell[] = []
 
     async initialise(instruments: Map<InstrumentId, InstrumentWithId>) {
         try {
@@ -49,32 +50,77 @@ export class GridStore {
     }
 
     setCurrentlySelectedCellHits(hits: InstrumentHit[]) {
-        if (this.currentlySelectedCell) {
-            this.updateGridCell(this.currentlySelectedCell, (cell) => {
-                cell.hits = hits
-            })
-        }
+        this.currentlySelectedCells.forEach((locator) => {
+            if (this.currentlySelectedCells) {
+                this.updateGridCell(locator, (cell) => {
+                    cell.hits = hits
+                })
+            }
+        })
     }
 
-    // Multi selects up to locator
+    // Multi selects up to locator on the same row
     selectUpTo(locator: CellLocator) {
+        // find this.currentlySelectedCell with lowest cell
+        let start = this.currentlySelectedCells[0]
+        // Reset after getting start
         this.resetSelected()
-        // Set 'selected' on all grid cells between this.currentlySelectedCell and locator
-        let start = this.currentlySelectedCell
+        // let start = this.currentlySelectedCells[0]
         let end = locator
+        // Set 'selected' on all grid cells between start and locator
         if (start && end) {
-            let startRow = Math.min(start.row, end.row)
-            let endRow = Math.max(start.row, end.row)
             let startCell = Math.min(start.cell, end.cell)
             let endCell = Math.max(start.cell, end.cell)
-            for (let row = startRow; row <= endRow; row++) {
-                for (let cell = startCell; cell <= endCell; cell++) {
-                    this.updateGridCell({ grid: start.grid, row, cell }, (cell) => {
-                        cell.selected = true
-                    })
-                }
+            for (let cell = startCell; cell <= endCell; cell++) {
+                this.updateGridCell({ grid: start.grid, row: start.row, cell }, (cell) => {
+                    cell.selected = true
+                })
+                this.currentlySelectedCells.push({ ...locator, cell: cell })
             }
         }
+        console.log("Selected cells", this.currentlySelectedCells)
+    }
+
+    copyCurrentlySelectedCells() {
+        this.copiedCells = []
+        this.currentlySelectedCells.forEach((locator) => {
+            let cell = this.getCell(locator)
+            if (cell) {
+                this.copiedCells.push(cell)
+            }
+        })
+        console.log("Copied cells", this.copiedCells)
+    }
+
+    pasteCells(instruments: SvelteMap<string, InstrumentWithId>) {
+        // Find the correct instrument for the currently selected cell[0]
+        const firstSelectedCell = this.currentlySelectedCells[0]
+        console.log("Pasting cells", this.copiedCells, "from", firstSelectedCell)
+        let instrumentForPaste = this.grids.get(firstSelectedCell.grid)?.rows[firstSelectedCell.row].instrument
+        if (instrumentForPaste == undefined) { 
+            console.error("Can't paste as can't find instrument on first selected cell", firstSelectedCell)
+            return 
+        }
+        let pastableHitTypes = [...instrumentForPaste.hitTypes.values()]
+
+        // For each this.copiedCells, start at firstSelectedCell and paste the copied cell moving right
+        this.copiedCells.forEach((copiedCell, index) => {
+            let instrumentForCopy: InstrumentWithId | undefined = instruments.get(copiedCell.hits[0]?.instrumentId)
+
+            let locator = { ...firstSelectedCell, cell: firstSelectedCell.cell + index }
+            this.updateGridCell(locator, (cell) => {
+                cell.cells_occupied = copiedCell.cells_occupied
+                // Map the copied cell hits to the new instrument
+                cell.hits = copiedCell.hits.map((copiedInstrumentHit) => {
+                    // Find the hit in 'pastableHitTypes' with the same key as 'instrumentForCopy' and set on newHit
+                    let copiedHit: HitTypeWithId | undefined = instrumentForCopy?.hitTypes.get(copiedInstrumentHit.hitId)
+                    let newInstrumentHit: HitTypeWithId | undefined = pastableHitTypes.find((pastableHits) => pastableHits.key == copiedHit?.key)
+                    // Default to the first hit if we can't find a matching hit
+                    const newInstrumentHitId = newInstrumentHit?.id ?? [...instrumentForPaste.hitTypes.values()][0].id
+                        return { hitId: newInstrumentHitId, instrumentId: instrumentForPaste.id }
+                })
+            })
+        })
     }
 
     // Set 'selected' in all grid cells to false
@@ -86,6 +132,7 @@ export class GridStore {
                 })
             })
         })
+        this.currentlySelectedCells = []
     }
 
     // Combined all actions to be complete when a cell is clicked:
@@ -99,7 +146,7 @@ export class GridStore {
         this.updateGridCell(locator, (cell) => {
             cell.selected = true
         })
-        this.currentlySelectedCell = locator
+        this.currentlySelectedCells = [locator]
     }
 
     // Toggle the hit in the cell 
@@ -131,7 +178,7 @@ export class GridStore {
             );
         }
     }
-    
+
     // Returns the next cyclic hit type.
     // Clicking a cell cycles through all the available hit types
     // TODO Would maybe be better to use right clicking or long pressing or something
@@ -176,9 +223,9 @@ export class GridStore {
     }
 
     unMergeCurrentlySelectedCell() {
-        if (this.currentlySelectedCell) {
-            this.unMergeCells(this.currentlySelectedCell)
-        }
+        this.currentlySelectedCells.forEach((locator) => {
+            this.unMergeCells(locator)
+        })
     }
 
     unMergeCells(locator: CellLocator) {
@@ -219,12 +266,14 @@ export class GridStore {
 
             console.log("Grid after unmerge", $state.snapshot(grid));
         });
-        this.currentlySelectedCell = undefined
+        this.currentlySelectedCells = []
     }
 
     mergeCurrentlySelectedCell(side: "left" | "right") {
-        if (this.currentlySelectedCell) {
-            this.mergeCells(this.currentlySelectedCell, side)
+        if (this.currentlySelectedCells.length == 1) {
+            this.mergeCells(this.currentlySelectedCells[0], side)
+        } else {
+            console.error("Can't merge multiple cells. Currently selected cells", this.currentlySelectedCells)
         }
     }
 
@@ -263,7 +312,7 @@ export class GridStore {
                 cellToEmpty.selected = false
                 // Update currently selected cell. if we merge left we should select the cell we merged into
                 if (side == "left") {
-                    this.currentlySelectedCell = { ...locator, cell: cellNextToClickedCellIndex }
+                    this.currentlySelectedCells = [{ ...locator, cell: cellNextToClickedCellIndex }]
                 }
                 console.log("Cells after merge", $state.snapshot(clickedCell), " & ", $state.snapshot(cellNextToClickedCell))
                 console.log("Grid after merge", $state.snapshot(grid))

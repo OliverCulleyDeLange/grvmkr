@@ -8,7 +8,7 @@ export class CellToolsStore {
     updateCellTools(
         gridStore: GridStore
     ) {
-        const currentlySelectedCell = gridStore.currentlySelectedCell
+        const currentlySelectedCell = gridStore.currentlySelectedCells[0]
         const grid = currentlySelectedCell ? gridStore.grids.get(currentlySelectedCell.grid) : undefined
 
         if (currentlySelectedCell) {

@@ -28,6 +28,12 @@ export class AppStateStore {
             case UiEvent.Mounted:
                 this.initialise();
                 break;
+            case UiEvent.Copy:
+                this.gridStore.copyCurrentlySelectedCells()
+                break;
+            case UiEvent.Paste:
+               this.gridStore.pasteCells(this.instrumentStore.instruments)
+                break;
             case ContextMenuEvent.Dismiss:
                 this.contextMenuStore.clear()
                 break;
