@@ -109,7 +109,16 @@ export class GridStore {
 
             let locator = { ...firstSelectedCell, cell: firstSelectedCell.cell + index }
             this.updateGridCell(locator, (cell) => {
-                cell.cells_occupied = copiedCell.cells_occupied
+                if (copiedCell.cells_occupied > 1) {
+                    // Update the next cells_occupied cells to occupy 0 cells
+                    for (let i = 1; i < copiedCell.cells_occupied; i++) {
+                        this.updateGridCell({ ...locator, cell: locator.cell + i }, (cell) => {
+                            cell.cells_occupied = 0
+                        })
+                    }
+
+                    cell.cells_occupied = copiedCell.cells_occupied
+                }
                 // Map the copied cell hits to the new instrument
                 cell.hits = copiedCell.hits.map((copiedInstrumentHit) => {
                     // Find the hit in 'pastableHitTypes' with the same key as 'instrumentForCopy' and set on newHit
