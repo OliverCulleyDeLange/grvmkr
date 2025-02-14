@@ -56,18 +56,46 @@ export class GridStore {
         }
     }
 
+    // Multi selects up to locator
+    selectUpTo(locator: CellLocator) {
+        this.resetSelected()
+        // Set 'selected' on all grid cells between this.currentlySelectedCell and locator
+        let start = this.currentlySelectedCell
+        let end = locator
+        if (start && end) {
+            let startRow = Math.min(start.row, end.row)
+            let endRow = Math.max(start.row, end.row)
+            let startCell = Math.min(start.cell, end.cell)
+            let endCell = Math.max(start.cell, end.cell)
+            for (let row = startRow; row <= endRow; row++) {
+                for (let cell = startCell; cell <= endCell; cell++) {
+                    this.updateGridCell({ grid: start.grid, row, cell }, (cell) => {
+                        cell.selected = true
+                    })
+                }
+            }
+        }
+    }
+
+    // Set 'selected' in all grid cells to false
+    resetSelected() {
+        this.grids.forEach((grid) => {
+            grid.rows.forEach((row) => {
+                row.cells.forEach((cell) => {
+                    cell.selected = false
+                })
+            })
+        })
+    }
+
     // Combined all actions to be complete when a cell is clicked:
     // - Toggle the hit
     // - Play the new hit
     // - Update the selected state
     // - Update cell tools
     onTapGridCell(locator: CellLocator) {
+        this.resetSelected()
         this.toggleGridHit(locator);
-        if (this.currentlySelectedCell) {
-            this.updateGridCell(this.currentlySelectedCell, (cell) => {
-                cell.selected = false
-            })
-        }
         this.updateGridCell(locator, (cell) => {
             cell.selected = true
         })

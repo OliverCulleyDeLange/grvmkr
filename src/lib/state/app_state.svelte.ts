@@ -146,10 +146,14 @@ export class AppStateStore {
     // - Update the selected state
     // - Update cell tools
     onTapGridCell(event: TappedGridCell) {
-        this.gridStore.onTapGridCell(event.locator)
-        const hit = this.gridStore.getHitAt(event.locator)
-        this.instrumentStore?.playHit(hit);
-        this.updateCellTools()
+        if (event.shiftHeld) {
+            this.gridStore.selectUpTo(event.locator)
+        } else {
+            this.gridStore.onTapGridCell(event.locator)
+            const hit = this.gridStore.getHitAt(event.locator)
+            this.instrumentStore?.playHit(hit);
+            this.updateCellTools()
+        }
     }
 
     save() {
