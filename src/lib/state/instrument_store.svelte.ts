@@ -69,7 +69,7 @@ export class InstrumentStore {
 
     async ensureInstrumentsInitialised() {
         const allHits = [...this.instruments.values()]
-        .flatMap((hit) => [...hit.hitTypes.values()])
+            .flatMap((hit) => [...hit.hitTypes.values()])
         return await this.audioManager.ensureAllAudioInitialised(allHits)
     }
 
@@ -133,10 +133,10 @@ export class InstrumentStore {
         if (!movingInstrument) return
         let movingIndex = movingInstrument.gridIndex
 
-        let swappingIndex 
-        if (event == InstrumentEvent.MoveDown){
+        let swappingIndex
+        if (event == InstrumentEvent.MoveDown) {
             swappingIndex = movingIndex + 1
-        } else if (event == InstrumentEvent.MoveUp){
+        } else if (event == InstrumentEvent.MoveUp) {
             swappingIndex = movingIndex - 1
         } else {
             return
@@ -147,7 +147,7 @@ export class InstrumentStore {
             i.gridIndex = swappingIndex
         })
         this.updateInstrument(swappingInstrument.id, (i) => {
-             i.gridIndex = movingIndex
+            i.gridIndex = movingIndex
         })
     }
 
@@ -186,7 +186,12 @@ export class InstrumentStore {
     }
 
     // When loading from file, replace all instruments
-    async replaceInstruments(instruments: SavedInstrumentV3[]) {
+    async replaceInstrumentsV1(instruments: SavedInstrumentV1[]) {
+        this.replaceInstrumentsV3(instruments.map((i) => { return { ...i, version: 3, gridIndex: 0 } }))
+    }
+
+    // When loading from file, replace all instruments
+    async replaceInstrumentsV3(instruments: SavedInstrumentV3[]) {
         await this.reset()
         instruments.forEach((instrument) => {
             let hitMap = new SvelteMap(instrument.hits.map((hit) => {

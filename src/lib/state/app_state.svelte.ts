@@ -187,20 +187,20 @@ export class AppStateStore {
 
     async loadSaveFileV1(saveFileContent: string) {
         let saveFile: SaveFileV1 = JSON.parse(saveFileContent);
-        await this.instrumentStore.replaceInstruments(saveFile.instruments);
+        await this.instrumentStore.replaceInstrumentsV1(saveFile.instruments);
         this.gridStore.loadSaveFileV1(saveFile, this.instrumentStore)
     }
 
     async loadSaveFileV2(saveFileContent: string) {
         let saveFile: SaveFileV2 = JSON.parse(saveFileContent);
-        await this.instrumentStore.replaceInstruments(saveFile.instruments);
+        await this.instrumentStore.replaceInstrumentsV1(saveFile.instruments);
         this.gridStore.loadSaveFileV2(saveFile, this.instrumentStore)
         this.file.name = saveFile.name
     }
 
     async loadSaveFileV3(saveFileContent: string) {
         let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
-        await this.instrumentStore.replaceInstruments(saveFile.instruments);
+        await this.instrumentStore.replaceInstrumentsV3(saveFile.instruments);
         this.gridStore.loadSaveFileV3(saveFile, this.instrumentStore)
         this.file.name = saveFile.name
     }
