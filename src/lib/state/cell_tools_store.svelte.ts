@@ -1,4 +1,4 @@
-import type { CellLocator, CellTools, Grid } from "$lib";
+import type { CellTools } from "$lib";
 import { writable, type Writable } from "svelte/store";
 import type { GridStore } from "./grid_store.svelte";
 

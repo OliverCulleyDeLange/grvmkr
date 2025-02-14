@@ -35,7 +35,7 @@
 			get(appStateStore.cellToolsStore.cellTools)
 		)
 	);
-	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(get(appStateStore.contextMenuStore.contextMenu)));
+	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenuStore.contextMenu))
 </script>
 
 <div class="p-4">
