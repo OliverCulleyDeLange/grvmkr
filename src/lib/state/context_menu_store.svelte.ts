@@ -7,7 +7,6 @@ export class ContextMenuStore {
         const locator = event.locator
         const cell = grid?.rows[locator.row].cells[locator.cell]
         let gridCols = grid?.gridCols
-        console.error("old", $state.snapshot(this.contextMenu))
         this.contextMenu = {
             x: event.x,
             y: event.y,
@@ -16,7 +15,6 @@ export class ContextMenuStore {
             isLastCell: gridCols ? locator.cell == gridCols - 1 : false,
             isMergedCell: cell ? cell.cells_occupied > 1 : false
         }
-        console.error("new", $state.snapshot(this.contextMenu))
     }
 
     clear = () => this.contextMenu = undefined
