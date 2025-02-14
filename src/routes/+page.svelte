@@ -24,7 +24,19 @@
 
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
 	});
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+			onEvent({ event: UiEvent.Copy });
+		}
+
+		if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
+			onEvent({ event: UiEvent.Paste });
+		}
+	}
 
 	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errorStore.errors));
 	let gridsUi: GridUis = $derived(
@@ -34,7 +46,9 @@
 			appStateStore.cellToolsStore.cellTools
 		)
 	);
-	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenuStore.contextMenu))
+	let contextMenuUi: ContextMenuUi | undefined = $derived(
+		mapContextMenuUi(appStateStore.contextMenuStore.contextMenu)
+	);
 </script>
 
 <div class="p-4">
