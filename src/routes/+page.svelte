@@ -18,7 +18,6 @@
 	import Instruments from './ui_elements/Instruments.svelte';
 	import Legend from './ui_elements/Legend.svelte';
 	import Toolbar from './ui_elements/Toolbar.svelte';
-	import { get } from 'svelte/store';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);

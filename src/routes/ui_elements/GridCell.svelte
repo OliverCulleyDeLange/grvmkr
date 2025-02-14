@@ -7,9 +7,13 @@
 		onRightTap
 	}: {
 		ui: GridCellUi;
-		onTap: () => void;
+		onTap: (shiftKey: boolean) => void;
 		onRightTap: (x: number, y: number) => void;
 	} = $props();
+
+	function handleClick(event: MouseEvent) {
+		onTap(event.shiftKey);
+	}
 
 	function handleRightClick(event: Event & MouseEvent) {
 		event.preventDefault();
@@ -25,9 +29,9 @@
 	}
 	function startTouch(event: Event & TouchEvent) {
 		pressTimer = setTimeout(() => {
-			const touch = event.touches[0]
+			const touch = event.touches[0];
 			onRightTap(touch.clientX, touch.clientY);
-		}, 250); 
+		}, 250);
 	}
 
 	function cancelPress() {
@@ -36,15 +40,15 @@
 </script>
 
 <button
-	onclick={onTap}
+	onclick={handleClick}
 	onmousedown={startPress}
 	onmouseup={cancelPress}
 	onmouseleave={cancelPress}
 	ontouchstart={startTouch}
 	ontouchend={cancelPress}
 	oncontextmenu={handleRightClick}
-	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-between  font-bold
-	text-gray-800 print:border print:border-gray-400" 
+	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-between font-bold
+	text-gray-800 print:border print:border-gray-400"
 	style="grid-column: span {ui.cellsOccupied}"
 	class:bg-gray-100={!ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-300={ui.isBeat && !ui.isFirstBeatOfBar}
@@ -53,7 +57,7 @@
 	class:border={ui.selected}
 	class:border-green-500={ui.selected}
 	class:border-2={ui.selected}
-	>
+>
 	{#each ui.content.split('') as char}
 		<div style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>{char}</div>
 	{/each}

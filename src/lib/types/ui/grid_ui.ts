@@ -73,6 +73,7 @@ export type TogglePlaying = {
 export type TappedGridCell = {
     event: GridEvent.TappedGridCell
     locator: CellLocator
+    shiftHeld: boolean
 }
 export type RightClick = {
     event: GridEvent.RightClick
