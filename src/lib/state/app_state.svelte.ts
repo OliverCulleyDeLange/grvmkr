@@ -1,11 +1,10 @@
-import { CellToolsEvent, ContextMenuEvent, ContextMenuStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ContextMenu, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { CellToolsEvent, CellToolsStore, ContextMenuEvent, ContextMenuStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ContextMenu, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
-import { createCellToolsStore, type CellToolsStore } from "./cell_tools_store.svelte";
 import { GridStore } from "./grid_store.svelte";
 
 export class AppStateStore {
@@ -14,7 +13,7 @@ export class AppStateStore {
     public gridStore: GridStore = new GridStore(this.instrumentStore, this.onEvent);
     public errorStore: ErrorStore = createErrorStore()
     public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
-    public cellToolsStore: CellToolsStore = createCellToolsStore()
+    public cellToolsStore: CellToolsStore = new CellToolsStore()
     public contextMenuStore: ContextMenuStore = new ContextMenuStore()
 
     private gridService: GridService = new GridService(this.instrumentStore)

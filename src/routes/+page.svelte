@@ -32,7 +32,7 @@
 		mapGridUi(
 			appStateStore.gridStore.grids,
 			appStateStore.instrumentStore,
-			get(appStateStore.cellToolsStore.cellTools)
+			appStateStore.cellToolsStore.cellTools
 		)
 	);
 	let contextMenuUi: ContextMenuUi | undefined = $derived(mapContextMenuUi(appStateStore.contextMenuStore.contextMenu))
