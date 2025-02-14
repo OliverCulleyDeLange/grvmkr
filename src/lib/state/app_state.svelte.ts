@@ -1,4 +1,4 @@
-import { calculateMsPerBeatDivision, CellToolsEvent, ContextMenuEvent, createErrorStore, createPlaybackStore, defaultFile, defaultGridRow, GridEvent, InstrumentStore, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ContextMenu, type ErrorStore, type Grid, type GridId, type GridRow, type GrvMkrFile, type HitId, type InstrumentHit, type PlaybackStore, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { CellToolsEvent, ContextMenuEvent, createContextMenuStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ContextMenu, type ContextMenuStore, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -15,13 +15,13 @@ export class AppStateStore {
     public errorStore: ErrorStore = createErrorStore()
     public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
     public cellToolsStore: CellToolsStore = createCellToolsStore()
+    public contextMenuStore: ContextMenuStore = createContextMenuStore()
 
     private gridService: GridService = new GridService(this.instrumentStore)
     private fileService: FileService = new FileService(this.instrumentStore)
 
     // Main state
     public file: GrvMkrFile = $state(defaultFile)
-    public contextMenu: ContextMenu | undefined = $state()
 
     onEvent(event: AppEvent) {
         this.logEvent(event)
@@ -30,7 +30,7 @@ export class AppStateStore {
                 this.initialise();
                 break;
             case ContextMenuEvent.Dismiss:
-                this.contextMenu = undefined
+                this.contextMenuStore.clear()
                 break;
             case ContextMenuEvent.MergeCells:
                 this.gridStore.mergeCells(event.locator, event.side)
@@ -61,7 +61,7 @@ export class AppStateStore {
                 this.onTapGridCell(event)
                 break;
             case GridEvent.RightClick:
-                this.showContextMenu(event)
+                this.contextMenuStore.createContextMenu(event, this.gridStore.grids.get(event.gridId))
                 break;
             case GridEvent.RemoveGrid:
                 this.gridStore.removeGrid(event);
@@ -124,21 +124,6 @@ export class AppStateStore {
     // Filters chatty events, and logs
     private logEvent(event: AppEvent) {
         console.log('Event:', event.event, event);
-    }
-
-    private showContextMenu(event: RightClick) {
-        const locator = event.locator
-        const grid = this.gridStore.grids.get(event.gridId)
-        const cell = grid?.rows[locator.row].cells[locator.cell]
-        let gridCols = grid?.gridCols
-        this.contextMenu = {
-            x: event.x,
-            y: event.y,
-            locator: locator,
-            isFirstCell: locator.cell == 0,
-            isLastCell: gridCols ? locator.cell == gridCols - 1 : false,
-            isMergedCell: cell ? cell.cells_occupied > 1 : false
-        }
     }
 
     async onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
