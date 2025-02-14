@@ -4,6 +4,7 @@
 ## Features
 - ✅ Live editing
   - Modify the grid and hear the results immediately, even when playing.
+  - Multi select grid cells in a row (shift click) + copy (ctrl/cmd + C) and paste (ctrl/cmd + V)
 - ✅ Choose the BPM for your composition (obviously)
 - ✅ Create your own instruments
   - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
@@ -15,7 +16,9 @@
 - ✅ Saving progress automatically so you don't lose everything if you refresh the page
 
 ### Coming soon (maybe)
-- Multi select + copy and paste
+- Add copy / paste to context menu
+- Add available hits to context menu
+- Make cell tools staticly positioned
 - Undo / Redo? In case you delete something you didn't mean to 
 - Record and trim sample into instrument
 
