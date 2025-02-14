@@ -16,6 +16,11 @@
 		<p class="py-4">This is meant to replace Mango Drum, a discontinued old windows only software that does pretty much the same thing. 
             I have no affiliation with Mango Drum, I built this because I was asked nicely by my mother, and you must <strong>always</strong> do as your mother says.
          </p>
+    
+        <h3 class="text-lg font-bold">Tips & Tricks</h3>
+		<p class="py-4">
+			You can multi-select cells by holding shift and clicking. Then you can copy and paste them with ctrl+c and ctrl+v.
+         </p>
 
         <h3 class="text-lg font-bold">Issues & Feature Requests</h3>
 		<p class="py-4">

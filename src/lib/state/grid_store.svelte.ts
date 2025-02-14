@@ -92,23 +92,27 @@ export class GridStore {
         console.log("Copied cells", this.copiedCells)
     }
 
+    // Paste the copied cells starting at the currently selected cell
+    // If pasting to a different row / instrument, we see if there's a hit with a matching HitKey
+    // Otherwise we default to pasting the first instrument hit
     pasteCells(instruments: SvelteMap<string, InstrumentWithId>) {
-        // Find the correct instrument for the currently selected cell[0]
+        // Find the instrument for the currently selected cell[0]
         const firstSelectedCell = this.currentlySelectedCells[0]
-        console.log("Pasting cells", this.copiedCells, "from", firstSelectedCell)
         let instrumentForPaste = this.grids.get(firstSelectedCell.grid)?.rows[firstSelectedCell.row].instrument
-        if (instrumentForPaste == undefined) { 
+        if (instrumentForPaste == undefined) {
             console.error("Can't paste as can't find instrument on first selected cell", firstSelectedCell)
-            return 
+            return
         }
         let pastableHitTypes = [...instrumentForPaste.hitTypes.values()]
+        console.log("Pasting cells", this.copiedCells, "from", firstSelectedCell, "with available hit types", pastableHitTypes)
 
-        // For each this.copiedCells, start at firstSelectedCell and paste the copied cell moving right
+        // For each copiedCell, start at firstSelectedCell and paste the copied cell moving right
         this.copiedCells.forEach((copiedCell, index) => {
-            let instrumentForCopy: InstrumentWithId | undefined = instruments.get(copiedCell.hits[0]?.instrumentId)
+            let instrumentFromCopiedCell: InstrumentWithId | undefined = instruments.get(copiedCell.hits[0]?.instrumentId)
 
             let locator = { ...firstSelectedCell, cell: firstSelectedCell.cell + index }
             this.updateGridCell(locator, (cell) => {
+                // If we're pasting a merged cell, we need to update the cells to the right to occupy 0 cells
                 if (copiedCell.cells_occupied > 1) {
                     // Update the next cells_occupied cells to occupy 0 cells
                     for (let i = 1; i < copiedCell.cells_occupied; i++) {
@@ -122,11 +126,11 @@ export class GridStore {
                 // Map the copied cell hits to the new instrument
                 cell.hits = copiedCell.hits.map((copiedInstrumentHit) => {
                     // Find the hit in 'pastableHitTypes' with the same key as 'instrumentForCopy' and set on newHit
-                    let copiedHit: HitTypeWithId | undefined = instrumentForCopy?.hitTypes.get(copiedInstrumentHit.hitId)
+                    let copiedHit: HitTypeWithId | undefined = instrumentFromCopiedCell?.hitTypes.get(copiedInstrumentHit.hitId)
                     let newInstrumentHit: HitTypeWithId | undefined = pastableHitTypes.find((pastableHits) => pastableHits.key == copiedHit?.key)
                     // Default to the first hit if we can't find a matching hit
                     const newInstrumentHitId = newInstrumentHit?.id ?? [...instrumentForPaste.hitTypes.values()][0].id
-                        return { hitId: newInstrumentHitId, instrumentId: instrumentForPaste.id }
+                    return { hitId: newInstrumentHitId, instrumentId: instrumentForPaste.id }
                 })
             })
         })
