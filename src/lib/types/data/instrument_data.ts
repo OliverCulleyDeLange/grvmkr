@@ -10,7 +10,8 @@ export type InstrumentDto = {
     id: InstrumentDtoId
     hitTypes: HitDtoId[]
     gridIndex: number
-    name: string
+    name: string,
+    volume: number | undefined
 };
 
 // Stored in the hits store

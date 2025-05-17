@@ -10,6 +10,30 @@
 		gridUi: GridUi;
 		onEvent: OnUiEvent;
 	} = $props();
+
+	let startX = 0;
+	let x = '';
+
+	function handlePointerDown(event, instrumentId: string) {
+		startX = event.clientX;
+		x = instrumentId;
+		window.addEventListener('pointermove', handlePointerMove);
+		window.addEventListener('pointerup', handlePointerUp);
+	}
+
+	function handlePointerMove(event) {
+		onEvent({
+			event: GridEvent.VolumeChanged,
+			instrumentId: x,
+			delta: event.clientX - startX
+		});
+		startX = event.clientX;
+	}
+
+	function handlePointerUp() {
+		window.removeEventListener('pointermove', handlePointerMove);
+		window.removeEventListener('pointerup', handlePointerUp);
+	}
 </script>
 
 <div class="flex flex-col gap-2">
@@ -42,14 +66,27 @@
 
 			{#each section.sectionRows as row}
 				<!-- Name -->
-				<div class="px-2">
-					<div>{row.instrumentName}</div>
+				<div class="select-none px-2 text-xs">
+					<div>
+						{row.instrumentName}
+					</div>
+					<div class="flex gap-2">
+						<!-- <button class="text-xs">M</button>
+						<button class="text-xs">S</button> -->
+						<div
+							class="cursor-ew-resize text-xs text-gray-500"
+							onpointerdown={(e) => handlePointerDown(e, row.instrumentId)}
+						>
+							{row.instrumentVolume}
+						</div>
+					</div>
 				</div>
 
 				{#each row.gridCells as cell}
 					<GridCell
 						ui={cell}
-						onTap={(shift) => onEvent({ event: GridEvent.TappedGridCell, locator: cell.locator, shiftHeld: shift })}
+						onTap={(shift) =>
+							onEvent({ event: GridEvent.TappedGridCell, locator: cell.locator, shiftHeld: shift })}
 						onRightTap={(x, y) =>
 							onEvent({
 								event: GridEvent.RightClick,

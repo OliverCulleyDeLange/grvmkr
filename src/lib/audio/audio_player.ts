@@ -3,7 +3,9 @@ export class AudioPlayer {
     public url: string;
     private audioBuffer: AudioBuffer | null = null;
     private sourceNode: AudioBufferSourceNode | null = null;
+    private gainNode: GainNode | null = null;
     private audioContext: AudioContext | null = null;
+
 
     constructor(url: string) {
         this.url = url
@@ -20,6 +22,8 @@ export class AudioPlayer {
             const response = await fetch(this.url);
             const arrayBuffer = await response.arrayBuffer();
             this.audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            this.gainNode = audioContext.createGain();
+            this.gainNode.gain.value = 0.8;
         } catch (error) {
             console.error("Error loading audio:", error);
         }
@@ -33,7 +37,13 @@ export class AudioPlayer {
         if (this.audioBuffer && this.audioContext) {
             this.sourceNode = this.audioContext.createBufferSource();
             this.sourceNode.buffer = this.audioBuffer;
-            this.sourceNode.connect(this.audioContext.destination);
+            if (this.gainNode) {
+                this.sourceNode.connect(this.gainNode);
+                this.gainNode.connect(this.audioContext.destination);
+            } else {
+                console.error(`No Gain control`)
+                this.sourceNode.connect(this.audioContext.destination);
+            }
             this.sourceNode.start();
         } else {
             console.error(`Audio not loaded yet for ${this.url}`);
@@ -43,6 +53,13 @@ export class AudioPlayer {
     stop(): void {
         if (this.sourceNode) {
             this.sourceNode.stop();
+        }
+    }
+
+    setVolume(volume: number): void {
+        if (this.gainNode) {
+            console.log("Setting volume to:", volume);
+            this.gainNode.gain.setValueAtTime(volume, this.audioContext!.currentTime);
         }
     }
 }

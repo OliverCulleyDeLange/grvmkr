@@ -4,6 +4,7 @@ import { AudioManager, InstrumentService } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
+import { clamp } from "$lib/math/math";
 
 // Responsible for storing, modifying and playing instruments
 export class InstrumentStore {
@@ -97,6 +98,19 @@ export class InstrumentStore {
             hit.audioFileName = storedFilename
         })
         this.audioManager.removeHit(hitId)
+    }
+
+    onChangeVolume(id: InstrumentId, delta: number) {
+        this.updateInstrument(id, (instrument) => {
+            console.log(instrument.volume, delta)
+            if (instrument.volume != undefined) {
+                instrument.volume = clamp(instrument.volume += (delta / 100), 0, 1)
+                // modify volume for each hit type
+                instrument.hitTypes.forEach((hit) => {
+                   this.audioManager.setVolume(hit.id, instrument.volume)
+                })
+            } else instrument.volume = 0.8
+        })
     }
 
     // Adds instruments from config, generating a new ID

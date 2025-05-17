@@ -20,8 +20,6 @@
 - Mobile friendly select copy and paste
 - Duplicate grid
 - Configurable instruments per grid / groove
-- Add copy / paste to context menu
-- Add available hits to context menu
 - Make cell tools staticly positioned on mobile and maybe on desktop
 - Undo / Redo? In case you delete something you didn't mean to 
 - Record and trim sample into instrument

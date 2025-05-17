@@ -54,6 +54,15 @@ export class AudioManager {
         this.hits.delete(hitId)
     }
 
+    setVolume(hitId: HitId, volume: number) {
+        let player = this.hits.get(hitId)
+        if (player) {
+            player.setVolume(volume)
+        } else {
+            console.error(`Can't set volume for ${hitId}, as no player. ExistingPlayers: `, this.hits)
+        }
+    }
+
     reset() {
         this.hits.clear()
     }

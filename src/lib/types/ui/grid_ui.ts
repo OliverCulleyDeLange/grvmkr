@@ -35,7 +35,9 @@ export type BeatIndicator = {
 
 export type GridRowUi = {
     index: number,
-    instrumentName: string
+    instrumentId: string,
+    instrumentName: string,
+    instrumentVolume: string
     gridCells: GridCellUi[]
 };
 
@@ -51,7 +53,7 @@ export type GridCellUi = {
 
 // Grid UI Events
 export type GridEvents = TogglePlaying | TappedGridCell | RemoveGrid | AddGrid | 
-    BpmChanged | BarsChanged | GridSizeChanged | NameChanged | RightClick
+    BpmChanged | BarsChanged | GridSizeChanged | NameChanged | VolumeChanged | RightClick
 
 export enum GridEvent {
     TogglePlaying = "TogglePlaying",
@@ -63,6 +65,7 @@ export enum GridEvent {
     BarsChanged = "BarsChanged",
     GridSizeChanged = "GridSizeChanged",
     NameChanged = "NameChanged",
+    VolumeChanged = "VolumeChanged",
 }
 
 export type TogglePlaying = {
@@ -109,4 +112,9 @@ export type NameChanged = {
     event: GridEvent.NameChanged
     gridId: GridId
     name: string
+}
+export type VolumeChanged = {
+    event: GridEvent.VolumeChanged
+    instrumentId: string,
+    delta: number
 }

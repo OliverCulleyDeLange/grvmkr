@@ -48,10 +48,13 @@ function mapRow(
             return mapCellToCellUi(cell, instruments, cellIndex, config, gridId, rowIndex)
         }
     }).filter((x) => x != undefined)
+    let instrument = instruments.get(row.instrument.id)
     let rowUi: GridRowUi = {
         index: row.instrument.gridIndex,
-        instrumentName: instruments.get(row.instrument.id)?.name ?? "error",
-        gridCells
+        instrumentId: instrument?.id ?? "error",
+        instrumentName: instrument?.name ?? "error",
+        gridCells,
+        instrumentVolume: instrument?.volume != undefined ? `${Math.round(instrument.volume * 100)}%` : "err",
     }
     return rowUi
 }

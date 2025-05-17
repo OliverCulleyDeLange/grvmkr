@@ -14,7 +14,8 @@ export type InstrumentWithId = {
     id: InstrumentId
     hitTypes: Map<HitId, HitTypeWithId>
     gridIndex: number
-    name: string
+    name: string,
+    volume: number,
 };
 
 export type HitTypeWithId = HitType & { id: HitId }; 

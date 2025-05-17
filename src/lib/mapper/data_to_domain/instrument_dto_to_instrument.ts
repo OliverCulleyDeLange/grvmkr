@@ -6,7 +6,8 @@ export function mapInstrumentToDomain(instrumentDto: InstrumentDto, hitTypes: Hi
         id: instrumentDto.id,
         gridIndex: instrumentDto.gridIndex,
         name: instrumentDto.name,
-        hitTypes: new SvelteMap(hitTypes.map((hitType) => [hitType.id, hitType]))
+        hitTypes: new SvelteMap(hitTypes.map((hitType) => [hitType.id, hitType])),
+        volume: instrumentDto.volume ?? 0.8,
     };
 }
 
