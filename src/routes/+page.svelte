@@ -2,17 +2,14 @@
 	import {
 		AppStateStore,
 		GridEvent,
-		mapContextMenu as mapContextMenuUi,
 		mapGridUi,
 		mapToolbarUi,
 		UiEvent,
-		type ContextMenuUi,
 		type GridUis
 	} from '$lib';
 	import type { AppEvent } from '$lib/types/event';
 	import { onMount } from 'svelte';
 	import Button from './ui_elements/Button.svelte';
-	import ContextMenu from './ui_elements/ContextMenu.svelte';
 	import Grid from './ui_elements/Grid.svelte';
 	import GridConfig from './ui_elements/GridConfig.svelte';
 	import Instruments from './ui_elements/Instruments.svelte';
@@ -46,9 +43,6 @@
 			appStateStore.cellToolsStore.cellTools
 		)
 	);
-	let contextMenuUi: ContextMenuUi | undefined = $derived(
-		mapContextMenuUi(appStateStore.contextMenuStore.contextMenu)
-	);
 </script>
 
 <div class="p-4">
@@ -75,7 +69,3 @@
 		</div>
 	{/if}
 </div>
-
-{#if contextMenuUi}
-	<ContextMenu ui={contextMenuUi} {onEvent} />
-{/if}

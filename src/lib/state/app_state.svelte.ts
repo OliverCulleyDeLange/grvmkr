@@ -1,4 +1,4 @@
-import { CellToolsEvent, CellToolsStore, ContextMenuEvent, ContextMenuStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ContextMenu, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -14,7 +14,6 @@ export class AppStateStore {
     public errorStore: ErrorStore = createErrorStore()
     public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
     public cellToolsStore: CellToolsStore = new CellToolsStore()
-    public contextMenuStore: ContextMenuStore = new ContextMenuStore()
 
     private gridService: GridService = new GridService(this.instrumentStore)
     private fileService: FileService = new FileService(this.instrumentStore)
@@ -33,17 +32,6 @@ export class AppStateStore {
                 break;
             case UiEvent.Paste:
                this.gridStore.pasteCells(this.instrumentStore.instruments)
-                break;
-            case ContextMenuEvent.Dismiss:
-                this.contextMenuStore.clear()
-                break;
-            case ContextMenuEvent.MergeCells:
-                this.gridStore.mergeCells(event.locator, event.side)
-                this.updateCellTools()
-                break;
-            case ContextMenuEvent.UnMerge:
-                this.gridStore.unMergeCells(event.locator)
-                this.updateCellTools()
                 break;
             case CellToolsEvent.Merge:
                 this.gridStore.mergeCurrentlySelectedCell(event.side)
@@ -66,7 +54,6 @@ export class AppStateStore {
                 this.onTapGridCell(event)
                 break;
             case GridEvent.RightClick:
-                this.contextMenuStore.createContextMenu(event, this.gridStore.grids.get(event.gridId))
                 break;
             case GridEvent.RemoveGrid:
                 this.gridStore.removeGrid(event);
