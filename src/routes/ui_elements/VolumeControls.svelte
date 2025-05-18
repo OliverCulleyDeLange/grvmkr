@@ -1,23 +1,25 @@
 <script lang="ts">
+	import type { VolumeControlUi } from '$lib';
 	import { clamp } from '$lib/util/math';
 
-	export let volumeString: String = '';
-	export let volume: number = 0.5; // from 0 to 1
+	export let model: VolumeControlUi;
 	export let onChange: (volume: number | undefined, delta: number | undefined) => void;
+	export let onMute: () => void;
+	export let onSolo: () => void;
 
-	const width = 60;
-	const height = 16;
+	const volumeSliderWidth = 60;
+	const volumeSliderHeight = 16;
 
 	let isDragging = false;
 	let startX = 0;
 	let startY = 0;
-	let startVolume = volume;
+	let startVolume = model.volume;
 
 	function handlePointerDownForSlider(event: PointerEvent) {
 		const rect = (event.target as SVGElement).getBoundingClientRect();
 		startX = event.clientX;
 		startY = event.clientY;
-		startVolume = volume;
+		startVolume = model.volume;
 		isDragging = true;
 
 		updateVolumeFromDelta(0, 0); // init
@@ -52,30 +54,37 @@
 	}
 
 	function updateVolumeFromDelta(dx: number, dy: number) {
-		const deltaX = dx / width;
-		const deltaY = dy / height;
+		const deltaX = dx / volumeSliderWidth;
+		const deltaY = dy / volumeSliderHeight;
 		const delta = (deltaX + deltaY) / 2;
-		volume = clamp(startVolume + delta, 0, 1);
+		const volume = clamp(startVolume + delta, 0, 1);
 		onChange(volume, undefined);
 	}
 
-	$: fillWidth = width * volume;
-	$: fillHeight = height * volume;
+	$: fillWidth = volumeSliderWidth * model.volume;
+	$: fillHeight = volumeSliderHeight * model.volume;
 </script>
 
+<button class="text-xs" class:text-blue-500={model.muted} onclick={() => onMute()}>M</button>
+<button class="text-xs" class:text-orange-400={model.soloed} onclick={() => onSolo()}>S</button>
+
 <svg
-	{width}
-	{height}
-	viewBox={`0 0 ${width} ${height}`}
+	width={volumeSliderWidth}
+	height={volumeSliderHeight}
+	viewBox={`0 0 ${volumeSliderWidth} ${volumeSliderHeight}`}
 	onpointerdown={handlePointerDownForSlider}
 	style="touch-action: none; cursor: ew-resize;"
 >
 	<!-- Triangle outline -->
-	<polygon points={`${width},${height} 0,${height} ${width},0`} fill="none" stroke="black" />
+	<polygon
+		points={`${volumeSliderWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${volumeSliderWidth},0`}
+		fill="none"
+		stroke="black"
+	/>
 
 	<!-- Shaded volume triangle -->
 	<polygon
-		points={`${fillWidth},${height} 0,${height} ${fillWidth},${height - fillHeight}`}
+		points={`${fillWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${fillWidth},${volumeSliderHeight - fillHeight}`}
 		fill="green"
 		opacity="0.6"
 	/>
@@ -85,5 +94,5 @@
 	class="cursor-ew-resize text-xs text-gray-500"
 	onpointerdown={(e) => handlePointerDownForText(e)}
 >
-	{volumeString}
+	{model.volumeString}
 </div>

@@ -1,4 +1,4 @@
-import type { CellLocator, CellToolsUi, GridConfig, GridId } from "$lib";
+import type { CellLocator, CellToolsUi, GridConfig, GridId, VolumeControlUi } from "$lib";
 
 // UI Models
 export type GridUis = {
@@ -37,9 +37,8 @@ export type GridRowUi = {
     index: number,
     instrumentId: string,
     instrumentName: string,
-    instrumentVolume: number
-    instrumentVolumeString: string
-    gridCells: GridCellUi[]
+    gridCells: GridCellUi[],
+    volume: VolumeControlUi,
 };
 
 export type GridCellUi = {
@@ -53,8 +52,9 @@ export type GridCellUi = {
 }
 
 // Grid UI Events
-export type GridEvents = TogglePlaying | TappedGridCell | RemoveGrid | AddGrid | 
-    BpmChanged | BarsChanged | GridSizeChanged | NameChanged | VolumeChanged | RightClick
+export type GridEvents = TogglePlaying | TappedGridCell | RemoveGrid | AddGrid |
+    BpmChanged | BarsChanged | GridSizeChanged | NameChanged | VolumeChanged | 
+    RightClick | MuteInstrument | SoloInstrument
 
 export enum GridEvent {
     TogglePlaying = "TogglePlaying",
@@ -67,6 +67,8 @@ export enum GridEvent {
     GridSizeChanged = "GridSizeChanged",
     NameChanged = "NameChanged",
     VolumeChanged = "VolumeChanged",
+    MuteInstrument = "MuteInstrument",
+    SoloInstrument = "SoloInstrument",
 }
 
 export type TogglePlaying = {
@@ -120,4 +122,12 @@ export type VolumeChanged = {
     instrumentId: string,
     delta: number | undefined,
     volume: number | undefined,
+}
+export type MuteInstrument = {
+    event: GridEvent.MuteInstrument
+    instrumentId: string,
+}
+export type SoloInstrument = {
+    event: GridEvent.SoloInstrument
+    instrumentId: string,
 }

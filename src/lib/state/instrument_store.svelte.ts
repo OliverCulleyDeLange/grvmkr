@@ -17,6 +17,8 @@ export class InstrumentStore {
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
 
+    private instrumentSoloed = false
+
     // Populate instruments state from db, defaulting to default config
     // Also downloads default sound files
     async initialise(): Promise<Map<InstrumentId, InstrumentWithId>> {
@@ -41,9 +43,13 @@ export class InstrumentStore {
 
     async playHit(hit: InstrumentHit | undefined) {
         if (hit) {
+            let instrument = this.instruments.get(hit.instrumentId)
+            if (instrument?.muted) return 
+            console.log(this.instrumentSoloed, !instrument?.soloed)
+            if (this.instrumentSoloed && !instrument?.soloed) return
+
             if (!this.audioManager.isHitInitialised(hit)) {
                 console.log("Hit not init'd")
-                let instrument = this.instruments.get(hit.instrumentId)
                 let hitType = instrument?.hitTypes.get(hit.hitId)
                 if (hitType) {
                     try {
@@ -119,6 +125,31 @@ export class InstrumentStore {
         })
     }
 
+    onToggleMute(id: InstrumentId) {
+        this.updateInstrument(id, (instrument) => {
+            instrument.muted = !instrument.muted
+            if (instrument.muted) {
+                instrument.soloed = false
+            }
+        })
+    }
+
+    onToggleSolo(id: InstrumentId) {
+        this.updateInstrument(id, (instrument) => {
+            // If we're about to solo this instrument
+            if (!instrument.soloed) {
+                // Unmute it
+                instrument.muted = false
+                // Unsolo all other instruments
+                this.instruments.forEach((i) => {
+                    i.soloed = false
+                })
+            }
+            instrument.soloed = !instrument.soloed
+            this.instrumentSoloed = instrument.soloed
+        })
+    }
+
     // Adds instruments from config, generating a new ID
     addInstrumentFromConfig(instrument: InstrumentConfig) {
         let instrumentId = `instrument_${crypto.randomUUID()}`
@@ -145,6 +176,8 @@ export class InstrumentStore {
             gridIndex: index,
             name: name,
             volume: defaultVolume,
+            muted: false,
+            soloed: false,
         };
         this.saveInstrumentToStateAndDb(instrument);
     }

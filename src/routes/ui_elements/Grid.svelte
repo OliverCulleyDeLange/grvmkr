@@ -48,11 +48,20 @@
 						{row.instrumentName}
 					</div>
 					<div class="flex gap-2">
-						<!-- <button class="text-xs">M</button>
-						<button class="text-xs">S</button> -->
 						<VolumeControls
-							volume={row.instrumentVolume}
-							volumeString={row.instrumentVolumeString}
+							model={row.volume}
+							onMute={() =>
+								onEvent({
+									event: GridEvent.MuteInstrument,
+									instrumentId: row.instrumentId,
+								})
+							}
+							onSolo={() =>
+								onEvent({
+									event: GridEvent.SoloInstrument,
+									instrumentId: row.instrumentId,
+								})
+							}
 							onChange={(volume, delta) =>
 								onEvent({
 									event: GridEvent.VolumeChanged,

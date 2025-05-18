@@ -77,6 +77,12 @@ export class AppStateStore {
             case GridEvent.VolumeChanged:
                 this.instrumentStore.onChangeVolume(event.instrumentId, event.volume, event.delta)
                 break;
+            case GridEvent.MuteInstrument:
+                this.instrumentStore.onToggleMute(event.instrumentId)
+                break;
+            case GridEvent.SoloInstrument:
+                this.instrumentStore.onToggleSolo(event.instrumentId)
+                break;
             case InstrumentEvent.RemoveInstrument:
                 this.instrumentStore.removeInstrument(event.instrumentId);
                 this.syncInstruments();

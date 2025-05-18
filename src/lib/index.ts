@@ -39,6 +39,7 @@ export * from "./types/ui/legend_ui"
 export * from "./types/ui/toolbar"
 export * from "./types/ui/toolbar"
 export * from "./types/ui/cell_tools"
+export * from "./types/ui/volume_control"
 
 export * from "./types/serialisation/savefile"
 export * from "./types/serialisation/savefile_v1"

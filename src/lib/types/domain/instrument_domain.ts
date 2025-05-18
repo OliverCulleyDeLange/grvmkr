@@ -16,6 +16,8 @@ export type InstrumentWithId = {
     gridIndex: number
     name: string,
     volume: number,
+    muted: boolean,
+    soloed: boolean,
 };
 
 export type HitTypeWithId = HitType & { id: HitId }; 
