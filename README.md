@@ -14,9 +14,9 @@
 - ✅ Save your composition grids as a PDF file for sharing with others
   -  Technically possible by 'Printing to PDF'. I've made sure the grids aren't split between pages. 
 - ✅ Saving progress automatically so you don't lose everything if you refresh the page
+- ✅ Mute / Solo and instrument volume controls
 
 ### Coming soon (maybe)
-- Mute / Solo instruments
 - Mobile friendly select copy and paste
 - Duplicate grid
 - Configurable instruments per grid / groove
