@@ -1,4 +1,4 @@
-import type { HitDto, HitTypeWithId, InstrumentDto, InstrumentWithId } from "$lib";
+import { defaultVolume, type HitDto, type HitTypeWithId, type InstrumentDto, type InstrumentWithId } from "$lib";
 import { SvelteMap } from "svelte/reactivity";
 
 export function mapInstrumentToDomain(instrumentDto: InstrumentDto, hitTypes: HitTypeWithId[]): InstrumentWithId {
@@ -7,7 +7,7 @@ export function mapInstrumentToDomain(instrumentDto: InstrumentDto, hitTypes: Hi
         gridIndex: instrumentDto.gridIndex,
         name: instrumentDto.name,
         hitTypes: new SvelteMap(hitTypes.map((hitType) => [hitType.id, hitType])),
-        volume: instrumentDto.volume ?? 0.8,
+        volume: instrumentDto.volume ?? defaultVolume,
     };
 }
 

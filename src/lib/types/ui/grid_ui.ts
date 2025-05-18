@@ -37,7 +37,8 @@ export type GridRowUi = {
     index: number,
     instrumentId: string,
     instrumentName: string,
-    instrumentVolume: string
+    instrumentVolume: number
+    instrumentVolumeString: string
     gridCells: GridCellUi[]
 };
 
@@ -113,8 +114,10 @@ export type NameChanged = {
     gridId: GridId
     name: string
 }
+// Contains either delta or volume
 export type VolumeChanged = {
     event: GridEvent.VolumeChanged
     instrumentId: string,
-    delta: number
+    delta: number | undefined,
+    volume: number | undefined,
 }

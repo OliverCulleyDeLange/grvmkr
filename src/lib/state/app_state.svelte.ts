@@ -75,7 +75,7 @@ export class AppStateStore {
                 this.gridStore.updateName(event.gridId, event.name)
                 break;
             case GridEvent.VolumeChanged:
-                this.instrumentStore.onChangeVolume(event.instrumentId, event.delta)
+                this.instrumentStore.onChangeVolume(event.instrumentId, event.volume, event.delta)
                 break;
             case InstrumentEvent.RemoveInstrument:
                 this.instrumentStore.removeInstrument(event.instrumentId);

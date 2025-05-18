@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { GridEvent, type GridUi, type InstrumentStore, type OnUiEvent } from '$lib';
+	import { GridEvent, type GridUi, type OnUiEvent } from '$lib';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
+	import VolumeControls from './VolumeControls.svelte';
 
 	let {
 		gridUi,
@@ -10,30 +11,6 @@
 		gridUi: GridUi;
 		onEvent: OnUiEvent;
 	} = $props();
-
-	let startX = 0;
-	let x = '';
-
-	function handlePointerDown(event, instrumentId: string) {
-		startX = event.clientX;
-		x = instrumentId;
-		window.addEventListener('pointermove', handlePointerMove);
-		window.addEventListener('pointerup', handlePointerUp);
-	}
-
-	function handlePointerMove(event) {
-		onEvent({
-			event: GridEvent.VolumeChanged,
-			instrumentId: x,
-			delta: event.clientX - startX
-		});
-		startX = event.clientX;
-	}
-
-	function handlePointerUp() {
-		window.removeEventListener('pointermove', handlePointerMove);
-		window.removeEventListener('pointerup', handlePointerUp);
-	}
 </script>
 
 <div class="flex flex-col gap-2">
@@ -73,12 +50,17 @@
 					<div class="flex gap-2">
 						<!-- <button class="text-xs">M</button>
 						<button class="text-xs">S</button> -->
-						<div
-							class="cursor-ew-resize text-xs text-gray-500"
-							onpointerdown={(e) => handlePointerDown(e, row.instrumentId)}
-						>
-							{row.instrumentVolume}
-						</div>
+						<VolumeControls
+							volume={row.instrumentVolume}
+							volumeString={row.instrumentVolumeString}
+							onChange={(volume, delta) =>
+								onEvent({
+									event: GridEvent.VolumeChanged,
+									instrumentId: row.instrumentId,
+									volume: volume,
+									delta: delta
+								})}
+						/>
 					</div>
 				</div>
 

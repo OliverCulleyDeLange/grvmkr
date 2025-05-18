@@ -1,3 +1,6 @@
+import { defaultVolume } from "$lib";
+import { isNumber } from "$lib/util/types";
+
 export class AudioPlayer {
 
     public url: string;
@@ -23,7 +26,7 @@ export class AudioPlayer {
             const arrayBuffer = await response.arrayBuffer();
             this.audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
             this.gainNode = audioContext.createGain();
-            this.gainNode.gain.value = 0.8;
+            this.gainNode.gain.value = defaultVolume;
         } catch (error) {
             console.error("Error loading audio:", error);
         }
@@ -57,8 +60,7 @@ export class AudioPlayer {
     }
 
     setVolume(volume: number): void {
-        if (this.gainNode) {
-            console.log("Setting volume to:", volume);
+        if (this.gainNode && isNumber(volume)) {
             this.gainNode.gain.setValueAtTime(volume, this.audioContext!.currentTime);
         }
     }

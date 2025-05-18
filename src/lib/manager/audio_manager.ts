@@ -37,6 +37,7 @@ export class AudioManager {
         let fileName = await this.audioDb.loadAudio(audioFileName)
         let player = new AudioPlayer(fileName)
         await player.loadAudio(this.audioContext!);
+        player.setVolume(hit.volume)
         this.hits.set(hit.id, player)
     }
 

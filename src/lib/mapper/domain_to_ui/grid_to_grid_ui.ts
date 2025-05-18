@@ -1,4 +1,4 @@
-import { type Grid, type GridCellUi, type GridUi, type InstrumentId, type InstrumentStore, type InstrumentWithId, type NotationSection, type GridConfig, type GridRowUi, type GridId, type GridUis, type BeatIndicator, type GridRow, type GridCell, mapCellToolsUi, type CellToolsUi, type OnUiEvent, type CellTools } from "$lib"
+import { type Grid, type GridCellUi, type GridUi, type InstrumentId, type InstrumentStore, type InstrumentWithId, type NotationSection, type GridConfig, type GridRowUi, type GridId, type GridUis, type BeatIndicator, type GridRow, type GridCell, mapCellToolsUi, type CellToolsUi, type OnUiEvent, type CellTools, defaultVolume } from "$lib"
 
 export function mapGridUi(grids: Map<GridId, Grid>, instrumentManager: InstrumentStore, cellTools: CellTools | undefined): GridUis {
     let gridUis: GridUi[] = [...grids.values()].map((grid) =>
@@ -54,7 +54,8 @@ function mapRow(
         instrumentId: instrument?.id ?? "error",
         instrumentName: instrument?.name ?? "error",
         gridCells,
-        instrumentVolume: instrument?.volume != undefined ? `${Math.round(instrument.volume * 100)}%` : "err",
+        instrumentVolume: instrument?.volume ?? defaultVolume,
+        instrumentVolumeString: instrument?.volume != undefined ? `${Math.round(instrument.volume * 100)}%` : "80%",
     }
     return rowUi
 }

@@ -4,7 +4,9 @@ import { AudioManager, InstrumentService } from "$lib";
 import { AudioDb } from "$lib/db/audio_db";
 import { defaultInstruments } from "$lib/audio/default_instruments";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
-import { clamp } from "$lib/math/math";
+import { clamp } from "$lib/util/math";
+
+export const defaultVolume = 0.8;
 
 // Responsible for storing, modifying and playing instruments
 export class InstrumentStore {
@@ -100,16 +102,20 @@ export class InstrumentStore {
         this.audioManager.removeHit(hitId)
     }
 
-    onChangeVolume(id: InstrumentId, delta: number) {
+    onChangeVolume(id: InstrumentId, volume: number | undefined, delta: number | undefined) {
         this.updateInstrument(id, (instrument) => {
-            console.log(instrument.volume, delta)
-            if (instrument.volume != undefined) {
+            if (instrument.volume != undefined && delta != undefined) {
                 instrument.volume = clamp(instrument.volume += (delta / 100), 0, 1)
-                // modify volume for each hit type
-                instrument.hitTypes.forEach((hit) => {
-                   this.audioManager.setVolume(hit.id, instrument.volume)
-                })
-            } else instrument.volume = 0.8
+            } else if (volume != undefined) {
+                instrument.volume = clamp(volume, 0, 1)
+            } else { 
+                instrument.volume = defaultVolume 
+            }
+
+            // modify volume for each hit type
+            instrument.hitTypes.forEach((hit) => {
+                this.audioManager.setVolume(hit.id, instrument.volume)
+            })
         })
     }
 
@@ -137,7 +143,8 @@ export class InstrumentStore {
             id: instrumentId,
             hitTypes: hitMap,
             gridIndex: index,
-            name: name
+            name: name,
+            volume: defaultVolume,
         };
         this.saveInstrumentToStateAndDb(instrument);
     }
@@ -212,7 +219,8 @@ export class InstrumentStore {
                 let hitType: HitType = {
                     key: hit.key,
                     description: hit.description,
-                    audioFileName: hit.audio_file_name
+                    audioFileName: hit.audio_file_name,
+                    volume: defaultVolume,
                 }
                 let hitWithId: HitTypeWithId = this.createHitWithId(hit.id, hitType);
                 return [hitWithId.id, hitWithId];
@@ -237,7 +245,8 @@ export class InstrumentStore {
             id: hitId,
             key: hit.key,
             description: hit.description,
-            audioFileName: hit.audioFileName
+            audioFileName: hit.audioFileName,
+            volume: hit.volume,
         };
         return hitWithId;
     }
