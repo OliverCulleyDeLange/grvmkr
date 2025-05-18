@@ -65,34 +65,36 @@
 	$: fillHeight = volumeSliderHeight * model.volume;
 </script>
 
-<button class="text-xs" class:text-blue-500={model.muted} onclick={() => onMute()}>M</button>
-<button class="text-xs" class:text-orange-400={model.soloed} onclick={() => onSolo()}>S</button>
+<div class="print:hidden flex gap-2">
+	<button class="text-xs" class:text-blue-500={model.muted} onclick={() => onMute()}>M</button>
+	<button class="text-xs" class:text-orange-400={model.soloed} onclick={() => onSolo()}>S</button>
 
-<svg
-	width={volumeSliderWidth}
-	height={volumeSliderHeight}
-	viewBox={`0 0 ${volumeSliderWidth} ${volumeSliderHeight}`}
-	onpointerdown={handlePointerDownForSlider}
-	style="touch-action: none; cursor: ew-resize;"
->
-	<!-- Triangle outline -->
-	<polygon
-		points={`${volumeSliderWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${volumeSliderWidth},0`}
-		fill="none"
-		stroke="black"
-	/>
+	<svg
+		width={volumeSliderWidth}
+		height={volumeSliderHeight}
+		viewBox={`0 0 ${volumeSliderWidth} ${volumeSliderHeight}`}
+		onpointerdown={handlePointerDownForSlider}
+		style="touch-action: none; cursor: ew-resize;"
+	>
+		<!-- Triangle outline -->
+		<polygon
+			points={`${volumeSliderWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${volumeSliderWidth},0`}
+			fill="none"
+			stroke="black"
+		/>
 
-	<!-- Shaded volume triangle -->
-	<polygon
-		points={`${fillWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${fillWidth},${volumeSliderHeight - fillHeight}`}
-		fill="green"
-		opacity="0.6"
-	/>
-</svg>
+		<!-- Shaded volume triangle -->
+		<polygon
+			points={`${fillWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${fillWidth},${volumeSliderHeight - fillHeight}`}
+			fill="green"
+			opacity="0.6"
+		/>
+	</svg>
 
-<div
-	class="cursor-ew-resize text-xs text-gray-500"
-	onpointerdown={(e) => handlePointerDownForText(e)}
->
-	{model.volumeString}
+	<div
+		class="cursor-ew-resize text-xs text-gray-500"
+		onpointerdown={(e) => handlePointerDownForText(e)}
+	>
+		{model.volumeString}
+	</div>
 </div>

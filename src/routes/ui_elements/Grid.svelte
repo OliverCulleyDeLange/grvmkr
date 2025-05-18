@@ -43,7 +43,7 @@
 
 			{#each section.sectionRows as row}
 				<!-- Name -->
-				<div class="select-none px-2 text-xs">
+				<div class="select-none px-2 text-xs print:text-lg">
 					<div>
 						{row.instrumentName}
 					</div>
