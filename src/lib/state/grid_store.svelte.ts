@@ -14,6 +14,7 @@ import type { RemoveGrid } from "$lib/types/ui/grid_ui";
 import { SvelteMap } from "svelte/reactivity";
 import type { InstrumentStore } from "./instrument_store.svelte";
 import type { OnEvent } from "$lib/types/event";
+import { get } from "svelte/store";
 
 // Responsible for storing, and modifying grids
 export class GridStore {
@@ -393,6 +394,18 @@ export class GridStore {
         const index = this.getNextGridIndex()
         let grid: Grid = $state(buildDefaultGrid(instruments, index));
         this.addGrid(grid)
+    }
+
+    duplicateGrid() {
+        let lastGrid = [...this.grids.values()].pop()
+        if (lastGrid) {
+            console.log(lastGrid)
+            let newGrid = $state.snapshot(lastGrid)
+            newGrid.index = this.getNextGridIndex()
+            newGrid.id = `grid_${crypto.randomUUID()}`
+            newGrid.config.name = newGrid.config.name + " (copy)"
+            this.addGrid(newGrid)
+        }
     }
 
     getCell(locator: CellLocator): GridCell | undefined {

@@ -18,7 +18,6 @@
 
 ### Coming soon (maybe)
 - Mobile friendly select copy and paste
-- Duplicate grid
 - Configurable instruments per grid / groove
 - Make cell tools staticly positioned on mobile and maybe on desktop
 - Undo / Redo? In case you delete something you didn't mean to 

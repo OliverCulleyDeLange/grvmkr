@@ -61,6 +61,9 @@ export class AppStateStore {
             case GridEvent.AddGrid:
                 this.gridStore.addDefaultGrid(this.instrumentStore.instruments)
                 break;
+            case GridEvent.DuplicateGrid:
+                this.gridStore.duplicateGrid()
+                break;
             case GridEvent.BpmChanged:
                 this.gridStore.updateBpm(event.gridId, event.bpm)
                 this.playbackStore.restartInterval()

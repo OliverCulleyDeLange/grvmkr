@@ -52,7 +52,7 @@ export type GridCellUi = {
 }
 
 // Grid UI Events
-export type GridEvents = TogglePlaying | TappedGridCell | RemoveGrid | AddGrid |
+export type GridEvents = TogglePlaying | TappedGridCell | RemoveGrid | AddGrid | DuplicateGrid |
     BpmChanged | BarsChanged | GridSizeChanged | NameChanged | VolumeChanged | 
     RightClick | MuteInstrument | SoloInstrument
 
@@ -61,6 +61,7 @@ export enum GridEvent {
     TappedGridCell = "TappedGridCell",
     RightClick = "RightClick",
     AddGrid = "AddGrid",
+    DuplicateGrid = "DuplicateGrid",
     RemoveGrid = "RemoveGrid",
     BpmChanged = "BpmChanged",
     BarsChanged = "BarsChanged",
@@ -94,6 +95,9 @@ export type RemoveGrid = {
 }
 export type AddGrid = {
     event: GridEvent.AddGrid
+}
+export type DuplicateGrid = {
+    event: GridEvent.DuplicateGrid
 }
 export type BpmChanged = {
     event: GridEvent.BpmChanged
