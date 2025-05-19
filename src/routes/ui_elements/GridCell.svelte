@@ -4,49 +4,19 @@
 	let {
 		ui,
 		onTap,
-		onRightTap
 	}: {
 		ui: GridCellUi;
 		onTap: (shiftKey: boolean) => void;
-		onRightTap: (x: number, y: number) => void;
 	} = $props();
 
 	function handleClick(event: MouseEvent) {
 		onTap(event.shiftKey);
 	}
 
-	function handleRightClick(event: Event & MouseEvent) {
-		event.preventDefault();
-		onRightTap(event.clientX, event.clientY);
-	}
-
-	let pressTimer: number;
-
-	function startPress(event: Event & MouseEvent) {
-		pressTimer = setTimeout(() => {
-			onRightTap(event.clientX, event.clientY);
-		}, 250);
-	}
-	function startTouch(event: Event & TouchEvent) {
-		pressTimer = setTimeout(() => {
-			const touch = event.touches[0];
-			onRightTap(touch.clientX, touch.clientY);
-		}, 250);
-	}
-
-	function cancelPress() {
-		clearTimeout(pressTimer);
-	}
 </script>
 
 <button
 	onclick={handleClick}
-	onmousedown={startPress}
-	onmouseup={cancelPress}
-	onmouseleave={cancelPress}
-	ontouchstart={startTouch}
-	ontouchend={cancelPress}
-	oncontextmenu={handleRightClick}
 	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-between font-bold
 	text-gray-800 print:border print:border-gray-400"
 	style="grid-column: span {ui.cellsOccupied}"

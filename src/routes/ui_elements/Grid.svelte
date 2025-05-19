@@ -53,15 +53,13 @@
 							onMute={() =>
 								onEvent({
 									event: GridEvent.MuteInstrument,
-									instrumentId: row.instrumentId,
-								})
-							}
+									instrumentId: row.instrumentId
+								})}
 							onSolo={() =>
 								onEvent({
 									event: GridEvent.SoloInstrument,
-									instrumentId: row.instrumentId,
-								})
-							}
+									instrumentId: row.instrumentId
+								})}
 							onChange={(volume, delta) =>
 								onEvent({
 									event: GridEvent.VolumeChanged,
@@ -77,14 +75,10 @@
 					<GridCell
 						ui={cell}
 						onTap={(shift) =>
-							onEvent({ event: GridEvent.TappedGridCell, locator: cell.locator, shiftHeld: shift })}
-						onRightTap={(x, y) =>
 							onEvent({
-								event: GridEvent.RightClick,
-								x,
-								y,
+								event: GridEvent.TappedGridCell,
 								locator: cell.locator,
-								gridId: gridUi.id
+								shiftHeld: shift
 							})}
 					/>
 				{/each}

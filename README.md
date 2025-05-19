@@ -28,9 +28,7 @@ Some features from MangoDrum are still missing, i may or may not add them depend
 
 - ❓ Create a 'Playlist' which brings all the sections of your composition together
   -  Er, kinda - You can create multiple grids, and play them seperately, but you can't create a playlist per se. If this is a useful feature, let me know, but the main purpose of this tool isn't to create songs, its to create grid notation.
-- ❌ ~~Change the volume and balance of each instrument~~: This didn't seem that important to me.
-- ❌ ~~Metronome~~: As above, didn't seem that useful. Just create an instrument with a beep sound file and fill in some squares?
-- ❌ ~~Undo and Redo~~: Seems unnecessary for such a simple app.
+- ❌ ~~Metronome~~: Didn't seem that useful. Just create an instrument with a beep sound file and fill in some squares?
   
 ## Developing
 

@@ -1,4 +1,4 @@
-import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type RightClick, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -52,8 +52,6 @@ export class AppStateStore {
                 break;
             case GridEvent.TappedGridCell:
                 this.onTapGridCell(event)
-                break;
-            case GridEvent.RightClick:
                 break;
             case GridEvent.RemoveGrid:
                 this.gridStore.removeGrid(event);
