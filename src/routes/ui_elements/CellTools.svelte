@@ -12,7 +12,7 @@
 	} = $props();
 </script>
 
-<div class="min-h-12">
+<div class="">
 	{#if ui.show}
 		<div class="flex flex-wrap items-center justify-start print:hidden">
 			<Button
@@ -32,7 +32,9 @@
 			>
 
 			<Button disabled={!ui.showCopy} onClick={() => onEvent({ event: UiEvent.Copy })}>Copy</Button>
-			<Button disabled={!ui.showPaste} onClick={() => onEvent({ event: UiEvent.Paste })}>Paste</Button>
+			<Button disabled={!ui.showPaste} onClick={() => onEvent({ event: UiEvent.Paste })}
+				>Paste</Button
+			>
 
 			{#each ui.hitOptions as [displayString, hits]}
 				<Button
