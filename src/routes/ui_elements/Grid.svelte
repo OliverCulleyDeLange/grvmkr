@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { GridEvent, type CellLocator, type GridUi, type OnUiEvent } from '$lib';
+	import type { OnEvent } from '$lib/types/event';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
 	import VolumeControls from './VolumeControls.svelte';
@@ -34,7 +35,7 @@
 			selectionEnd = locator;
 			onEvent({
 				event: GridEvent.ChangeCellSelection,
-				locator: locator,
+				locator: locator
 			});
 		}
 	}

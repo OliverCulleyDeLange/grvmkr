@@ -119,6 +119,9 @@ export class AppStateStore {
             case DomainEvent.DatabaseError:
                 this.errorStore.addError(event)
                 break;
+            case DomainEvent.DebugLog:
+                this.errorStore.debugLog(event)
+                break;
         }
     }
 

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { GridCellUi } from '$lib';
+	import { DomainEvent } from '$lib/types/domain/event';
+	import type { OnEvent } from '$lib/types/event';
 
 	let {
 		ui,
@@ -16,16 +18,19 @@
 	function handleClick(event: MouseEvent) {
 		onTap(event.shiftKey);
 	}
-
 </script>
 
 <button
 	onclick={handleClick}
-	onpointerdown={onpointerdown}
+	onpointerdown={(event: PointerEvent) => {
+		event.preventDefault();
+		(event.currentTarget as HTMLElement)?.releasePointerCapture(event.pointerId);
+		onpointerdown(event);
+	}}
 	onpointermove={onpointermove}
 	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-between font-bold
 	text-gray-800 print:border print:border-gray-400"
-	style="grid-column: span {ui.cellsOccupied}"
+	style="grid-column: span {ui.cellsOccupied};"
 	class:bg-gray-100={!ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-300={ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-400={ui.isFirstBeatOfBar}
