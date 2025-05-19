@@ -7,7 +7,7 @@
 	export let onMute: () => void;
 	export let onSolo: () => void;
 
-	const volumeSliderWidth = 60;
+	const volumeSliderWidth = 30;
 	const volumeSliderHeight = 16;
 
 	let isDragging = false;
