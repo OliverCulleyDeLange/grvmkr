@@ -12,24 +12,41 @@ export function mapCellToolsUi(
         showMergeRight: false,
         showMergeLeft: false,
         showUnMerge: false,
+        showCopy: false,
+        showPaste: false,
     }
 
     if (cellTools == undefined || cellTools.gridId != gridId) return ui
 
     ui.show = true
-    cellTools?.hits.forEach((hit) => {
-        const hitCount = getHitCountsForCellOccupation(cellTools.cellsOccupied)
-        hitCount.forEach((count) => {
+    if (cellTools.kind == "multi") {
+        cellTools.hits.forEach((hit) => {
             const instrumentHit: InstrumentHit = {
                 instrumentId: cellTools.instrument.id,
                 hitId: hit.id
             }
-            ui.hitOptions.set(hit.key.repeat(count), Array(count).fill(instrumentHit))
+            ui.hitOptions.set(hit.key, [instrumentHit])
         })
-    })
-    ui.showMergeRight = !cellTools.isLastCell && cellTools.cellsOccupied < 8
-    ui.showMergeLeft = !cellTools.isFirstCell && cellTools.cellsOccupied < 8
-    ui.showUnMerge = cellTools.cellsOccupied > 1
+        ui.showCopy = true
+        ui.showPaste = cellTools.cellsCopied
+    } else if (cellTools.kind == "single") {
+        cellTools?.hits.forEach((hit) => {
+            const hitCount = getHitCountsForCellOccupation(cellTools.cellsOccupied)
+            hitCount.forEach((count) => {
+                const instrumentHit: InstrumentHit = {
+                    instrumentId: cellTools.instrument.id,
+                    hitId: hit.id
+                }
+                ui.hitOptions.set(hit.key.repeat(count), Array(count).fill(instrumentHit))
+            })
+        })
+        ui.showCopy = true
+        ui.showPaste = cellTools.cellsCopied
+        ui.showMergeRight = !cellTools.isLastCell && cellTools.cellsOccupied < 8
+        ui.showMergeLeft = !cellTools.isFirstCell && cellTools.cellsOccupied < 8
+        ui.showUnMerge = cellTools.cellsOccupied > 1
+    }
+
     return ui
 }
 

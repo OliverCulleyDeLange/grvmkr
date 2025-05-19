@@ -1,4 +1,4 @@
-import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type TappedGridCell } from "$lib";
+import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type CellLocator, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type StartCellSelection, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -29,9 +29,10 @@ export class AppStateStore {
                 break;
             case UiEvent.Copy:
                 this.gridStore.copyCurrentlySelectedCells()
+                this.cellToolsStore.setCellsCopied()
                 break;
             case UiEvent.Paste:
-               this.gridStore.pasteCells(this.instrumentStore.instruments)
+                this.gridStore.pasteCells(this.instrumentStore.instruments)
                 break;
             case CellToolsEvent.Merge:
                 this.gridStore.mergeCurrentlySelectedCell(event.side)
@@ -52,6 +53,12 @@ export class AppStateStore {
                 break;
             case GridEvent.TappedGridCell:
                 this.onTapGridCell(event)
+                break;
+            case GridEvent.StartCellSelection:
+                this.onStartCellSelection(event)
+                break;
+            case GridEvent.ChangeCellSelection:
+                this.onChangeCellSelection(event.locator)
                 break;
             case GridEvent.RemoveGrid:
                 this.gridStore.removeGrid(event);
@@ -157,6 +164,18 @@ export class AppStateStore {
             this.instrumentStore?.playHit(hit);
             this.updateCellTools()
         }
+    }
+
+    onStartCellSelection(event: StartCellSelection) {
+        if (!event.shiftHeld) {
+            this.gridStore.onStartCellSelection(event.locator)
+        }
+        this.updateCellTools()
+    }
+
+    onChangeCellSelection(locator: CellLocator) {
+        this.gridStore.selectUpTo(locator)
+        this.updateCellTools()
     }
 
     save() {

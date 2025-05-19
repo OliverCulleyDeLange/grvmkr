@@ -29,6 +29,7 @@ export class GridStore {
     public grids: SvelteMap<GridId, Grid> = new SvelteMap();
     public currentlyPlayingGrid: Grid | undefined = $state();
     public currentlySelectedCells: CellLocator[] = $state([]);
+    public selectionStartCell: CellLocator | null = $state(null);
     public copiedCells: GridCell[] = []
 
     async initialise(instruments: Map<InstrumentId, InstrumentWithId>) {
@@ -60,27 +61,23 @@ export class GridStore {
         })
     }
 
-    // Multi selects up to locator on the same row
     selectUpTo(locator: CellLocator) {
-        // find this.currentlySelectedCell with lowest cell
-        let start = this.currentlySelectedCells[0]
-        // Reset after getting start
-        this.resetSelected()
-        // let start = this.currentlySelectedCells[0]
-        let end = locator
-        // Set 'selected' on all grid cells between start and locator
-        if (start && end) {
-            let startCell = Math.min(start.cell, end.cell)
-            let endCell = Math.max(start.cell, end.cell)
-            for (let cell = startCell; cell <= endCell; cell++) {
-                this.updateGridCell({ grid: start.grid, row: start.row, cell }, (cell) => {
-                    cell.selected = true
-                })
-                this.currentlySelectedCells.push({ ...locator, cell: cell })
-            }
+        if (!this.selectionStartCell) return;
+
+        const anchor = this.selectionStartCell;
+
+        const startCell = Math.min(anchor.cell, locator.cell);
+        const endCell = Math.max(anchor.cell, locator.cell);
+
+        this.resetSelected();
+
+        for (let cell = startCell; cell <= endCell; cell++) {
+            const cellLocator = { grid: anchor.grid, row: anchor.row, cell };
+            this.updateGridCell(cellLocator, (c) => (c.selected = true), false);
+            this.currentlySelectedCells.push(cellLocator);
         }
-        console.log("Selected cells", this.currentlySelectedCells)
     }
+
 
     copyCurrentlySelectedCells() {
         this.copiedCells = []
@@ -151,9 +148,7 @@ export class GridStore {
 
     // Combined all actions to be complete when a cell is clicked:
     // - Toggle the hit
-    // - Play the new hit
     // - Update the selected state
-    // - Update cell tools
     onTapGridCell(locator: CellLocator) {
         this.resetSelected()
         this.toggleGridHit(locator);
@@ -161,6 +156,16 @@ export class GridStore {
             cell.selected = true
         })
         this.currentlySelectedCells = [locator]
+    }
+
+    // Like tapping, but only selects the cell. Doesn't update hit
+    onStartCellSelection(locator: CellLocator) {
+        this.resetSelected()
+        this.updateGridCell(locator, (cell) => {
+            cell.selected = true
+        }, false)
+        this.currentlySelectedCells = [locator]
+        this.selectionStartCell = locator
     }
 
     // Toggle the hit in the cell 
@@ -494,7 +499,7 @@ export class GridStore {
     }
 
     // Updates grid cell in state and DB
-    updateGridCell(locator: CellLocator, withGridCell: (division: GridCell) => void) {
+    updateGridCell(locator: CellLocator, withGridCell: (division: GridCell) => void, persist: boolean = true) {
         this.updateGrid(locator.grid, (grid) => {
             let cell = grid.rows[locator.row].cells[locator.cell]
             if (cell) {
@@ -502,7 +507,7 @@ export class GridStore {
             } else {
                 console.error("Couldn't find grid cell to update with locator ", locator);
             }
-        })
+        }, persist)
     }
 
     trySaveGrid(grid: Grid) {

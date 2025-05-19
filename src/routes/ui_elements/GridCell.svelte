@@ -4,9 +4,13 @@
 	let {
 		ui,
 		onTap,
+		onpointerdown,
+		onpointermove,
 	}: {
 		ui: GridCellUi;
 		onTap: (shiftKey: boolean) => void;
+		onpointerdown: (e: PointerEvent) => void;
+		onpointermove: () => void;
 	} = $props();
 
 	function handleClick(event: MouseEvent) {
@@ -17,6 +21,8 @@
 
 <button
 	onclick={handleClick}
+	onpointerdown={onpointerdown}
+	onpointermove={onpointermove}
 	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-between font-bold
 	text-gray-800 print:border print:border-gray-400"
 	style="grid-column: span {ui.cellsOccupied}"

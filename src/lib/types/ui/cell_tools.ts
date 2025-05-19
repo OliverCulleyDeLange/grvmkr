@@ -26,4 +26,6 @@ export type CellToolsUi = {
     showMergeRight: boolean
     showMergeLeft: boolean
     showUnMerge: boolean
+    showCopy: boolean
+    showPaste: boolean
 }

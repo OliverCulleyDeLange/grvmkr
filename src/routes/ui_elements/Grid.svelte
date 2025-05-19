@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GridEvent, type GridUi, type OnUiEvent } from '$lib';
+	import { GridEvent, type CellLocator, type GridUi, type OnUiEvent } from '$lib';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
 	import VolumeControls from './VolumeControls.svelte';
@@ -11,9 +11,45 @@
 		gridUi: GridUi;
 		onEvent: OnUiEvent;
 	} = $props();
+
+	// Selection state
+	let selecting: boolean = false;
+	let selectionStart: CellLocator | null = null;
+	let selectionEnd: CellLocator | null = null;
+
+	function onPointerDown(locator: CellLocator, shiftKey: boolean) {
+		selecting = true;
+		selectionEnd = locator;
+		selectionStart = locator;
+		onEvent({
+			event: GridEvent.StartCellSelection,
+			locator: locator,
+			shiftHeld: shiftKey
+		});
+	}
+
+	function onPointerMove(locator: CellLocator) {
+		if (!selecting) return;
+		if (locator.cell > selectionEnd?.cell || locator.cell < selectionEnd?.cell) {
+			selectionEnd = locator;
+			onEvent({
+				event: GridEvent.ChangeCellSelection,
+				locator: locator,
+			});
+		}
+	}
+
+	function onPointerUp() {
+		selecting = false;
+	}
 </script>
 
-<div class="flex flex-col gap-2">
+<div
+	class="flex select-none flex-col gap-2"
+	style="touch-action: pan-y; position:relative;"
+	onpointerup={onPointerUp}
+	onpointercancel={onPointerUp}
+>
 	{#each gridUi.notationSections as section}
 		<div class="grid" style="--cells: {section.columns};">
 			<button
@@ -22,7 +58,6 @@
 			>
 				X
 			</button>
-			<!-- Beat indicator -->
 			<div class="beat-indicator">
 				{#each section.beatIndicator as indicator}
 					<div
@@ -41,12 +76,9 @@
 				{/each}
 			</div>
 
-			{#each section.sectionRows as row}
-				<!-- Name -->
+			{#each section.sectionRows as row, rowIdx}
 				<div class="select-none px-2 text-xs print:text-lg">
-					<div>
-						{row.instrumentName}
-					</div>
+					<div>{row.instrumentName}</div>
 					<div class="flex gap-2">
 						<VolumeControls
 							model={row.volume}
@@ -74,6 +106,8 @@
 				{#each row.gridCells as cell}
 					<GridCell
 						ui={cell}
+						onpointerdown={(e: PointerEvent) => onPointerDown(cell.locator, e.shiftKey)}
+						onpointermove={() => onPointerMove(cell.locator)}
 						onTap={(shift) =>
 							onEvent({
 								event: GridEvent.TappedGridCell,
@@ -102,5 +136,23 @@
 		display: grid;
 		grid-column: span var(--cells) / span var(--cells);
 		grid-template-columns: subgrid;
+	}
+
+	/* Selected cell styling */
+	.selected {
+		outline: 2px solid #3b82f6;
+		background-color: #bfdbfe;
+	}
+
+	/* Action bar styling */
+	.selection-action-bar {
+		background: white;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		padding: 4px 8px;
+		display: flex;
+		gap: 8px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+		z-index: 1000;
 	}
 </style>

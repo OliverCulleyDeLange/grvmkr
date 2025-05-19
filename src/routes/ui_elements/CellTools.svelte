@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CellToolsEvent, type OnUiEvent } from '$lib';
+	import { CellToolsEvent, UiEvent, type OnUiEvent } from '$lib';
 	import type { CellToolsUi } from '$lib/types/ui/cell_tools';
 	import Button from './Button.svelte';
 
@@ -30,6 +30,9 @@
 			<Button disabled={!ui.showUnMerge} onClick={() => onEvent({ event: CellToolsEvent.UnMerge })}
 				>Un-Merge</Button
 			>
+
+			<Button disabled={!ui.showCopy} onClick={() => onEvent({ event: UiEvent.Copy })}>Copy</Button>
+			<Button disabled={!ui.showPaste} onClick={() => onEvent({ event: UiEvent.Paste })}>Paste</Button>
 
 			{#each ui.hitOptions as [displayString, hits]}
 				<Button
