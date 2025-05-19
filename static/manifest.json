@@ -1,7 +1,7 @@
 {
     "name": "GrvMkr",
     "short_name": "GrvMkr",
-    "start_url": "/",
+    "start_url": "/grvmkr/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#1D232A",
