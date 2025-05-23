@@ -45,7 +45,6 @@ export class InstrumentStore {
         if (hit) {
             let instrument = this.instruments.get(hit.instrumentId)
             if (instrument?.muted) return 
-            console.log(this.instrumentSoloed, !instrument?.soloed)
             if (this.instrumentSoloed && !instrument?.soloed) return
 
             if (!this.audioManager.isHitInitialised(hit)) {

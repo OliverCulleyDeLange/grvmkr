@@ -19,10 +19,13 @@
     
         <h3 class="text-lg font-bold">Tips & Tricks</h3>
 		<p class="py-4">
-			You can multi-select cells by holding shift and clicking. Then you can copy and paste them with ctrl+c and ctrl+v.
+			On desktop, you can multi-select cells by holding shift and clicking. Then you can copy and paste them with ctrl+c and ctrl+v.
          </p>
 
         <h3 class="text-lg font-bold">Issues & Feature Requests</h3>
+		<p>
+			If you're on an iPhone and can't hear anything, make sure your silent switch isn't enabled. 
+		</p>
 		<p class="py-4">
             This is not a commercial product, but a hobby project.
             If you notice any issues or think of a way this could be more useful, please feel free to reach out at
