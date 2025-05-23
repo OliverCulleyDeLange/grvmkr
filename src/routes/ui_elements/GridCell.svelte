@@ -40,7 +40,7 @@
 	class:border-2={ui.selected}
 >
 	{#each ui.content.split('') as char}
-		<div style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>{char}</div>
+		<div class="pointer-events-none" style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>{char}</div>
 	{/each}
 	<div id="spacer"></div>
 	<div
