@@ -46,7 +46,7 @@
 	);
 </script>
 
-<div class="p-4 bg-white dark:bg-[#1D232A]">
+<div class="box-border w-full p-4 bg-white dark:bg-[#1D232A]">
 	<Toolbar {onEvent} {toolbarUi} />
 	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">

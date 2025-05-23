@@ -19,6 +19,7 @@
 - ✅ Dark mode theme
 
 ### Coming soon (maybe)
+- Save/open grids locally
 - Configurable instruments per grid / groove
 - Undo / Redo? In case you delete something you didn't mean to 
 - Record and trim sample into instrument
