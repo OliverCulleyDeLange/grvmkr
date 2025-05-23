@@ -92,7 +92,7 @@
 				onchange={onBpmChange}
 				min={minBpm}
 				max={maxBpm}
-				class="input input-xs input-bordered"
+				class="input input-xs input-bordered w-16"
 			/>
 			<input
 				type="range"
