@@ -35,9 +35,9 @@
 	class:bg-gray-300={ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-400={ui.isFirstBeatOfBar}
 	class:no-print-adjust={ui.isBeat}
-	class:border={ui.selected}
-	class:border-green-500={ui.selected}
-	class:border-2={ui.selected}
+	class:outline={ui.selected}
+	class:outline-green-500={ui.selected}
+	class:outline-2={ui.selected}
 >
 	{#each ui.content.split('') as char}
 		<div class="pointer-events-none" style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>{char}</div>
