@@ -45,7 +45,7 @@
                 }
             ],
             "gridIndex": 11,
-            "volume": 0.8
+            "volume": 0.7886474609375
         },
         {
             "type": "instrument",
@@ -71,7 +71,7 @@
                 }
             ],
             "gridIndex": 7,
-            "volume": 0.8
+            "volume": 0.8006673177083333
         },
         {
             "type": "instrument",
@@ -89,7 +89,7 @@
                 }
             ],
             "gridIndex": 9,
-            "volume": 0.8
+            "volume": 0.3202067057291667
         },
         {
             "type": "instrument",
@@ -159,7 +159,7 @@
                 }
             ],
             "gridIndex": 8,
-            "volume": 0.8
+            "volume": 0.37296549479166674
         },
         {
             "type": "instrument",
@@ -185,7 +185,7 @@
                 }
             ],
             "gridIndex": 10,
-            "volume": 0.8
+            "volume": 0.34819335937500007
         }
     ],
     "grids": [
