@@ -22,7 +22,7 @@
 	// Toolsbar pin state
 	let gridRef: HTMLElement;
 	let toolsRef: HTMLElement;
-	let isPinned = false;
+	let isPinned = $state(false);
 
 	function onPointerDown(locator: CellLocator, shiftKey: boolean) {
 		selecting = true;
@@ -37,7 +37,7 @@
 
 	function onPointerMove(locator: CellLocator) {
 		if (!selecting) return;
-		if (locator.cell > selectionEnd?.cell || locator.cell < selectionEnd?.cell) {
+		if (selectionEnd && (locator.cell > selectionEnd.cell || locator.cell < selectionEnd.cell)) {
 			selectionEnd = locator;
 			onEvent({
 				event: GridEvent.ChangeCellSelection,
@@ -172,23 +172,7 @@
 		grid-template-columns: subgrid;
 	}
 
-	/* Selected cell styling */
-	.selected {
-		outline: 2px solid #3b82f6;
-		background-color: #bfdbfe;
-	}
-
-	/* Action bar styling */
-	.selection-action-bar {
-		background: white;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-		padding: 4px 8px;
-		display: flex;
-		gap: 8px;
-		box-shadow: 0 2px 5px rgba(255, 255, 255, 0.15);
-		z-index: 1000;
-	}
+	
 
 	.cell-tools {
 		position: sticky;

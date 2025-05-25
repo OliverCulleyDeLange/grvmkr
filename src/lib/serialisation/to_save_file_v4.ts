@@ -1,13 +1,13 @@
-import { type Grid, type GridCell, type GridRow, type InstrumentHit, type InstrumentWithId, type SavedGridCellV3, type SavedGridRowV3, type SavedGridV3, type SavedHitV1, type SavedInstrumentHitV1, type SavedInstrumentV1, type SavedInstrumentV3, type SaveFileV3 } from "$lib";
+import { defaultVolume, type Grid, type GridCell, type GridRow, type InstrumentHit, type InstrumentWithId, type SavedGridCellV3, type SavedGridRowV3, type SavedGridV3, type SavedHitV1, type SavedInstrumentHitV1, type SavedInstrumentV1, type SavedInstrumentV3, type SavedInstrumentV4, type SaveFileV3, type SaveFileV4 } from "$lib";
 
-// Serialises the grid model state into a SaveFileV2 for reloading later
-export function serialiseToSaveFileV3(name: string, grids: Grid[], instruments: InstrumentWithId[]): SaveFileV3 {
-    let savedInstruments: SavedInstrumentV3[] = mapInstrumentsToSavedInstrumentsV3(instruments);
+// Serialises the grid model state into a SaveFileV4 for reloading later
+export function serialiseToSaveFileV4(name: string, grids: Grid[], instruments: InstrumentWithId[]): SaveFileV4 {
+    let savedInstruments: SavedInstrumentV4[] = mapInstrumentsToSavedInstrumentsV4(instruments);
     let savedGrids: SavedGridV3[] = mapGridsToSavedGridV3(grids)
 
-    let saveFile: SaveFileV3 = {
+    let saveFile: SaveFileV4 = {
         type: "savefile",
-        version: 3,
+        version: 4,
         name: name,
         instruments: savedInstruments,
         grids: savedGrids
@@ -68,17 +68,19 @@ function mapHitToSavedInstrumentHitV1(hit: InstrumentHit): SavedInstrumentHitV1 
     return savedHit;
 }
 
-function mapInstrumentsToSavedInstrumentsV3(instruments: InstrumentWithId[]): SavedInstrumentV3[] {
+function mapInstrumentsToSavedInstrumentsV4(instruments: InstrumentWithId[]): SavedInstrumentV4[] {
     return instruments.map((instrument) => {
         let savedHits: SavedHitV1[] = mapInstrumentToSavedHitsV1(instrument);
 
-        let savedInstrument: SavedInstrumentV3 = {
+        let savedInstrument: SavedInstrumentV4 = {
             type: "instrument",
-            version: 3,
+            version: 4,
             id: instrument.id,
             name: instrument.name,
             hits: savedHits,
-            gridIndex: instrument.gridIndex
+            gridIndex: instrument.gridIndex,
+            volume: instrument.volume,
+            
         };
         return savedInstrument;
     });

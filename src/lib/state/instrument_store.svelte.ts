@@ -1,12 +1,7 @@
 import { SvelteMap } from "svelte/reactivity";
-import type { HitId, HitType, HitTypeWithId, InstrumentConfig, InstrumentHit, InstrumentId, InstrumentWithId, SavedInstrumentV1, SavedInstrumentV3 } from "$lib";
+import { AudioDb, defaultInstruments, defaultVolume, InstrumentEvent, type HitId, type HitType, type HitTypeWithId, type InstrumentConfig, type InstrumentHit, type InstrumentId, type InstrumentWithId, type SavedInstrumentV1, type SavedInstrumentV3, type SavedInstrumentV4 } from "$lib";
 import { AudioManager, InstrumentService } from "$lib";
-import { AudioDb } from "$lib/db/audio_db";
-import { defaultInstruments } from "$lib/audio/default_instruments";
-import { InstrumentEvent } from "$lib/types/ui/instruments";
 import { clamp } from "$lib/util/math";
-
-export const defaultVolume = 0.8;
 
 // Responsible for storing, modifying and playing instruments
 export class InstrumentStore {
@@ -159,7 +154,7 @@ export class InstrumentStore {
         let instruments = [...this.instruments.values()]
         let maxIndex = Math.max(0, ...[...instruments.map((i) => i.gridIndex)])
         let index = maxIndex + 1
-        this.addInstrument(instrumentId, hitMap, instrument.name, index);
+        this.addInstrument(instrumentId, hitMap, instrument.name, index, defaultVolume);
     }
 
     // Saves a reactive instrument in state and db
@@ -167,14 +162,15 @@ export class InstrumentStore {
         instrumentId: string,
         hitMap: SvelteMap<string, HitTypeWithId>,
         name: string,
-        index: number
+        index: number,
+        volume: number,
     ) {
         let instrument: InstrumentWithId = {
             id: instrumentId,
             hitTypes: hitMap,
             gridIndex: index,
             name: name,
-            volume: defaultVolume,
+            volume: volume,
             muted: false,
             soloed: false,
         };
@@ -238,13 +234,18 @@ export class InstrumentStore {
         }
     }
 
-    // When loading from file, replace all instruments
+    // Add missing fields to V1 and process
     async replaceInstrumentsV1(instruments: SavedInstrumentV1[]) {
         this.replaceInstrumentsV3(instruments.map((i) => { return { ...i, version: 3, gridIndex: 0 } }))
     }
+    
+    // Add missising fields to V3 and process
+    async replaceInstrumentsV3(instruments: SavedInstrumentV3[]) {
+        this.replaceInstrumentsV4(instruments.map((i) => { return { ...i, version: 4, volume: defaultVolume } }))
+    }
 
     // When loading from file, replace all instruments
-    async replaceInstrumentsV3(instruments: SavedInstrumentV3[]) {
+    async replaceInstrumentsV4(instruments: SavedInstrumentV4[]) {
         await this.reset()
         instruments.forEach((instrument) => {
             let hitMap = new SvelteMap(instrument.hits.map((hit) => {
@@ -252,12 +253,12 @@ export class InstrumentStore {
                     key: hit.key,
                     description: hit.description,
                     audioFileName: hit.audio_file_name,
-                    volume: defaultVolume,
+                    volume: instrument.volume,
                 }
                 let hitWithId: HitTypeWithId = this.createHitWithId(hit.id, hitType);
                 return [hitWithId.id, hitWithId];
             }));
-            this.addInstrument(instrument.id, hitMap, instrument.name, instrument.gridIndex);
+            this.addInstrument(instrument.id, hitMap, instrument.name, instrument.gridIndex, instrument.volume);
         })
     }
 

@@ -1,87 +1,92 @@
-import type { InstrumentConfig } from "$lib";
+import { type HitType, type InstrumentConfig } from "$lib";
 
-export const defaultHitConfig = { 
-    key: "X", description: "", audioFileName: ""
+export const defaultVolume = 0.8;
+
+export const defaultHitType: HitType = {
+    key: "X",
+    description: "",
+    audioFileName: "",
+    volume: defaultVolume
 }
 
-export const defaultInstrumentConfig: InstrumentConfig = { 
-    name: "Instrument", 
+export const defaultInstrumentConfig: InstrumentConfig = {
+    name: "Instrument",
     hitTypes: [
-        defaultHitConfig
-    ], 
+        defaultHitType
+    ],
 }
 
 export const defaultInstruments: Array<InstrumentConfig> = [
-    { 
-        name: "Hi Hat", 
+    {
+        name: "Hi Hat",
         hitTypes: [
-            { key: "C", description: "Closed", audioFileName: 'hat_closed.wav' },
-            { key: "O", description: "Open", audioFileName: 'hat_open.wav' },
-        ], 
+            { ...defaultHitType, key: "C", description: "Closed", audioFileName: 'hat_closed.wav' },
+            { ...defaultHitType, key: "O", description: "Open", audioFileName: 'hat_open.wav', volume: defaultVolume },
+        ],
     },
-    { 
-        name: "Snare", 
+    {
+        name: "Snare",
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'snare.wav' },
-        ], 
+            {  ...defaultHitType, key: "X", description: "", audioFileName: 'snare.wav' },
+        ],
     },
-    { 
-        name: "Kick", 
+    {
+        name: "Kick",
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'kick.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "", audioFileName: 'kick.wav' },
+        ],
     },
-    { 
-        name: "Surdo L", 
+    {
+        name: "Surdo L",
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'surdo_l.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "", audioFileName: 'surdo_l.wav' },
+        ],
     },
-    { 
-        name: "Surdo M", 
+    {
+        name: "Surdo M",
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'surdo_m.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "", audioFileName: 'surdo_m.wav' },
+        ],
     },
-    { 
-        name: "Surdo H", 
+    {
+        name: "Surdo H",
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'surdo_h.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "", audioFileName: 'surdo_h.wav' },
+        ],
     },
-    { 
-        name: "Repinique", 
+    {
+        name: "Repinique",
         hitTypes: [
-            { key: "X", description: "Hit", audioFileName: 'repinique_hit.wav' },
-            { key: "r", description: "Rim", audioFileName: 'repinique_rim.wav' },
-            { key: "H", description: "Hand", audioFileName: 'repinique_hand.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "Hit", audioFileName: 'repinique_hit.wav' },
+            { ...defaultHitType, key: "r", description: "Rim", audioFileName: 'repinique_rim.wav' },
+            { ...defaultHitType, key: "H", description: "Hand", audioFileName: 'repinique_hand.wav' },
+        ],
     },
-    { 
-        name: "Caixa", 
+    {
+        name: "Caixa",
         hitTypes: [
-            { key: "X", description: "Accent", audioFileName: 'caixa.wav' },
-            { key: "x", description: "Ghost", audioFileName: 'caixa_ghost.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "Accent", audioFileName: 'caixa.wav' },
+            { ...defaultHitType, key: "x", description: "Ghost", audioFileName: 'caixa_ghost.wav' },
+        ],
     },
-    { 
-        name: "Tamborim", 
+    {
+        name: "Tamborim",
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'tamborim.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "", audioFileName: 'tamborim.wav' },
+        ],
     },
-    { 
-        name: "Timba", 
+    {
+        name: "Timba",
         hitTypes: [
-            { key: "S", description: "Slap", audioFileName: 'timba_slap.wav' },
-            { key: "O", description: "Open", audioFileName: 'timba_open.wav' },
-        ], 
+            { ...defaultHitType, key: "S", description: "Slap", audioFileName: 'timba_slap.wav' },
+            { ...defaultHitType, key: "O", description: "Open", audioFileName: 'timba_open.wav' },
+        ],
     },
-    { 
-        name: "Shaker", 
+    {
+        name: "Shaker",
         hitTypes: [
-            { key: "X", description: "", audioFileName: 'shaker_a.wav' },
-            { key: "x", description: "", audioFileName: 'shaker_g.wav' },
-        ], 
+            { ...defaultHitType, key: "X", description: "", audioFileName: 'shaker_a.wav' },
+            { ...defaultHitType, key: "x", description: "", audioFileName: 'shaker_g.wav' },
+        ],
     },
 ];

@@ -1,4 +1,4 @@
-import type { Bar, BarDto, Beat, GridCell, GridCellDto, BeatDto, Grid, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto, Notation, NotationDto } from "$lib";
+import type { Grid, GridCell, GridCellDto, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto } from "$lib";
 
 export function mapGridToGridDto(grid: Grid): GridDto {
     return {

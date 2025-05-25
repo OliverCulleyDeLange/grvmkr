@@ -40,11 +40,13 @@ export * from "./types/ui/toolbar"
 export * from "./types/ui/toolbar"
 export * from "./types/ui/cell_tools"
 export * from "./types/ui/volume_control"
+export * from "./types/ui/instruments"
 
 export * from "./types/serialisation/savefile"
 export * from "./types/serialisation/savefile_v1"
 export * from "./types/serialisation/savefile_v2"
 export * from "./types/serialisation/savefile_v3"
+export * from "./types/serialisation/savefile_v4"
 
 // Mappers
 export * from "./mapper/domain_to_ui/grid_to_grid_ui"
@@ -62,7 +64,7 @@ export * from "./mapper/data_to_domain/instrument_dto_to_instrument"
 export * from "./mapper/misc_mapper_funcs"
 
 // Serialisation
-export * from "./serialisation/to_save_file_v3"
+export * from "./serialisation/to_save_file_v4"
 export * from "./serialisation/from_save_file_v1"
 export * from "./serialisation/from_save_file_v2"
 export * from "./serialisation/from_save_file_v3"

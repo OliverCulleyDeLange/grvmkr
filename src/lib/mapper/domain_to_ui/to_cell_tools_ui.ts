@@ -16,7 +16,11 @@ export function mapCellToolsUi(
         showPaste: false,
     }
 
-    if (cellTools == undefined || cellTools.gridId != gridId) return ui
+    if (
+        cellTools == undefined ||
+        !('gridId' in cellTools) ||
+        cellTools.gridId != gridId
+    ) return ui
 
     ui.show = true
     if (cellTools.kind == "multi") {

@@ -9,12 +9,13 @@ import type { CellLocator, Grid, GridCell, GridId, GridRow, InstrumentHit } from
 import type { HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from "$lib/types/domain/instrument_domain";
 import type { SaveFileV1 } from "$lib/types/serialisation/savefile_v1";
 import type { SaveFileV2 } from "$lib/types/serialisation/savefile_v2";
-import type { SaveFileV3 } from "$lib/types/serialisation/savefile_v3";
+import type { SavedGridV3, SaveFileV3 } from "$lib/types/serialisation/savefile_v3";
 import type { RemoveGrid } from "$lib/types/ui/grid_ui";
 import { SvelteMap } from "svelte/reactivity";
 import type { InstrumentStore } from "./instrument_store.svelte";
 import type { OnEvent } from "$lib/types/event";
 import { get } from "svelte/store";
+import type { SaveFileV4 } from "$lib";
 
 // Responsible for storing, and modifying grids
 export class GridStore {
@@ -386,15 +387,15 @@ export class GridStore {
         });
     }
 
-    async loadSaveFileV3(saveFile: SaveFileV3, instrumentStore: InstrumentStore) {
+    async loadSaveFileV3(grids: SavedGridV3[], instrumentStore: InstrumentStore) {
         this.gridService.deleteAllGrids()
         this.grids.clear();
-        saveFile.grids.forEach((grid) => {
+        grids.forEach((grid) => {
             let gridModel: Grid = mapSavedGridV3ToGrid(grid, instrumentStore);
             this.addGrid(gridModel)
         });
     }
-
+    
     addDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>) {
         const index = this.getNextGridIndex()
         let grid: Grid = $state(buildDefaultGrid(instruments, index));

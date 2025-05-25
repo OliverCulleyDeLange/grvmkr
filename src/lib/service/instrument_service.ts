@@ -55,7 +55,7 @@ export class InstrumentService {
         const hitTypes: HitTypeWithId[] = (await Promise.all(
             instrumentDto.hitTypes.map(async (hitId) => await this.hitTable.getHit(hitId))
         )).filter((hitType) => hitType != null)
-            .map((dto) => mapHitDtoToHitTypeWithId(dto));
+            .map((dto) => mapHitDtoToHitTypeWithId(dto, instrumentDto.volume));
 
         return mapInstrumentToDomain(instrumentDto, hitTypes);
     }

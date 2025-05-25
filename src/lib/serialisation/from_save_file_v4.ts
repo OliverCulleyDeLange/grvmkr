@@ -18,7 +18,7 @@ export function mapSavedGridV3ToGrid(savedGrid: SavedGridV3, instrumentManager: 
 
     let grid: Grid = {
         id: savedGrid.id,
-        index: 0, // Not present in V3
+        index: 0, // Not present in V2
         config: {
             name: savedGrid.config.name,
             bpm: savedGrid.config.bpm,

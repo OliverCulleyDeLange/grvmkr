@@ -13,11 +13,12 @@ export function mapInstrumentToDomain(instrumentDto: InstrumentDto, hitTypes: Hi
     };
 }
 
-export function mapHitDtoToHitTypeWithId(dto: HitDto): HitTypeWithId {
+export function mapHitDtoToHitTypeWithId(dto: HitDto, volume: number | undefined): HitTypeWithId {
     return {
         id: dto.id,
-        key: dto.key,
+        key: dto.key ?? "err",
         description: dto.description,
-        audioFileName: dto.audioFileName
+        audioFileName: dto.audioFileName,
+        volume: volume ?? defaultVolume,
     }
 }

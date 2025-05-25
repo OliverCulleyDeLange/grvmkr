@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HitId, InstrumentId, InstrumentStore, OnUiEvent } from '$lib';
-	import { defaultHitConfig } from '$lib/audio/default_instruments';
+	import { defaultHitType } from '$lib/audio/default_instruments';
 	import { InstrumentEvent } from '$lib/types/ui/instruments';
 
 	// TODO Remove - replace with passed down instrument UI model
@@ -28,7 +28,10 @@
 			<div class="">{instrument.gridIndex}</div>
 			<input
 				value={instrument.name}
-				oninput={(e) => instrumentManager.onChangeName(e.target.value, instrument.id)}
+				oninput={(e: Event) => {
+					const target = e.target as HTMLInputElement | null;
+					if (target) instrumentManager.onChangeName(target.value, instrument.id);
+				}}
 				type="text"
 				class="input input-xs input-bordered w-24"
 			/>
@@ -53,7 +56,7 @@
 			</button>
 			<button
 				class="btn btn-outline btn-xs"
-				onclick={() => instrumentManager.addHit(defaultHitConfig, instrument.id)}
+				onclick={() => instrumentManager.addHit(defaultHitType, instrument.id)}
 			>
 				Add Hit
 			</button>
@@ -64,15 +67,20 @@
 				<li class="flex-right flex gap-2 p-1">
 					<input
 						value={hit.key}
-						oninput={(e) => instrumentManager.onChangeHitKey(e.target.value, instrument.id, hitId)}
+						oninput={(e: Event) => {
+							const target = e.target as HTMLInputElement | null;
+							if (target) instrumentManager.onChangeHitKey(target.value, instrument.id, hitId);
+						}}
 						type="text"
 						class="input input-xs input-bordered w-8"
 					/>
 					➜
 					<input
 						value={hit.description}
-						oninput={(e) =>
-							instrumentManager.onChangeHitDescription(e.target.value, instrument.id, hitId)}
+						oninput={(e: Event) => {
+							const target = e.target as HTMLInputElement | null;
+							if (target) instrumentManager.onChangeHitDescription(target.value, instrument.id, hitId);
+						}}
 						type="text"
 						class="input input-xs input-bordered w-24"
 					/>

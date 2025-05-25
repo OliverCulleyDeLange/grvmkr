@@ -1,4 +1,4 @@
-import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV3, ToolbarEvent, UiEvent, type CellLocator, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type StartCellSelection, type TappedGridCell } from "$lib";
+import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV4, ToolbarEvent, UiEvent, type CellLocator, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type SaveFileV4, type StartCellSelection, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
 import { FileService } from "$lib/service/file_service";
 import { GridService } from "$lib/service/grid_service";
@@ -182,7 +182,7 @@ export class AppStateStore {
     }
 
     save() {
-        let saveFile: SaveFileV3 = serialiseToSaveFileV3(
+        let saveFile: SaveFileV4 = serialiseToSaveFileV4(
             this.file.name,
             [...this.gridStore.grids.values()],
             [...this.instrumentStore.instruments.values()]
@@ -210,6 +210,9 @@ export class AppStateStore {
             case 3:
                 this.loadSaveFileV3(fileText)
                 break;
+            case 4:
+                this.loadSaveFileV4(fileText)
+                break;
         }
     }
 
@@ -229,7 +232,14 @@ export class AppStateStore {
     async loadSaveFileV3(saveFileContent: string) {
         let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
         await this.instrumentStore.replaceInstrumentsV3(saveFile.instruments);
-        this.gridStore.loadSaveFileV3(saveFile, this.instrumentStore)
+        this.gridStore.loadSaveFileV3(saveFile.grids, this.instrumentStore)
+        this.file.name = saveFile.name
+    }
+
+    async loadSaveFileV4(saveFileContent: string) {
+        let saveFile: SaveFileV4 = JSON.parse(saveFileContent);
+        await this.instrumentStore.replaceInstrumentsV4(saveFile.instruments);
+        this.gridStore.loadSaveFileV3(saveFile.grids, this.instrumentStore)
         this.file.name = saveFile.name
     }
 
