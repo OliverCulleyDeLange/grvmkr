@@ -388,12 +388,12 @@ export class GridStore {
     }
 
     async loadSaveFileV3(grids: SavedGridV3[], instrumentStore: InstrumentStore) {
-        this.gridService.deleteAllGrids()
+       await this.gridService.deleteAllGrids()
         this.grids.clear();
-        grids.forEach((grid) => {
+        for (const grid of grids) {
             let gridModel: Grid = mapSavedGridV3ToGrid(grid, instrumentStore);
-            this.addGrid(gridModel)
-        });
+            await this.addGrid(gridModel)
+        }
     }
     
     addDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>) {
@@ -429,10 +429,10 @@ export class GridStore {
     }
 
     // Makes the grid reactive, and sets it in state and the DB
-    addGrid(grid: Grid) {
+    async addGrid(grid: Grid) {
         let reactiveGrid = $state(grid);
         this.grids.set(reactiveGrid.id, reactiveGrid);
-        this.trySaveGrid(grid);
+        await this.trySaveGrid(grid);
     }
 
     updateBpm(gridId: GridId, bpm: number) {
@@ -511,9 +511,9 @@ export class GridStore {
         }, persist)
     }
 
-    trySaveGrid(grid: Grid) {
+    async trySaveGrid(grid: Grid) {
         console.log("Saving grid to db", $state.snapshot(grid))
-        this.gridService.saveGrid(grid)
+        await this.gridService.saveGrid(grid)
             .catch((e) => {
                 console.error("Error saving grid", e, grid)
                 let error = e.target.error

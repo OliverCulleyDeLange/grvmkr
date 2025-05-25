@@ -158,7 +158,7 @@ export class InstrumentStore {
     }
 
     // Saves a reactive instrument in state and db
-    addInstrument(
+    async addInstrument(
         instrumentId: string,
         hitMap: SvelteMap<string, HitTypeWithId>,
         name: string,
@@ -174,7 +174,7 @@ export class InstrumentStore {
             muted: false,
             soloed: false,
         };
-        this.saveInstrumentToStateAndDb(instrument);
+        await this.saveInstrumentToStateAndDb(instrument);
     }
 
     moveInstrument(event: InstrumentEvent, instrumentId: InstrumentId) {
@@ -200,12 +200,12 @@ export class InstrumentStore {
         })
     }
 
-    private saveInstrumentToStateAndDb(instrument: InstrumentWithId) {
+    private async saveInstrumentToStateAndDb(instrument: InstrumentWithId) {
         // Save a reactive version to state
         let reactiveInstrument = makeInstrumentReactive(instrument);
         this.instruments.set(instrument.id, reactiveInstrument);
         // Persist non reactive version in DB
-        this.instrumentService.saveInstrument(instrument)
+        await this.instrumentService.saveInstrument(instrument)
     }
 
     // Adds a new hit to the instrument, generating a new id
@@ -236,18 +236,18 @@ export class InstrumentStore {
 
     // Add missing fields to V1 and process
     async replaceInstrumentsV1(instruments: SavedInstrumentV1[]) {
-        this.replaceInstrumentsV3(instruments.map((i) => { return { ...i, version: 3, gridIndex: 0 } }))
+        await  this.replaceInstrumentsV3(instruments.map((i) => { return { ...i, version: 3, gridIndex: 0 } }))
     }
     
     // Add missising fields to V3 and process
     async replaceInstrumentsV3(instruments: SavedInstrumentV3[]) {
-        this.replaceInstrumentsV4(instruments.map((i) => { return { ...i, version: 4, volume: defaultVolume } }))
+        await this.replaceInstrumentsV4(instruments.map((i) => { return { ...i, version: 4, volume: defaultVolume } }))
     }
 
     // When loading from file, replace all instruments
     async replaceInstrumentsV4(instruments: SavedInstrumentV4[]) {
         await this.reset()
-        instruments.forEach((instrument) => {
+        for (const instrument of instruments) {
             let hitMap = new SvelteMap(instrument.hits.map((hit) => {
                 let hitType: HitType = {
                     key: hit.key,
@@ -258,8 +258,8 @@ export class InstrumentStore {
                 let hitWithId: HitTypeWithId = this.createHitWithId(hit.id, hitType);
                 return [hitWithId.id, hitWithId];
             }));
-            this.addInstrument(instrument.id, hitMap, instrument.name, instrument.gridIndex, instrument.volume);
-        })
+            await this.addInstrument(instrument.id, hitMap, instrument.name, instrument.gridIndex, instrument.volume);
+        }
     }
 
     async reset() {
