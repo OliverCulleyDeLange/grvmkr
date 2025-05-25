@@ -531,7 +531,7 @@ export class GridStore {
     }
 
     reset() {
-        this.gridRepository.deleteAllGrids
+        this.gridRepository.deleteAllGrids()
     }
 
     // Returns a count of the number of columns in the grid

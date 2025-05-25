@@ -27,20 +27,24 @@ export class InstrumentStore {
         try {
             let instruments = await this.instrumentRepository.getAllInstruments()
             if (instruments.length == 0) {
-                this.setupDefaultInstruments();
+                await this.setupDefaultInstruments();
             } else {
-                instruments.forEach((instrument) => this.saveInstrumentToStateAndDb(instrument))
+                for (const instrument of instruments) {
+                    await this.saveInstrumentToStateAndDb(instrument);
+                }
             }
         } catch (e: any) {
             console.error("Error initialising instruments", e)
-            this.setupDefaultInstruments();
+            await this.setupDefaultInstruments();
         }
         return this.instruments
     }
 
-    private setupDefaultInstruments() {
-        defaultInstruments.forEach((instrument) => this.addInstrumentFromConfig(instrument));
-        this.downloadDefaultAudioFiles();
+    private async setupDefaultInstruments() {
+        for (const instrument of defaultInstruments) {
+            await this.addInstrumentFromConfig(instrument);
+        }
+        await this.downloadDefaultAudioFiles();
     }
 
     async playHit(hit: InstrumentHit | undefined) {
@@ -157,7 +161,7 @@ export class InstrumentStore {
     }
 
     // Adds instruments from config, generating a new ID
-    addInstrumentFromConfig(instrument: InstrumentConfig) {
+    async addInstrumentFromConfig(instrument: InstrumentConfig) {
         let instrumentId = `instrument_${crypto.randomUUID()}`
         let hitMap = new SvelteMap(instrument.hitTypes.map((hit) => {
             let hitWithId: HitTypeWithId = this.buildHitFromConfig(hit);
@@ -166,7 +170,7 @@ export class InstrumentStore {
         let instruments = [...this.instruments.values()]
         let maxIndex = Math.max(0, ...[...instruments.map((i) => i.gridIndex)])
         let index = maxIndex + 1
-        this.addInstrument(instrumentId, hitMap, instrument.name, index, defaultVolume);
+        await this.addInstrument(instrumentId, hitMap, instrument.name, index, defaultVolume);
     }
 
     // Saves a reactive instrument in state and db
@@ -319,25 +323,23 @@ export class InstrumentStore {
     }
 
     // Downloads default audio files if they don't exist in the db already
-    private downloadDefaultAudioFiles() {
-        this.instruments.forEach((instrument) => {
-            instrument.hitTypes.forEach((hit) => {
-                this.audioDb.audioExists(hit.audioFileName)
-                    .then((exists) => {
-                        if (!exists) {
-                            console.log("Downloading default audio file", hit.audioFileName);
-                            fetch(`./${hit.audioFileName}`)
-                                .then((res) => {
-                                    res.blob()
-                                        .then((blob) => {
-                                            const file = new File([blob], hit.audioFileName, { type: blob.type });
-                                            this.audioDb.storeAudio(file);
-                                        });
-                                });
-                        }
-                    });
-            });
-        });
+    private async downloadDefaultAudioFiles() {
+        for (const [id, instrument] of this.instruments) {
+            for (const [id, hit] of instrument.hitTypes) {
+                const exists = await this.audioDb.audioExists(hit.audioFileName);
+                if (!exists) {
+                    console.log("Downloading default audio file", hit.audioFileName);
+                    try {
+                        const res = await fetch(`./${hit.audioFileName}`);
+                        const blob = await res.blob();
+                        const file = new File([blob], hit.audioFileName, { type: blob.type });
+                        await this.audioDb.storeAudio(file);
+                    } catch (error) {
+                        console.error(`Failed to download/store ${hit.audioFileName}:`, error);
+                    }
+                }
+            }
+        }
     }
 }
 
