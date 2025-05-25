@@ -2,9 +2,16 @@ import { SvelteMap } from "svelte/reactivity";
 import { AudioDb, defaultInstruments, defaultVolume, InstrumentEvent, type HitId, type HitType, type HitTypeWithId, type InstrumentConfig, type InstrumentHit, type InstrumentId, type InstrumentWithId, type SavedInstrumentV1, type SavedInstrumentV3, type SavedInstrumentV4 } from "$lib";
 import { AudioManager, InstrumentService } from "$lib";
 import { clamp } from "$lib/util/math";
+import { DomainEvent } from "$lib/types/domain/event";
+import type { OnEvent } from "$lib/types/event";
 
 // Responsible for storing, modifying and playing instruments
 export class InstrumentStore {
+    private onEvent: OnEvent
+
+    constructor(onEvent: OnEvent) {
+        this.onEvent = onEvent
+    }
 
     private audioManager = new AudioManager()
     private audioDb: AudioDb = new AudioDb();
@@ -39,7 +46,7 @@ export class InstrumentStore {
     async playHit(hit: InstrumentHit | undefined) {
         if (hit) {
             let instrument = this.instruments.get(hit.instrumentId)
-            if (instrument?.muted) return 
+            if (instrument?.muted) return
             if (this.instrumentSoloed && !instrument?.soloed) return
 
             if (!this.audioManager.isHitInitialised(hit)) {
@@ -52,6 +59,11 @@ export class InstrumentStore {
                     } catch (e) {
                         if (e == "loadAudio: onsuccess but no result") {
                             console.error("Sound file not present in database. Removing existing sample", e)
+                            this.onEvent({
+                                event: DomainEvent.DatabaseError,
+                                doingWhat: "playing hit",
+                                error: `Sound file "${hitType.audioFileName}" for hit ${hitType.key} not found. Please re-upload.`
+                            })
                             hitType.audioFileName = ""
                         } else {
                             console.error("Unhandled error when loading uninitialised instrument hit:", e)
@@ -108,8 +120,8 @@ export class InstrumentStore {
                 instrument.volume = clamp(instrument.volume += (delta / 100), 0, 1)
             } else if (volume != undefined) {
                 instrument.volume = clamp(volume, 0, 1)
-            } else { 
-                instrument.volume = defaultVolume 
+            } else {
+                instrument.volume = defaultVolume
             }
 
             // modify volume for each hit type
@@ -236,9 +248,9 @@ export class InstrumentStore {
 
     // Add missing fields to V1 and process
     async replaceInstrumentsV1(instruments: SavedInstrumentV1[]) {
-        await  this.replaceInstrumentsV3(instruments.map((i) => { return { ...i, version: 3, gridIndex: 0 } }))
+        await this.replaceInstrumentsV3(instruments.map((i) => { return { ...i, version: 3, gridIndex: 0 } }))
     }
-    
+
     // Add missising fields to V3 and process
     async replaceInstrumentsV3(instruments: SavedInstrumentV3[]) {
         await this.replaceInstrumentsV4(instruments.map((i) => { return { ...i, version: 4, volume: defaultVolume } }))

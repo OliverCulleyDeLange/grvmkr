@@ -9,8 +9,8 @@ import { GridStore } from "./grid_store.svelte";
 
 export class AppStateStore {
     // TODO make private
-    public instrumentStore: InstrumentStore = new InstrumentStore();
-    public gridStore: GridStore = new GridStore(this.instrumentStore, this.onEvent);
+    public instrumentStore: InstrumentStore = new InstrumentStore(this.onEvent.bind(this));
+    public gridStore: GridStore = new GridStore(this.instrumentStore, this.onEvent.bind(this));
     public errorStore: ErrorStore = createErrorStore()
     public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
     public cellToolsStore: CellToolsStore = new CellToolsStore()
