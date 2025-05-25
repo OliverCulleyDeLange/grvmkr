@@ -1,7 +1,7 @@
 import { GridTable, FileTable, mapGridDtoToGrid, InstrumentStore, mapFileDtoToFile, mapToDto } from "$lib";
 import type { GrvMkrFile, GrvMkrFileId, FileDto, Grid, GridId } from "$lib";
 
-export class FileService {
+export class FileRepository {
     private instrumentManager: InstrumentStore
 
     private fileTable: FileTable = new FileTable()

@@ -1,7 +1,7 @@
 import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV4, ToolbarEvent, UiEvent, type CellLocator, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type SaveFileV4, type StartCellSelection, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
-import { FileService } from "$lib/service/file_service";
-import { GridService } from "$lib/service/grid_service";
+import { FileRepository } from "$lib/repository/file_repository";
+import { GridRepository } from "$lib/repository/grid_repository";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
@@ -15,8 +15,8 @@ export class AppStateStore {
     public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
     public cellToolsStore: CellToolsStore = new CellToolsStore()
 
-    private gridService: GridService = new GridService(this.instrumentStore)
-    private fileService: FileService = new FileService(this.instrumentStore)
+    private gridService: GridRepository = new GridRepository(this.instrumentStore)
+    private fileService: FileRepository = new FileRepository(this.instrumentStore)
 
     // Main state
     public file: GrvMkrFile = $state(defaultFile)

@@ -15,7 +15,7 @@ export * from "./state/playback_store"
 export * from "./state/cell_tools_store.svelte"
 export * from "./state/date"
 
-export * from "./service/instrument_service"
+export * from "./repository/instrument_repository"
 
 export * from "./db/audio_db"
 export * from "./db/instrument_table"

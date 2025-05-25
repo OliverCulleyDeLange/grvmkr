@@ -3,7 +3,7 @@ import { buildDefaultGrid, defaultGridRow } from "$lib/model/default_grid";
 import { mapSavedGridV1ToGrid } from "$lib/serialisation/from_save_file_v1";
 import { mapSavedGridV2ToGrid } from "$lib/serialisation/from_save_file_v2";
 import { mapSavedGridV3ToGrid } from "$lib/serialisation/from_save_file_v3";
-import { GridService } from "$lib/service/grid_service";
+import { GridRepository } from "$lib/repository/grid_repository";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { CellLocator, Grid, GridCell, GridId, GridRow, InstrumentHit } from "$lib/types/domain/grid_domain";
 import type { HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from "$lib/types/domain/instrument_domain";
@@ -20,10 +20,10 @@ import type { SaveFileV4 } from "$lib";
 // Responsible for storing, and modifying grids
 export class GridStore {
     private onEvent: OnEvent
-    private gridService: GridService
+    private gridService: GridRepository
 
     constructor(instrumentStore: InstrumentStore, onEvent: OnEvent) {
-        this.gridService = new GridService(instrumentStore)
+        this.gridService = new GridRepository(instrumentStore)
         this.onEvent = onEvent
     }
 

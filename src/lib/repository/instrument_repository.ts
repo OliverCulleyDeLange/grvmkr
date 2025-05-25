@@ -3,7 +3,7 @@ import type { InstrumentDto, HitDto } from "$lib";
 import { InstrumentTable, mapHitDtoToHitTypeWithId, mapHitTypeToHitDto, mapInstrumentToDomain, mapInstrumentToInstrumentDto } from "$lib";
 import { HitTable } from "$lib";
 
-export class InstrumentService {
+export class InstrumentRepository {
     private instrumentTable = new InstrumentTable();
     private hitTable = new HitTable();
 

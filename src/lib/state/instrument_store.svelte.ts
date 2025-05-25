@@ -1,6 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
 import { AudioDb, defaultInstruments, defaultVolume, InstrumentEvent, type HitId, type HitType, type HitTypeWithId, type InstrumentConfig, type InstrumentHit, type InstrumentId, type InstrumentWithId, type SavedInstrumentV1, type SavedInstrumentV3, type SavedInstrumentV4 } from "$lib";
-import { AudioManager, InstrumentService } from "$lib";
+import { AudioManager, InstrumentRepository } from "$lib";
 import { clamp } from "$lib/util/math";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { OnEvent } from "$lib/types/event";
@@ -15,7 +15,7 @@ export class InstrumentStore {
 
     private audioManager = new AudioManager()
     private audioDb: AudioDb = new AudioDb();
-    private instrumentService: InstrumentService = new InstrumentService();
+    private instrumentService: InstrumentRepository = new InstrumentRepository();
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
 

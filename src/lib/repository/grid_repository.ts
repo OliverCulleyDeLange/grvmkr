@@ -1,6 +1,6 @@
 import { GridTable, InstrumentStore, mapGridDtoToGrid, mapGridToGridDto, type Grid, type GridId } from "$lib";
 
-export class GridService {
+export class GridRepository {
 
     private instrumentManager: InstrumentStore
 
