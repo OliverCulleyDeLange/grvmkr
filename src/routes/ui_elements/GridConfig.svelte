@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { GridEvent, type GridUi, type OnUiEvent } from '$lib';
+	import Button from './Button.svelte';
 
 	let {
 		gridUi,
@@ -17,6 +18,7 @@
 		beatNoteFraction = gridUi.config.beatDivisions;
 	});
 
+	let gridConfigExpanded: boolean = $state(false);
 	let gridName: string = $state(gridUi.config.name);
 
 	const minBpm = 20;
@@ -74,70 +76,95 @@
 	}
 </script>
 
-<div class="flex break-after-avoid flex-wrap items-center gap-2 p-2">
-	<div class="flex flex-col items-center gap-2 sm:flex-row">
-		<button onclick={togglePlaying} class="btn btn-outline btn-sm my-2 print:invisible">
+<!-- Outer container (hidden for print)-->
+<div
+	class="flex break-after-avoid flex-wrap items-center gap-2 rounded-lg bg-gray-100 dark:bg-[#171c23] p-2 print:hidden"
+>
+	<!-- Play, grid name, settings button -->
+	<div class="flex w-full flex-row items-center gap-2">
+		<button onclick={togglePlaying} class="btn btn-outline btn-sm">
 			{gridUi.playing ? 'Stop' : 'Play'}
 		</button>
 
-		<input bind:value={gridName} onchange={onNameChange} class="input input-sm input-bordered" />
-	</div>
-	<div class="flex flex-col items-start gap-2 sm:flex-row">
-		<div class="mx-4 flex flex-nowrap items-center gap-2">
-			<div>BPM:</div>
-			<input
-				type="number"
-				step="1"
-				bind:value={bpm}
-				onchange={onBpmChange}
-				min={minBpm}
-				max={maxBpm}
-				class="input input-xs input-bordered w-16"
-			/>
-			<input
-				type="range"
-				step="1"
-				bind:value={bpm}
-				oninput={onBpmChange}
-				min={minBpm}
-				max={maxBpm}
-				class="print:hidden"
-			/>
-		</div>
+		<input
+			bind:value={gridName}
+			onchange={onNameChange}
+			class="input input-sm input-bordered flex-1"
+		/>
 
-		<div class="mx-4 flex flex-nowrap items-center gap-2">
-			<div>Bars:</div>
-			<input
-				type="number"
-				step="1"
-				bind:value={bars}
-				onchange={onBarsChange}
-				min={minBars}
-				max={maxBars}
-				class="input input-xs input-bordered"
-			/>
+		<Button onClick={() => (gridConfigExpanded = !gridConfigExpanded)}>⚙️</Button>
+	</div>
+	<!-- Grid config -->
+	{#if gridConfigExpanded}
+		<div class="flex flex-col items-start gap-2 sm:flex-row">
+			<div class="mx-4 flex flex-nowrap items-center gap-2">
+				<div>BPM:</div>
+				<input
+					type="number"
+					step="1"
+					bind:value={bpm}
+					onchange={onBpmChange}
+					min={minBpm}
+					max={maxBpm}
+					class="input input-xs input-bordered w-16"
+				/>
+				<input
+					type="range"
+					step="1"
+					bind:value={bpm}
+					oninput={onBpmChange}
+					min={minBpm}
+					max={maxBpm}
+				/>
+			</div>
+
+			<div class="mx-4 flex flex-nowrap items-center gap-2">
+				<div>Bars:</div>
+				<input
+					type="number"
+					step="1"
+					bind:value={bars}
+					onchange={onBarsChange}
+					min={minBars}
+					max={maxBars}
+					class="input input-xs input-bordered"
+				/>
+			</div>
+			<div class="mx-4 flex flex-nowrap items-center gap-2">
+				<div class="whitespace-nowrap">Grid size:</div>
+				<input
+					type="number"
+					step="1"
+					bind:value={beatsPerBar}
+					onchange={onBeatsPerBarChange}
+					min={minGridSize}
+					max={maxGridSize}
+					class="input input-xs input-bordered"
+				/>
+				/
+				<input
+					type="number"
+					step="1"
+					bind:value={beatNoteFraction}
+					onchange={onBeatNoteFractionChange}
+					min={minGridSize}
+					max={maxGridSize}
+					class="input input-xs input-bordered"
+				/>
+			</div>
 		</div>
-		<div class="mx-4 flex flex-nowrap items-center gap-2">
-			<div class="whitespace-nowrap">Grid size:</div>
-			<input
-				type="number"
-				step="1"
-				bind:value={beatsPerBar}
-				onchange={onBeatsPerBarChange}
-				min={minGridSize}
-				max={maxGridSize}
-				class="input input-xs input-bordered"
-			/>
-			/
-			<input
-				type="number"
-				step="1"
-				bind:value={beatNoteFraction}
-				onchange={onBeatNoteFractionChange}
-				min={minGridSize}
-				max={maxGridSize}
-				class="input input-xs input-bordered"
-			/>
-		</div>
+	{/if}
+</div>
+
+<!-- Print only config -->
+<div class="hidden print:block">
+	<!-- Print grid name, and config -->
+	<h4 class="text-2xl">
+		{gridUi.config.name}
+	</h4>
+	<div class="flex flex-row items-center gap-2">
+		<span>BPM: {gridUi.config.bpm}</span>
+		<span>Bars: {gridUi.config.bars}</span>
+		<span>Grid size: {gridUi.config.beatsPerBar}/{gridUi.config.beatDivisions}</span>
 	</div>
 </div>

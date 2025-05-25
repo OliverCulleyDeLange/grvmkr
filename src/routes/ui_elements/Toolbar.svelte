@@ -44,7 +44,7 @@
 <div class="flex flex-col gap-4 p-2 sm:flex-row print:hidden">
 	<h1 class="text-3xl">GrvMkr</h1>
 
-	<div>
+	<div class="flex flex-row gap-2 flex-wrap">
 		<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Save })}
 			>Save</button
 		>
@@ -86,11 +86,27 @@
 	{/if}
 </div>
 
-<input
-	bind:value={fileName}
-	oninput={onFilenameChange}
-	class="input-xl input input-bordered w-full flex-grow"
-/>
+<!-- Filename input -->
+<div class="relative w-full print:hidden mb-2">
+	<input
+		id="fileName"
+		bind:value={fileName}
+		oninput={onFilenameChange}
+		placeholder=" "
+		class="peer input input-xl input-bordered w-full"
+	/>
+	<label
+		for="fileName"
+		class="absolute left-2 top-1 text-[8px] text-gray-600 "
+	>
+		File name
+	</label>
+</div>
+
+<!-- Print only file name -->
+<div class="hidden print:block">
+	<h1 class="text-4xl">{fileName}</h1>
+</div>	
 
 {#if showResetConfirmation}
 	<dialog open class="modal">

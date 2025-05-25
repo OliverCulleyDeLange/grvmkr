@@ -26,7 +26,7 @@
 	});
 </script>
 
-<article class="flex flex-wrap gap-x-8">
+<article class="flex flex-wrap gap-x-8 my-2">
 	{#each ui.instruments as instrument}
     <div class="flex flex-nowrap items-baseline">
         <div class="text-md font-bold">{instrument.name}</div><div class="text-md">: {instrument.hits}</div>
