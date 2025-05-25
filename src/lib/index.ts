@@ -9,6 +9,7 @@ export * from "./model/default_grid"
 export * from "./model/default_file"
 
 export * from "./state/app_state.svelte"
+export * from "./state/file_store.svelte"
 export * from "./state/error_store"
 export * from "./state/instrument_store.svelte"
 export * from "./state/playback_store"
@@ -16,6 +17,8 @@ export * from "./state/cell_tools_store.svelte"
 export * from "./state/date"
 
 export * from "./repository/instrument_repository"
+export * from "./repository/file_repository"
+export * from "./repository/grid_repository"
 
 export * from "./db/audio_db"
 export * from "./db/instrument_table"
@@ -23,10 +26,13 @@ export * from "./db/hit_table"
 export * from "./db/grid_table"
 export * from "./db/file_table"
 
+export * from "./types/event"
+
 export * from "./types/data/grid_data"
 export * from "./types/data/instrument_data"
 export * from "./types/data/file_data"
 
+export * from "./types/domain/event"
 export * from "./types/domain/error"
 export * from "./types/domain/grid_domain"
 export * from "./types/domain/instrument_domain"

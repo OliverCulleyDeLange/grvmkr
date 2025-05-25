@@ -20,10 +20,10 @@ import type { SaveFileV4 } from "$lib";
 // Responsible for storing, and modifying grids
 export class GridStore {
     private onEvent: OnEvent
-    private gridService: GridRepository
+    private gridRepository: GridRepository
 
     constructor(instrumentStore: InstrumentStore, onEvent: OnEvent) {
-        this.gridService = new GridRepository(instrumentStore)
+        this.gridRepository = new GridRepository(instrumentStore)
         this.onEvent = onEvent
     }
 
@@ -35,7 +35,7 @@ export class GridStore {
 
     async initialise(instruments: Map<InstrumentId, InstrumentWithId>) {
         try {
-            let grids = await this.gridService.getAllGrids()
+            let grids = await this.gridRepository.getAllGrids()
             if (grids.length == 0) {
                 this.addDefaultGrid(instruments)
             } else {
@@ -370,7 +370,7 @@ export class GridStore {
     }
 
     async loadSaveFileV1(saveFile: SaveFileV1, instrumentStore: InstrumentStore) {
-        this.gridService.deleteAllGrids()
+        this.gridRepository.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
             let gridModel: Grid = mapSavedGridV1ToGrid(grid, instrumentStore);
@@ -379,7 +379,7 @@ export class GridStore {
     }
 
     async loadSaveFileV2(saveFile: SaveFileV2, instrumentStore: InstrumentStore) {
-        this.gridService.deleteAllGrids()
+        this.gridRepository.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
             let gridModel: Grid = mapSavedGridV2ToGrid(grid, instrumentStore);
@@ -388,7 +388,7 @@ export class GridStore {
     }
 
     async loadSaveFileV3(grids: SavedGridV3[], instrumentStore: InstrumentStore) {
-       await this.gridService.deleteAllGrids()
+       await this.gridRepository.deleteAllGrids()
         this.grids.clear();
         for (const grid of grids) {
             let gridModel: Grid = mapSavedGridV3ToGrid(grid, instrumentStore);
@@ -513,13 +513,13 @@ export class GridStore {
 
     async trySaveGrid(grid: Grid) {
         console.log("Saving grid to db", $state.snapshot(grid))
-        await this.gridService.saveGrid(grid)
+        await this.gridRepository.saveGrid(grid)
             .catch((e) => {
                 console.error("Error saving grid", e, grid)
                 let error = e.target.error
                 this.onEvent({
                     event: DomainEvent.DatabaseError,
-                    doingWhat: "saving grid",
+                    doingWhat: "saving grid to database",
                     error
                 })
             });
@@ -527,7 +527,11 @@ export class GridStore {
 
     removeGrid(event: RemoveGrid) {
         this.grids.delete(event.gridId);
-        this.gridService.deleteGrid(event.gridId)
+        this.gridRepository.deleteGrid(event.gridId)
+    }
+
+    reset() {
+        this.gridRepository.deleteAllGrids
     }
 
     // Returns a count of the number of columns in the grid

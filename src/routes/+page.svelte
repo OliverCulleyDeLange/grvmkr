@@ -36,7 +36,7 @@
 		}
 	}
 
-	let toolbarUi = $derived(mapToolbarUi(appStateStore.file.name, appStateStore.errorStore.errors));
+	let toolbarUi = $derived(mapToolbarUi(appStateStore.fileStore.file.name, appStateStore.errorStore.errors));
 	let gridsUi: GridUis = $derived(
 		mapGridUi(
 			appStateStore.gridStore.grids,

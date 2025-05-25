@@ -15,7 +15,7 @@ export class InstrumentStore {
 
     private audioManager = new AudioManager()
     private audioDb: AudioDb = new AudioDb();
-    private instrumentService: InstrumentRepository = new InstrumentRepository();
+    private instrumentRepository: InstrumentRepository = new InstrumentRepository();
 
     public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap()
 
@@ -25,7 +25,7 @@ export class InstrumentStore {
     // Also downloads default sound files
     async initialise(): Promise<Map<InstrumentId, InstrumentWithId>> {
         try {
-            let instruments = await this.instrumentService.getAllInstruments()
+            let instruments = await this.instrumentRepository.getAllInstruments()
             if (instruments.length == 0) {
                 this.setupDefaultInstruments();
             } else {
@@ -217,7 +217,7 @@ export class InstrumentStore {
         let reactiveInstrument = makeInstrumentReactive(instrument);
         this.instruments.set(instrument.id, reactiveInstrument);
         // Persist non reactive version in DB
-        await this.instrumentService.saveInstrument(instrument)
+        await this.instrumentRepository.saveInstrument(instrument)
     }
 
     // Adds a new hit to the instrument, generating a new id
@@ -227,13 +227,13 @@ export class InstrumentStore {
         let instrument = this.instruments.get(instrumentId)
         if (instrument) {
             instrument.hitTypes.set(reactiveHit.id, reactiveHit)
-            this.instrumentService.saveInstrument(instrument)
+            this.instrumentRepository.saveInstrument(instrument)
         }
     }
 
     removeInstrument(id: InstrumentId) {
         this.instruments.delete(id)
-        this.instrumentService.deleteInstrument(id)
+        this.instrumentRepository.deleteInstrument(id)
     }
 
     removeHit(instrumentId: InstrumentId, hitId: HitId) {
@@ -242,7 +242,7 @@ export class InstrumentStore {
         })
         this.audioManager.removeHit(hitId)
         if (updatedInstrument) {
-            this.instrumentService.saveInstrument(updatedInstrument)
+            this.instrumentRepository.saveInstrument(updatedInstrument)
         }
     }
 
@@ -275,7 +275,7 @@ export class InstrumentStore {
     }
 
     async reset() {
-        await this.instrumentService.deleteAllInstruments()
+        await this.instrumentRepository.deleteAllInstruments()
         this.instruments.clear()
         this.audioManager.reset()
     }
@@ -300,7 +300,7 @@ export class InstrumentStore {
         let instrument = this.instruments.get(id)
         if (instrument) {
             callback(instrument)
-            this.instrumentService.saveInstrument(instrument)
+            this.instrumentRepository.saveInstrument(instrument)
         } else {
             console.error(`Couldn't update instrument ${id} as it doesn't exist`)
         }

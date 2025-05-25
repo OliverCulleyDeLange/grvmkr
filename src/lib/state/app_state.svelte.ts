@@ -1,7 +1,5 @@
-import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, defaultFile, GridEvent, InstrumentStore, serialiseToSaveFileV4, ToolbarEvent, UiEvent, type CellLocator, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type SaveFileV4, type StartCellSelection, type TappedGridCell } from "$lib";
+import { CellToolsEvent, CellToolsStore, createErrorStore, createPlaybackStore, FileStore, GridEvent, InstrumentStore, serialiseToSaveFileV4, ToolbarEvent, UiEvent, type CellLocator, type ErrorStore, type GridId, type GrvMkrFile, type PlaybackStore, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type SaveFileV4, type StartCellSelection, type TappedGridCell } from "$lib";
 import { defaultInstrumentConfig } from "$lib/audio/default_instruments";
-import { FileRepository } from "$lib/repository/file_repository";
-import { GridRepository } from "$lib/repository/grid_repository";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { AppEvent } from "$lib/types/event";
 import { InstrumentEvent } from "$lib/types/ui/instruments";
@@ -10,16 +8,11 @@ import { GridStore } from "./grid_store.svelte";
 export class AppStateStore {
     // TODO make private
     public instrumentStore: InstrumentStore = new InstrumentStore(this.onEvent.bind(this));
+    public fileStore: FileStore = new FileStore(this.instrumentStore, this.onEvent.bind(this));
     public gridStore: GridStore = new GridStore(this.instrumentStore, this.onEvent.bind(this));
     public errorStore: ErrorStore = createErrorStore()
     public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore)
     public cellToolsStore: CellToolsStore = new CellToolsStore()
-
-    private gridService: GridRepository = new GridRepository(this.instrumentStore)
-    private fileService: FileRepository = new FileRepository(this.instrumentStore)
-
-    // Main state
-    public file: GrvMkrFile = $state(defaultFile)
 
     onEvent(event: AppEvent) {
         this.logEvent(event)
@@ -186,9 +179,9 @@ export class AppStateStore {
 
     save() {
         let saveFile: SaveFileV4 = serialiseToSaveFileV4(
-            this.file.name,
-            [...this.gridStore.grids.values()],
-            [...this.instrumentStore.instruments.values()]
+            this.fileStore.file.name,
+            Array.from(this.gridStore.grids.values()),
+            Array.from(this.instrumentStore.instruments.values())
         );
         const text = JSON.stringify(saveFile);
         const blob = new Blob([text], { type: 'application/json' });
@@ -229,28 +222,29 @@ export class AppStateStore {
         let saveFile: SaveFileV2 = JSON.parse(saveFileContent);
         await this.instrumentStore.replaceInstrumentsV1(saveFile.instruments);
         this.gridStore.loadSaveFileV2(saveFile, this.instrumentStore)
-        this.file.name = saveFile.name
+        this.fileStore.loadFileV2(saveFile)
     }
 
     async loadSaveFileV3(saveFileContent: string) {
         let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
         await this.instrumentStore.replaceInstrumentsV3(saveFile.instruments);
         this.gridStore.loadSaveFileV3(saveFile.grids, this.instrumentStore)
-        this.file.name = saveFile.name
+        this.fileStore.loadFileV3(saveFile)
     }
 
     async loadSaveFileV4(saveFileContent: string) {
         let saveFile: SaveFileV4 = JSON.parse(saveFileContent);
         await this.instrumentStore.replaceInstrumentsV4(saveFile.instruments);
         this.gridStore.loadSaveFileV3(saveFile.grids, this.instrumentStore)
-        this.file.name = saveFile.name
+        this.fileStore.loadFileV4(saveFile)
+
     }
 
     // Clears the DBs and refreshes
     async reset() {
         // Clear DBs (except sounds db)
-        await this.gridService.deleteAllGrids()
-        await this.fileService.deleteFile('default file')
+        await this.gridStore.reset()
+        await this.fileStore.reset()
         await this.instrumentStore.reset()
 
         window.location.reload();
@@ -259,39 +253,13 @@ export class AppStateStore {
     // Initialises the app 
     async initialise() {
         await this.instrumentStore.initialise()
-        try {
-            let file = await this.fileService.getFile('default file')
-            if (file) {
-                this.file.name = file.name
-            }
-        } catch (e: any) {
-            console.error("Error getting file", e)
-            this.onEvent({
-                event: DomainEvent.DatabaseError,
-                doingWhat: "initialising file name",
-                error: e.target.error
-            })
-        }
+        await this.fileStore.initialise()
         await this.gridStore.initialise(this.instrumentStore.instruments)
     }
 
-
     // Updates grid in state and DB
     updateFile(withFile: (file: GrvMkrFile) => void) {
-        withFile(this.file);
-        this.trySaveFile(this.file)
-    }
-
-    trySaveFile(file: GrvMkrFile) {
-        this.fileService.saveFile(file)
-            .catch((e) => {
-                console.error(`Error saving file. Error: [${e}]`, file)
-                let error = e.target.error
-                this.onEvent({
-                    event: DomainEvent.DatabaseError,
-                    doingWhat: "saving file",
-                    error
-                })
-            });
+        withFile(this.fileStore.file);
+        this.fileStore.trySaveFile()
     }
 }
