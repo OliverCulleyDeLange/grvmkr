@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
-	import Button from './Button.svelte';
 	import HelpOverlay from './HelpOverlay.svelte';
 
 	let {
@@ -75,6 +74,12 @@
 			{#each toolbarUi.errors as error}
 				<div class="alert alert-error">
 					{error.message}
+					<button
+						class="btn btn-circle btn-ghost btn-xs"
+						onclick={() => onEvent({ event: ToolbarEvent.DismissError, id: error.id})}
+					>
+						✕
+					</button>
 				</div>
 			{/each}
 		</div>

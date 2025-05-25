@@ -1,11 +1,12 @@
 // Toolbar UI Events
-export type ToolbarEvents = Save | Load | Reset | FileNameChanged
+export type ToolbarEvents = Save | Load | Reset | FileNameChanged | DismissError
 
 export enum ToolbarEvent {
     Save = "Save",
     Load = "Load",
     Reset = "Reset",
     FileNameChanged = "FileNameChanged",
+    DismissError = "DismissError",
 }
 
 export type Reset = {
@@ -22,6 +23,10 @@ export type FileNameChanged = {
     event: ToolbarEvent.FileNameChanged
     fileName: string
 }
+export type DismissError = {
+    event: ToolbarEvent.DismissError
+    id: string
+}
 
 // Toolbar UI components
 export type ToolbarUi = {
@@ -30,5 +35,6 @@ export type ToolbarUi = {
 }
 
 export type AppErrorUi = {
+    id: string,
     message: string
 }

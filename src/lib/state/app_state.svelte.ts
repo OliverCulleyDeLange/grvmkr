@@ -116,6 +116,9 @@ export class AppStateStore {
             case ToolbarEvent.Reset:
                 this.reset()
                 break;
+            case ToolbarEvent.DismissError:
+                this.errorStore.dismissError(event.id)
+                break;
             case DomainEvent.DatabaseError:
                 this.errorStore.addError(event)
                 break;
