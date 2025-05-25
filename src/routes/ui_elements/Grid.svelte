@@ -22,7 +22,7 @@
 	// Toolsbar pin state
 	let gridRef: HTMLElement;
 	let toolsRef: HTMLElement;
-	let isPinned = $state(false);
+	let isPinned = false;
 
 	function onPointerDown(locator: CellLocator, shiftKey: boolean) {
 		selecting = true;
@@ -171,8 +171,6 @@
 		grid-column: span var(--cells) / span var(--cells);
 		grid-template-columns: subgrid;
 	}
-
-	
 
 	.cell-tools {
 		position: sticky;
