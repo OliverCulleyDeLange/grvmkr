@@ -1,12 +1,8 @@
-import { GridTable, InstrumentStore, mapGridDtoToGrid, mapGridToGridDto, type Grid, type GridId } from "$lib";
+import { GridTable, InstrumentRepository, InstrumentStore, mapGridDtoToGrid, mapGridToGridDto, type Grid, type GridDto, type GridId } from "$lib";
 
 export class GridRepository {
 
-    private instrumentManager: InstrumentStore
-
-    constructor(instrumentManager: InstrumentStore) {
-        this.instrumentManager = instrumentManager
-    }
+    private instrumentRepository: InstrumentRepository = new InstrumentRepository()
 
     private gridTable: GridTable = new GridTable();
 
@@ -18,7 +14,20 @@ export class GridRepository {
 
     async getGrid(id: GridId): Promise<Grid | null> {
         const gridDto = await this.gridTable.getGrid(id);
-        return gridDto ? mapGridDtoToGrid(gridDto, this.instrumentManager) : null;
+
+        if (!gridDto) {
+            console.warn(`Grid with id ${id} not found`);
+            return null;
+        }
+
+        // Collect all instrumentIds used in this grid
+        return await this.gridDtoToGrid(gridDto);
+    }
+
+    async getGrids(ids: GridId[]): Promise<Grid[]> {
+        const gridDtos = await this.gridTable.getGrids(ids)
+        const filtered = gridDtos.filter((d) => d != null);
+        return await Promise.all(filtered.map(dto => this.gridDtoToGrid(dto)));
     }
 
     async deleteGrid(id: GridId): Promise<void> {
@@ -28,12 +37,19 @@ export class GridRepository {
 
     async getAllGrids(): Promise<Grid[]> {
         const gridDtos = await this.gridTable.getAllGrids();
-        return gridDtos.map(dto => mapGridDtoToGrid(dto, this.instrumentManager));
+        return await Promise.all(gridDtos.map(dto => this.gridDtoToGrid(dto)));
     }
 
     async deleteAllGrids(): Promise<void> {
         await this.gridTable.deleteAllGrids();
-        console.log("Deleted all Grids from DB"
-        )
+        console.log("Deleted all Grids from DB")
+    }
+
+    private async gridDtoToGrid(gridDto: GridDto): Promise<Grid> {
+        const instrumentIds = gridDto.rows.map(row => row.instrumentId);
+        const instrumentsArray = await this.instrumentRepository.getInstruments(instrumentIds);
+        const instruments = new Map(instrumentsArray.map(i => [i.id, i]));
+
+        return mapGridDtoToGrid(gridDto, instruments);
     }
 }

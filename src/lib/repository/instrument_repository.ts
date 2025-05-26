@@ -1,6 +1,6 @@
 import type { InstrumentWithId, HitTypeWithId } from "$lib";
 import type { InstrumentDto, HitDto } from "$lib";
-import { InstrumentTable, mapHitDtoToHitTypeWithId, mapHitTypeToHitDto, mapInstrumentToDomain, mapInstrumentToInstrumentDto } from "$lib";
+import { InstrumentTable, mapHitDtoToHitTypeWithId, mapHitTypeToHitDto, mapInstrumentDtoToInstrumentWithId, mapInstrumentToInstrumentDto } from "$lib";
 import { HitTable } from "$lib";
 
 export class InstrumentRepository {
@@ -23,6 +23,14 @@ export class InstrumentRepository {
         const instrumentDto = await this.instrumentTable.getInstrument(id);
         if (!instrumentDto) return null;
         return this.buildInstrument(instrumentDto)
+    }
+
+    async getInstruments(ids: string[]): Promise<InstrumentWithId[]> {
+        const instrumentDtos = await this.instrumentTable.getInstruments(ids);
+        const filtered = instrumentDtos.filter((d) => d != null);
+        return Promise.all(
+            filtered.map(async (instrumentDto) => await this.buildInstrument(instrumentDto))
+        );        
     }
 
     async getAllInstruments(): Promise<InstrumentWithId[]> {
@@ -57,7 +65,7 @@ export class InstrumentRepository {
         )).filter((hitType) => hitType != null)
             .map((dto) => mapHitDtoToHitTypeWithId(dto, instrumentDto.volume));
 
-        return mapInstrumentToDomain(instrumentDto, hitTypes);
+        return mapInstrumentDtoToInstrumentWithId(instrumentDto, hitTypes);
     }
 
 }

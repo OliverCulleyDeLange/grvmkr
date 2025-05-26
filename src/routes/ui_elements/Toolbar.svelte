@@ -4,10 +4,12 @@
 
 	let {
 		toolbarUi,
-		onEvent
+		onEvent,
+		toggleGrooveSelector
 	}: {
 		toolbarUi: ToolbarUi;
 		onEvent: OnUiEvent;
+		toggleGrooveSelector: () => void;
 	} = $props();
 
 	let showHelp: boolean = $state(false);
@@ -22,7 +24,7 @@
 		const fileInput = event.target as HTMLInputElement;
 		if (fileInput.files && fileInput.files[0]) {
 			let file = fileInput.files[0];
-			onEvent({ event: ToolbarEvent.Load, file });
+			onEvent({ event: ToolbarEvent.LoadFile, file });
 			fileInput.value = '';
 		}
 	}
@@ -44,14 +46,25 @@
 <div class="flex flex-col gap-4 p-2 sm:flex-row print:hidden">
 	<h1 class="text-3xl">GrvMkr</h1>
 
-	<div class="flex flex-row gap-2 flex-wrap">
-		<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Save })}
-			>Save</button
-		>
+	<div class="flex flex-row flex-wrap gap-2">
+		<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.New })}>
+			New
+		</button>
+
+		<button class="btn btn-outline btn-sm" onclick={() => toggleGrooveSelector()}>
+			My Grooves
+		</button>
+
+		<button class="btn btn-outline btn-sm" onclick={() => onEvent({ event: ToolbarEvent.Save })}>
+			Save to File
+		</button>
 		<button
 			class="btn btn-outline btn-sm"
-			onclick={() => document.getElementById('hidden-file-input-for-load')?.click()}>Load</button
+			onclick={() => document.getElementById('hidden-file-input-for-load')?.click()}
 		>
+			Load File
+		</button>
+
 		<input
 			id="hidden-file-input-for-load"
 			type="file"
@@ -59,14 +72,13 @@
 			accept="application/json"
 			hidden
 		/>
-		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>Print / Save PDF</button>
+		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>
+			Print / Save PDF
+		</button>
 
-		<button class="btn btn-outline btn-sm" onclick={reset}>Reset</button>
+		<button class="btn btn-outline btn-sm" onclick={reset}> Reset </button>
 
-		<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}>?</button>
-		{#if showHelp}
-			<HelpOverlay closeDialog={() => (showHelp = !showHelp)} />
-		{/if}
+		<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}> ? </button>
 	</div>
 
 	{#if toolbarUi.errors.length > 0}
@@ -76,7 +88,7 @@
 					{error.message}
 					<button
 						class="btn btn-circle btn-ghost btn-xs"
-						onclick={() => onEvent({ event: ToolbarEvent.DismissError, id: error.id})}
+						onclick={() => onEvent({ event: ToolbarEvent.DismissError, id: error.id })}
 					>
 						✕
 					</button>
@@ -87,26 +99,21 @@
 </div>
 
 <!-- Filename input -->
-<div class="relative w-full print:hidden mb-2">
+<div class="relative mb-2 w-full print:hidden">
 	<input
 		id="fileName"
 		bind:value={fileName}
 		oninput={onFilenameChange}
 		placeholder=" "
-		class="peer input input-xl input-bordered w-full"
+		class="input-xl peer input input-bordered w-full"
 	/>
-	<label
-		for="fileName"
-		class="absolute left-2 top-1 text-[8px] text-gray-600 "
-	>
-		File name
-	</label>
+	<label for="fileName" class="absolute left-2 top-1 text-[8px] text-gray-600"> File name </label>
 </div>
 
 <!-- Print only file name -->
 <div class="hidden print:block">
 	<h1 class="text-4xl">{fileName}</h1>
-</div>	
+</div>
 
 {#if showResetConfirmation}
 	<dialog open class="modal">
@@ -121,4 +128,8 @@
 			<button onclick={() => (showResetConfirmation = false)}>close</button>
 		</form>
 	</dialog>
+{/if}
+
+{#if showHelp}
+	<HelpOverlay closeDialog={() => (showHelp = !showHelp)} />
 {/if}

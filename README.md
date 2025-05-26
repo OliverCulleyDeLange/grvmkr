@@ -2,24 +2,26 @@
 [Groove Maker](https://oliverdelange.co.uk/grvmkr/) is a percussion grid notation tool and modern replacement for the now obsolete [Mango Drum](http://mangodrum.com/) which only runs on Windows.
 
 ## Features
-- ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 - ✅ Live editing
   - Modify the grid and hear the results immediately, even when playing.
-  - Multi select grid cells in a row (shift click or drag) + copy (ctrl/cmd + C) and paste (ctrl/cmd + V)
+  - Multi select grid cells in a row. On desktop, shift click or click and drag cursor. On mobile press and drag cells. 
+  - Merge cells + uneven hits like triplets 
+- ✅ Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users. 
 - ✅ Choose the BPM for your composition (obviously)
 - ✅ Create your own instruments
   - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
 - ✅ Built in instruments
   - There are currently some standard built ins for making beats / samba grooves
-- ✅ Save your composition grids as a json file, which can be re-loaded at a later date. 
-- ✅ Save your composition grids as a PDF file for sharing with others
+- ✅ Save and load grids in the app (saved to your browsers internal database)
+- ✅ Save your composition grids as a file, which can be re-loaded on other computers. Useful for sharing with band members!
+- ✅ Save or print your composition grids as a PDF file for sharing with others
   -  Technically possible by 'Printing to PDF'. I've made sure the grids aren't split between pages. 
 - ✅ Saving progress automatically so you don't lose everything if you refresh the page
 - ✅ Mute / Solo and instrument volume controls
 - ✅ Dark mode theme
+- ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-- Save/open grids locally
 - Keyboard Shortcuts (space to play)
 - Play grids in order like a song
 - Configurable instruments per grid / groove

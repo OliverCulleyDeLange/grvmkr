@@ -1,29 +1,26 @@
 import { calculateMsPerBeatDivision } from "$lib/mapper/misc_mapper_funcs";
 import { buildDefaultGrid, defaultGridRow } from "$lib/model/default_grid";
+import { GridRepository } from "$lib/repository/grid_repository";
 import { mapSavedGridV1ToGrid } from "$lib/serialisation/from_save_file_v1";
 import { mapSavedGridV2ToGrid } from "$lib/serialisation/from_save_file_v2";
 import { mapSavedGridV3ToGrid } from "$lib/serialisation/from_save_file_v3";
-import { GridRepository } from "$lib/repository/grid_repository";
 import { DomainEvent } from "$lib/types/domain/event";
 import type { CellLocator, Grid, GridCell, GridId, GridRow, InstrumentHit } from "$lib/types/domain/grid_domain";
 import type { HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from "$lib/types/domain/instrument_domain";
+import type { OnEvent } from "$lib/types/event";
 import type { SaveFileV1 } from "$lib/types/serialisation/savefile_v1";
 import type { SaveFileV2 } from "$lib/types/serialisation/savefile_v2";
-import type { SavedGridV3, SaveFileV3 } from "$lib/types/serialisation/savefile_v3";
+import type { SavedGridV3 } from "$lib/types/serialisation/savefile_v3";
 import type { RemoveGrid } from "$lib/types/ui/grid_ui";
 import { SvelteMap } from "svelte/reactivity";
 import type { InstrumentStore } from "./instrument_store.svelte";
-import type { OnEvent } from "$lib/types/event";
-import { get } from "svelte/store";
-import type { SaveFileV4 } from "$lib";
 
 // Responsible for storing, and modifying grids
 export class GridStore {
     private onEvent: OnEvent
-    private gridRepository: GridRepository
+    private gridRepository: GridRepository = new GridRepository()
 
-    constructor(instrumentStore: InstrumentStore, onEvent: OnEvent) {
-        this.gridRepository = new GridRepository(instrumentStore)
+    constructor(onEvent: OnEvent) {
         this.onEvent = onEvent
     }
 
@@ -33,13 +30,20 @@ export class GridStore {
     public selectionStartCell: CellLocator | null = $state(null);
     public copiedCells: GridCell[] = []
 
-    async initialise(instruments: Map<InstrumentId, InstrumentWithId>) {
+    async initialise(
+        gridMap: Map<GridId, Grid>,
+        instruments: Map<InstrumentId, InstrumentWithId>
+    ): Promise<SvelteMap<GridId, Grid>> {
         try {
-            let grids = await this.gridRepository.getAllGrids()
+            this.grids.clear();
+            let grids = Array.from(gridMap.values());
             if (grids.length == 0) {
-                this.addDefaultGrid(instruments)
+                console.log("No grids found, adding default grid");
+                await this.addDefaultGrid(instruments)
             } else {
-                grids.forEach((grid) => this.addGrid(grid))
+                for (const grid of grids) {
+                    await this.addGrid(grid, false);
+                }
             }
         } catch (e: any) {
             console.error("Error getting all grids:", e)
@@ -48,8 +52,9 @@ export class GridStore {
                 doingWhat: "initialising grids",
                 error: e.target.error
             })
-            this.addDefaultGrid(instruments)
+            await this.addDefaultGrid(instruments)
         }
+        return this.grids
     }
 
     setCurrentlySelectedCellHits(hits: InstrumentHit[]) {
@@ -370,7 +375,6 @@ export class GridStore {
     }
 
     async loadSaveFileV1(saveFile: SaveFileV1, instrumentStore: InstrumentStore) {
-        this.gridRepository.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
             let gridModel: Grid = mapSavedGridV1ToGrid(grid, instrumentStore);
@@ -379,7 +383,6 @@ export class GridStore {
     }
 
     async loadSaveFileV2(saveFile: SaveFileV2, instrumentStore: InstrumentStore) {
-        this.gridRepository.deleteAllGrids()
         this.grids.clear();
         saveFile.grids.forEach((grid) => {
             let gridModel: Grid = mapSavedGridV2ToGrid(grid, instrumentStore);
@@ -388,16 +391,16 @@ export class GridStore {
     }
 
     async loadSaveFileV3(grids: SavedGridV3[], instrumentStore: InstrumentStore) {
-       await this.gridRepository.deleteAllGrids()
         this.grids.clear();
         for (const grid of grids) {
             let gridModel: Grid = mapSavedGridV3ToGrid(grid, instrumentStore);
             await this.addGrid(gridModel)
         }
     }
-    
-    addDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>) {
+
+    async addDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>) {
         const index = this.getNextGridIndex()
+        //TODO I think this $state can be removed as its being added in addGrid
         let grid: Grid = $state(buildDefaultGrid(instruments, index));
         this.addGrid(grid)
     }
@@ -429,10 +432,12 @@ export class GridStore {
     }
 
     // Makes the grid reactive, and sets it in state and the DB
-    async addGrid(grid: Grid) {
+    async addGrid(grid: Grid, persist: boolean = true) {
         let reactiveGrid = $state(grid);
         this.grids.set(reactiveGrid.id, reactiveGrid);
-        await this.trySaveGrid(grid);
+        if (persist) {
+            await this.trySaveGrid(grid);
+        }
     }
 
     updateBpm(gridId: GridId, bpm: number) {
@@ -512,7 +517,6 @@ export class GridStore {
     }
 
     async trySaveGrid(grid: Grid) {
-        console.log("Saving grid to db", $state.snapshot(grid))
         await this.gridRepository.saveGrid(grid)
             .catch((e) => {
                 console.error("Error saving grid", e, grid)
@@ -525,13 +529,31 @@ export class GridStore {
             });
     }
 
-    removeGrid(event: RemoveGrid) {
-        this.grids.delete(event.gridId);
-        this.gridRepository.deleteGrid(event.gridId)
+    async replaceGrids(grids: Map<string, Grid>) {
+        this.resetState();
+        console.log("Replacing grids with", grids);
+        this.grids.clear();
+        for (const [id, grid] of grids) {
+            await this.addGrid(grid, false);
+        }
     }
 
-    reset() {
-        this.gridRepository.deleteAllGrids()
+    async removeGrid(event: RemoveGrid) {
+        this.grids.delete(event.gridId);
+        await this.gridRepository.deleteGrid(event.gridId)
+        this.resetState(); // Easier to reset than check a bunch of stuff
+    }
+
+    async reset() {
+        await this.gridRepository.deleteAllGrids()
+        this.resetState();
+    }
+
+    resetState() {
+        this.currentlyPlayingGrid = undefined;
+        this.currentlySelectedCells = [];
+        this.selectionStartCell = null;
+        this.copiedCells = [];
     }
 
     // Returns a count of the number of columns in the grid

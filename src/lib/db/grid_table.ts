@@ -1,4 +1,4 @@
-import type { GridDto } from "$lib";
+import type { GridDto, GridId } from "$lib";
 import { getDataDb } from "./data_db";
 import { GRID_STORE } from "./db_config";
 
@@ -29,6 +29,24 @@ export class GridTable {
             request.onerror = () => reject("Failed to get grid");
         });
     }
+
+    /** ✅ Retrieve GridDto's by their ids */
+    async getGrids(ids: GridId[]): Promise<(GridDto | null)[]> {
+        const db = await getDataDb();
+        const tx = db.transaction(GRID_STORE, "readonly");
+        const store = tx.objectStore(GRID_STORE);
+
+        const promises = ids.map(id => {
+            return new Promise<GridDto | null>((resolve, reject) => {
+                const request = store.get(id);
+                request.onsuccess = () => resolve(request.result || null);
+                request.onerror = () => reject(`Failed to get grid with id ${id}`);
+            });
+        });
+
+        return await Promise.all(promises);
+    }
+
 
     /** ✅ Retrieve all GridDtos */
     async getAllGrids(): Promise<GridDto[]> {

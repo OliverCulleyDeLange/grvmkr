@@ -1,4 +1,4 @@
-import type { GridDtoId } from "./grid_data";
+import type { GridDtoId, InstrumentId } from "$lib";
 
 export type FileDtoId = string
 
@@ -7,4 +7,5 @@ export type FileDto = {
     id: FileDtoId
     name: string
     grids: GridDtoId[]
+    instruments: InstrumentId[]
 };

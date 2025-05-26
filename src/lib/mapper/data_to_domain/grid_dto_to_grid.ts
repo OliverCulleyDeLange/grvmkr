@@ -1,11 +1,11 @@
-import type { Grid, GridCell, GridCellDto, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto, InstrumentStore } from "$lib";
+import type { Grid, GridCell, GridCellDto, GridConfig, GridConfigDto, GridDto, GridRow, GridRowDto, InstrumentHit, InstrumentHitDto, InstrumentStore, InstrumentWithId } from "$lib";
 
-export function mapGridDtoToGrid(gridDto: GridDto, instrumentManager: InstrumentStore): Grid {
+export function mapGridDtoToGrid(gridDto: GridDto, instruments: Map<string, InstrumentWithId>): Grid {
     return {
         id: gridDto.id,
         index: gridDto.index,
         config: configFromDto(gridDto.config),
-        rows: gridDto.rows.map(row => rowFromDto(row, instrumentManager)),
+        rows: gridDto.rows.map(row => rowFromDto(row, instruments.get(row.instrumentId)!)),
         currentlyPlayingColumn: gridDto.currentlyPlayingColumn,
         msPerBeatDivision: gridDto.msPerBeatDivision,
         gridCols: gridDto.gridCols,
@@ -23,13 +23,9 @@ export function configFromDto(configDto: GridConfigDto): GridConfig {
     };
 }
 
-export function rowFromDto(gridRowDto: GridRowDto, instrumentManager: InstrumentStore): GridRow {
-    let instrument = instrumentManager.instruments.get(gridRowDto.instrumentId)
-    if (!instrument) {
-        console.error(`Can't find instrument with id [${gridRowDto.instrumentId}] from db. Domain obj will have no instrument!`, instrument)
-    }
+export function rowFromDto(gridRowDto: GridRowDto, instrument: InstrumentWithId): GridRow {
     return {
-        instrument: instrument!,
+        instrument: instrument,
         cells: gridRowDto.cells.map((cell) => mapGridCellDtoToGridCell(cell))
     };
 }

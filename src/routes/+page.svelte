@@ -3,6 +3,7 @@
 		AppStateStore,
 		GridEvent,
 		mapGridUi,
+		mapGrvMkrFilesToGrooveSelectorUi,
 		mapToolbarUi,
 		UiEvent,
 		type GridUis
@@ -16,8 +17,10 @@
 	import Instruments from './ui_elements/Instruments.svelte';
 	import Legend from './ui_elements/Legend.svelte';
 	import Toolbar from './ui_elements/Toolbar.svelte';
+	import GrooveSelector from './ui_elements/GrooveSelector.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
+	let showGrooveSelector: boolean = $state(false);
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
 
 	onMount(() => {
@@ -36,7 +39,9 @@
 		}
 	}
 
-	let toolbarUi = $derived(mapToolbarUi(appStateStore.fileStore.file.name, appStateStore.errorStore.errors));
+	let toolbarUi = $derived(
+		mapToolbarUi(appStateStore.fileStore.file.name, appStateStore.errorStore.errors)
+	);
 	let gridsUi: GridUis = $derived(
 		mapGridUi(
 			appStateStore.gridStore.grids,
@@ -44,10 +49,15 @@
 			appStateStore.cellToolsStore.cellTools
 		)
 	);
+	let grooveSelectorUi = $derived(mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files));
 </script>
 
-<div class="box-border w-full p-4 bg-white dark:bg-[#1D232A]">
-	<Toolbar {onEvent} {toolbarUi} />
+<div class="box-border w-full bg-white p-4 dark:bg-[#1D232A]">
+	<Toolbar
+		{onEvent}
+		{toolbarUi}
+		toggleGrooveSelector={() => (showGrooveSelector = !showGrooveSelector)}
+	/>
 	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">
 			{#each gridsUi.grids as gridUi}
@@ -63,7 +73,10 @@
 			<Button onClick={() => onEvent({ event: GridEvent.AddGrid })} classes="ml-auto print:hidden">
 				Add Grid
 			</Button>
-			<Button onClick={() => onEvent({ event: GridEvent.DuplicateGrid })} classes="ml-auto print:hidden">
+			<Button
+				onClick={() => onEvent({ event: GridEvent.DuplicateGrid })}
+				classes="ml-auto print:hidden"
+			>
 				Duplicate Grid
 			</Button>
 		</div>
@@ -71,5 +84,13 @@
 		<div class="print:hidden">
 			<Instruments instrumentManager={appStateStore.instrumentStore} {onEvent} />
 		</div>
+	{/if}
+
+	{#if showGrooveSelector}
+		<GrooveSelector
+			ui={grooveSelectorUi}
+			{onEvent}
+			closeDialog={() => (showGrooveSelector = !showGrooveSelector)}
+		/>
 	{/if}
 </div>

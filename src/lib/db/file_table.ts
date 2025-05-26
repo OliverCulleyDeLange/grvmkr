@@ -26,6 +26,17 @@ export class FileTable {
         });
     }
 
+    async getAllFiles(): Promise<FileDto[]> {
+        const db = await getDataDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(FILE_STORE, "readonly");
+            const store = tx.objectStore(FILE_STORE);
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
     async deleteFile(id: FileDtoId): Promise<void> {
         const db = await getDataDb();
         return new Promise((resolve, reject) => {
@@ -37,14 +48,16 @@ export class FileTable {
         });
     }
 
-    async getAllFiles(): Promise<FileDto[]> {
+    /** ✅ Delete all files */
+    async deleteAllFiles(): Promise<void> {
         const db = await getDataDb();
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(FILE_STORE, "readonly");
+            const tx = db.transaction(FILE_STORE, "readwrite");
             const store = tx.objectStore(FILE_STORE);
-            const request = store.getAll();
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => reject(request.error);
+            const request = store.clear();
+
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject("Failed to delete all files");
         });
     }
 }

@@ -1,23 +1,33 @@
 // Toolbar UI Events
-export type ToolbarEvents = Save | Load | Reset | FileNameChanged | DismissError
+export type ToolbarEvents = New | Save | LoadFile | LoadLocalGroove | Reset | FileNameChanged | DismissError | GrooveSelectorShown
 
 export enum ToolbarEvent {
+    New = "New",
     Save = "Save",
-    Load = "Load",
+    LoadFile = "Load",
+    LoadLocalGroove = "LoadLocalGroove",
     Reset = "Reset",
     FileNameChanged = "FileNameChanged",
     DismissError = "DismissError",
+    GrooveSelectorShown = "GrooveSelectorShown",
 }
 
+export type New = {
+    event: ToolbarEvent.New
+}
 export type Reset = {
     event: ToolbarEvent.Reset
 }
 export type Save = {
     event: ToolbarEvent.Save
 }
-export type Load = {
-    event: ToolbarEvent.Load
+export type LoadFile = {
+    event: ToolbarEvent.LoadFile
     file: File
+}
+export type LoadLocalGroove = {
+    event: ToolbarEvent.LoadLocalGroove
+    id: string
 }
 export type FileNameChanged = {
     event: ToolbarEvent.FileNameChanged
@@ -26,6 +36,9 @@ export type FileNameChanged = {
 export type DismissError = {
     event: ToolbarEvent.DismissError
     id: string
+}
+export type GrooveSelectorShown = {
+    event: ToolbarEvent.GrooveSelectorShown
 }
 
 // Toolbar UI components

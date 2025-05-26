@@ -1,7 +1,7 @@
 import { defaultVolume, type HitDto, type HitTypeWithId, type InstrumentDto, type InstrumentWithId } from "$lib";
 import { SvelteMap } from "svelte/reactivity";
 
-export function mapInstrumentToDomain(instrumentDto: InstrumentDto, hitTypes: HitTypeWithId[]): InstrumentWithId {
+export function mapInstrumentDtoToInstrumentWithId(instrumentDto: InstrumentDto, hitTypes: HitTypeWithId[]): InstrumentWithId {
     return {
         id: instrumentDto.id,
         gridIndex: instrumentDto.gridIndex,

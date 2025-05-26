@@ -1,25 +1,43 @@
-import { defaultFile, DomainEvent, FileRepository, InstrumentStore, type GrvMkrFile, type OnEvent, type SaveFileV2, type SaveFileV3, type SaveFileV4 } from "$lib";
+import { defaultFile, defaultFileName, DomainEvent, FileRepository, saveWorkingFileId, type Grid, type GridId, type GrvMkrFile, type GrvMkrFileId, type InstrumentWithId, type OnEvent, type SaveFileV2, type SaveFileV3, type SaveFileV4 } from "$lib";
+import { SvelteMap } from "svelte/reactivity";
 
-// Responsible for storing, and modifying grids
+// Responsible for storing, and modifying files
 export class FileStore {
     private onEvent: OnEvent
     private fileRepository: FileRepository
 
-    // Main state
-    public file: GrvMkrFile = $state(defaultFile)
+    // Working file
+    public file: GrvMkrFile = $state(defaultFile())
 
+    // A list of all locally stored files. Never store a $state wrapped object in here
+    public files: Map<GrvMkrFileId, GrvMkrFile> = new SvelteMap<GrvMkrFileId, GrvMkrFile>()
 
-    constructor(instrumentStore: InstrumentStore, onEvent: OnEvent) {
-        this.fileRepository = new FileRepository(instrumentStore)
+    constructor(onEvent: OnEvent) {
+        this.fileRepository = new FileRepository()
         this.onEvent = onEvent
     }
 
-    async initialise() {
+    // Get or create the working file, and populate the full list of available files
+    async initialise(): Promise<GrvMkrFile> {
+        const workingFile = await this.initialiseWorkingFile()
+        await this.updateAllFiles();
+        return workingFile
+    }
+
+    // Get or create the working file in the db and state
+    async initialiseWorkingFile(): Promise<GrvMkrFile> {
         try {
-            let file = await this.fileRepository.getFile('default file')
-            if (file) {
-                this.file.name = file.name
+            let workingFileFromDb = await this.fileRepository.getWorkingFile();
+            if (workingFileFromDb) {
+                this.file = workingFileFromDb
+                console.log("Initialised file from DB", workingFileFromDb)
+            } else {
+                // If no file exists in db, create the working file
+                await this.fileRepository.saveFile(this.file)
+                saveWorkingFileId(this.file.id)
+                console.log("Created default file in DB", $state.snapshot(this.file))
             }
+            return this.file
         } catch (e: any) {
             console.error("Error getting file", e)
             this.onEvent({
@@ -27,38 +45,89 @@ export class FileStore {
                 doingWhat: "initialising file name",
                 error: e.target.error
             })
+            return Promise.reject(e)
         }
     }
 
-    loadFileV2(saveFile: SaveFileV2) {
-        this.file.name = saveFile.name
+    async loadGroove(fileId: GrvMkrFileId): Promise<GrvMkrFile> {
+        const newFile = this.files.get(fileId);
+        if (!newFile) {
+            console.error(`File with id ${fileId} not found in local files.`);
+            return Promise.reject(new Error(`File with id ${fileId} not found`));
+        }
+        this.file = newFile;
+        saveWorkingFileId(this.file.id)
+        return newFile
+    }
+
+    async setGrids(grids: Map<GridId, Grid>) {
+        this.file.grids = grids
         this.trySaveFile()
     }
 
-    loadFileV3(saveFile: SaveFileV3) {
-        this.file.name = saveFile.name
+    async setInstruments(instruments: Map<string, InstrumentWithId>) {
+        this.file.instruments = instruments
         this.trySaveFile()
     }
 
-    loadFileV4(saveFile: SaveFileV4) {
-        this.file.name = saveFile.name
-        this.trySaveFile()
+    async saveWorkingFile() {
+        const fileCopy: GrvMkrFile = { ...this.file }
+        fileCopy.id = `file_${crypto.randomUUID()}`
+        await this.trySaveFile(fileCopy)
+        this.files.set(fileCopy.id, $state.snapshot(fileCopy))
+        
+        // Set current working file name to the default 
+        this.file.name = defaultFileName()
+        await this.trySaveFile()
     }
 
-    trySaveFile() {
-        this.fileRepository.saveFile(this.file)
-            .catch((e) => {
-                console.error(`Error saving file. Error: [${e}]`, this.file)
-                let error = e.target.error
-                this.onEvent({
-                    event: DomainEvent.DatabaseError,
-                    doingWhat: "saving file to database",
-                    error
-                })
+    async loadFileV2(saveFile: SaveFileV2, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
+        await this.loadFile(saveFile.name, instruments, grids);
+    }
+
+    async loadFileV3(saveFile: SaveFileV3, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
+        await this.loadFile(saveFile.name, instruments, grids);
+    }
+
+    async loadFileV4(saveFile: SaveFileV4, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
+        await this.loadFile(saveFile.name, instruments, grids);
+    }
+
+    async loadFile(fileName: string, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
+        this.file.name = fileName
+        this.file.instruments = instruments
+        this.file.grids = grids
+
+        await this.trySaveFile()
+        // todo populate grids and instruments
+        saveWorkingFileId(this.file.id)
+    }
+
+    async trySaveFile(file: GrvMkrFile = this.file) {
+        try {
+            await this.fileRepository.saveFile(file);
+        } catch (e: any) {
+            console.error(`Error saving file. Error: [${e}]`, this.file);
+            const error = e?.target?.error ?? e;
+            this.onEvent({
+                event: DomainEvent.DatabaseError,
+                doingWhat: "saving file to database",
+                error,
             });
+        }
     }
 
     async reset() {
-        await this.fileRepository.deleteFile('default file')
+        await this.fileRepository.deleteAllFiles()
+    }
+
+    // Populate the internal state of all available files
+    // Currently only triggered when we open the groove selector 
+    async updateAllFiles() {
+        const filesArray = await this.fileRepository.getAllFiles();
+        this.files.clear()
+        for (const file of filesArray) {
+            this.files.set(file.id, file);
+        }
     }
 }

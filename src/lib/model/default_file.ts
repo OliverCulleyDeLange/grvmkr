@@ -1,3 +1,15 @@
 import { formatDateYYYYMMMDD } from "$lib/state/date";
+import type { GrvMkrFile, GrvMkrFileId } from "$lib/types/domain/file_domain";
 
-export const defaultFile = { id: 'default file', name: `Groove from ${formatDateYYYYMMMDD()}`, grids: new Map() }
+export function defaultFile(): GrvMkrFile {
+    return {
+        id: `file_${crypto.randomUUID()}`,
+        name: defaultFileName(),
+        grids: new Map(),
+        instruments: new Map()
+    }
+}
+
+export function defaultFileName(): string {
+    return `Groove from ${formatDateYYYYMMMDD()}`;
+}

@@ -21,16 +21,17 @@ export class InstrumentStore {
 
     private instrumentSoloed = false
 
-    // Populate instruments state from db, defaulting to default config
+    // Populate instruments state from the working files instruments, defaulting to default config
     // Also downloads default sound files
-    async initialise(): Promise<Map<InstrumentId, InstrumentWithId>> {
+    async initialise(instrumentMap: Map<InstrumentId, InstrumentWithId>): Promise<Map<InstrumentId, InstrumentWithId>> {
         try {
-            let instruments = await this.instrumentRepository.getAllInstruments()
+            let instruments = Array.from(instrumentMap.values());
             if (instruments.length == 0) {
+                console.log("No instruments found, setting up default instruments");
                 await this.setupDefaultInstruments();
             } else {
                 for (const instrument of instruments) {
-                    await this.saveInstrumentToStateAndDb(instrument);
+                    await this.saveInstrumentToStateAndDb(instrument, false);
                 }
             }
         } catch (e: any) {
@@ -216,12 +217,12 @@ export class InstrumentStore {
         })
     }
 
-    private async saveInstrumentToStateAndDb(instrument: InstrumentWithId) {
+    private async saveInstrumentToStateAndDb(instrument: InstrumentWithId, persist: boolean = true) {
         // Save a reactive version to state
         let reactiveInstrument = makeInstrumentReactive(instrument);
         this.instruments.set(instrument.id, reactiveInstrument);
         // Persist non reactive version in DB
-        await this.instrumentRepository.saveInstrument(instrument)
+        if (persist) await this.instrumentRepository.saveInstrument(instrument)
     }
 
     // Adds a new hit to the instrument, generating a new id
@@ -262,7 +263,7 @@ export class InstrumentStore {
 
     // When loading from file, replace all instruments
     async replaceInstrumentsV4(instruments: SavedInstrumentV4[]) {
-        await this.reset()
+        this.instruments.clear()
         for (const instrument of instruments) {
             let hitMap = new SvelteMap(instrument.hits.map((hit) => {
                 let hitType: HitType = {
@@ -275,6 +276,16 @@ export class InstrumentStore {
                 return [hitWithId.id, hitWithId];
             }));
             await this.addInstrument(instrument.id, hitMap, instrument.name, instrument.gridIndex, instrument.volume);
+        }
+    }
+
+    // Replace instruments from local file, so has domain object already
+    async replaceInstruments(instruments: Map<InstrumentId, InstrumentWithId>) {
+        this.instruments.clear()
+        for (const instrument of instruments.values()) {
+            // Make sure hits are reactive
+            let reactiveInstrument = makeInstrumentReactive(instrument);
+            this.instruments.set(reactiveInstrument.id, reactiveInstrument);
         }
     }
 

@@ -31,6 +31,22 @@ export class InstrumentTable {
         });
     }
 
+    async getInstruments(ids: InstrumentDtoId[]): Promise<(InstrumentDto | null)[]> {
+        const db = await getDataDb();
+        const tx = db.transaction(INSTRUMENT_STORE, "readonly");
+        const store = tx.objectStore(INSTRUMENT_STORE);
+
+        const promises = ids.map(id => {
+            return new Promise<InstrumentDto | null>((resolve, reject) => {
+                const request = store.get(id);
+                request.onsuccess = () => resolve(request.result || null);
+                request.onerror = () => reject(`Failed to get grid with id ${id}`);
+            });
+        });
+
+        return await Promise.all(promises);
+    }
+
     // ✅ Retrieve All Instruments
     async getAllInstruments(): Promise<InstrumentDto[]> {
         const db = await getDataDb();
