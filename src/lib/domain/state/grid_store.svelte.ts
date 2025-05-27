@@ -21,9 +21,10 @@ import type { SavedGridV3 } from '$lib/data/types/serialisation/savefile_v3';
 import type { RemoveGrid } from '$lib/ui/grid/grid_ui_events';
 import { SvelteMap } from 'svelte/reactivity';
 import type { InstrumentStore } from './instrument_store.svelte';
+import type { GridRepositoryI } from '../interface/GridRepositoryI';
 
 // Responsible for storing, and modifying grids
-export class GridStore {
+export class GridStore implements GridRepositoryI {
 	private onEvent: OnEvent;
 	private gridRepository: GridRepository = new GridRepository();
 
@@ -32,11 +33,23 @@ export class GridStore {
 	}
 
 	public grids: SvelteMap<GridId, Grid> = new SvelteMap();
-	public currentlyPlayingGrid: Grid | undefined = $state();
-	public mostRecentlyPlayedGrid: Grid | undefined = $state();
+	public currentlyPlayingGrid: Grid | null = $state(null);
+	public mostRecentlyPlayedGrid: Grid | null = $state(null);
 	public currentlySelectedCells: CellLocator[] = $state([]);
 	public selectionStartCell: CellLocator | null = $state(null);
 	public copiedCells: GridCell[] = [];
+
+	getMostRecentlyPlayedGrid(): Grid | null {
+		return this.mostRecentlyPlayedGrid;
+	}
+
+	setPlaying(id: GridId, playing: boolean) {
+		this.updatePlaying(playing, id);
+	}
+
+	getFirstGrid(): Grid | null {
+		return this.grids.values().next().value ?? null;
+	}
 
 	async initialise(
 		gridMap: Map<GridId, Grid>,
@@ -536,10 +549,10 @@ export class GridStore {
 			this.currentlyPlayingGrid.playing = false;
 		}
 		if (playing) {
-			this.currentlyPlayingGrid = this.grids.get(gridId);
+			this.currentlyPlayingGrid = this.grids.get(gridId) ?? null;
 			this.mostRecentlyPlayedGrid = this.currentlyPlayingGrid;
 		} else {
-			this.currentlyPlayingGrid = undefined;
+			this.currentlyPlayingGrid = null;
 		}
 		await this.updateGrid(
 			gridId,
@@ -622,8 +635,8 @@ export class GridStore {
 	}
 
 	resetState() {
-		this.currentlyPlayingGrid = undefined;
-		this.mostRecentlyPlayedGrid = undefined;
+		this.currentlyPlayingGrid = null;
+		this.mostRecentlyPlayedGrid = null;
 		this.currentlySelectedCells = [];
 		this.selectionStartCell = null;
 		this.copiedCells = [];

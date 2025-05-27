@@ -8,6 +8,7 @@ import {
 	PlaybackStore,
 	ProblemEvent,
 	serialiseToSaveFileV4,
+	togglePlayUseCase,
 	ToolbarEvent,
 	UiEvent,
 	type CellLocator,
@@ -50,7 +51,10 @@ export class AppStateStore {
 				this.gridStore.pasteCells(this.instrumentStore.instruments);
 				break;
 			case UiEvent.PlayPause:
-				this.onTogglePlaying();
+				togglePlayUseCase(
+					this.gridStore,
+					this.playbackStore
+				);
 				break;
 			case CellToolsEvent.Merge:
 				this.gridStore.mergeCurrentlySelectedCell(event.side);
@@ -174,30 +178,6 @@ export class AppStateStore {
 	// Filters chatty events, and logs
 	private logEvent(event: AppEvent) {
 		console.log('Event:', event.event, event);
-	}
-
-	// Space key toggles playing the currently playing grid.
-	async onTogglePlaying(): Promise<void> {
-		const recentlyPlayed = this.gridStore.mostRecentlyPlayedGrid;
-		if (recentlyPlayed) {
-			if (recentlyPlayed.playing) {
-				// If currently playing, stop it
-				this.playbackStore.stop();
-				this.gridStore.updatePlaying(false, recentlyPlayed.id);
-				return;
-			} else {
-				// Play
-				this.playbackStore.play(recentlyPlayed);
-				this.gridStore.updatePlaying(true, recentlyPlayed.id);
-			}
-		} else {
-			// Find first grid and play it
-			const firstGrid = this.gridStore.grids.values().next().value;
-			if (firstGrid) {
-				this.playbackStore.play(firstGrid);
-				this.gridStore.updatePlaying(true, firstGrid.id);
-			}
-		}
 	}
 
 	async onTogglePlayingGrid(newPlaying: boolean, gridId: GridId): Promise<void> {

@@ -1,6 +1,6 @@
 import type { HitTypeWithId } from './instrument_domain';
 
-export type OnErrorEvent = (event: ProblemEvents) => void;
+export type OnProblemEvent = (event: ProblemEvents) => void;
 
 export type ProblemEvents = DatabaseError | DebugLog | MissingSampleAudio;
 

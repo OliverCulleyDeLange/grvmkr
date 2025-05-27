@@ -1,5 +1,4 @@
-import type { GridId } from '$lib';
-import type { HitTypeWithId, InstrumentWithId } from './instrument_domain';
+import type { GridId, HitTypeWithId, InstrumentWithId } from '$lib';
 
 export type CellTools =
 	| CellToolsForSingleCellSelection

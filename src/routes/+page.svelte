@@ -27,16 +27,11 @@
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
 	let dark = $state(true);
 
-	function toggleTheme() {
-		themeStore.toggleTheme();
-	}
-
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
 		// Initialise theme
 		themeStore.initTheme();
 		const unsubscribeThemeStore = themeStore.dark.subscribe((v) => (dark = v));
-
 		const unregisterShortcuts = registerAppKeyboardShortcuts(onEvent);
 		return () => {
 			unregisterShortcuts();
@@ -64,7 +59,7 @@
 		{onEvent}
 		{toolbarUi}
 		toggleGrooveSelector={() => (showGrooveSelector = !showGrooveSelector)}
-		toggleLightDark={() => toggleTheme()}
+		toggleLightDark={() => themeStore.toggleTheme()}
 	/>
 	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">

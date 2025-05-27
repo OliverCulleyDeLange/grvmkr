@@ -1,7 +1,8 @@
 import type { Grid } from '$lib';
+import type { PlaybackControllerI } from '../interface/PlaybackControlllerI';
 import type { InstrumentStore } from './instrument_store.svelte';
 
-export class PlaybackStore {
+export class PlaybackStore implements PlaybackControllerI {
 	private instrumentStore: InstrumentStore;
 	private playingGrid: Grid | undefined;
 	private playingIntervalId: number | undefined;
