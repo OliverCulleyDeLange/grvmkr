@@ -1,5 +1,6 @@
 import {
 	calculateMsPerBeatDivision,
+	generateGridId,
 	InstrumentStore,
 	type Grid,
 	type GridCell,
@@ -35,7 +36,8 @@ export function mapSavedGridV3ToGrid(
 		.filter((r) => r != null);
 
 	let grid: Grid = {
-		id: savedGrid.id,
+		// We regenerate grid IDs to ensure uniqueness, because people can export multiple files from the same working file
+		id: generateGridId(), 
 		index: 0, // Not present in V2
 		config: {
 			name: savedGrid.config.name,

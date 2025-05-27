@@ -1,12 +1,16 @@
 import type { Grid, GridCell, GridRow, InstrumentId, InstrumentWithId } from '$lib';
 
+export function generateGridId(): string {
+	return `grid_${crypto.randomUUID()}`;
+}
+
 // The values here are pre calculated
 export function buildDefaultGrid(
 	instruments: Map<InstrumentId, InstrumentWithId>,
 	index: number
 ): Grid {
 	let grid: Grid = {
-		id: `grid_${crypto.randomUUID()}`,
+		id: generateGridId(),
 		index: index,
 		config: {
 			name: `Groove ${index + 1}`,

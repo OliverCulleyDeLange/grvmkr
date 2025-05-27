@@ -1,5 +1,5 @@
 import { calculateMsPerBeatDivision } from '$lib/mapper/misc_mapper_funcs';
-import { buildDefaultGrid, defaultGridRow } from '$lib/model/default_grid';
+import { buildDefaultGrid, defaultGridRow, generateGridId } from '$lib/model/default_grid';
 import { GridRepository } from '$lib/repository/grid_repository';
 import { mapSavedGridV1ToGrid } from '$lib/serialisation/from_save_file_v1';
 import { mapSavedGridV2ToGrid } from '$lib/serialisation/from_save_file_v2';
@@ -473,7 +473,7 @@ export class GridStore {
 			console.log(lastGrid);
 			let newGrid = $state.snapshot(lastGrid);
 			newGrid.index = this.getNextGridIndex();
-			newGrid.id = `grid_${crypto.randomUUID()}`;
+			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';
 			this.addGrid(newGrid);
 		}

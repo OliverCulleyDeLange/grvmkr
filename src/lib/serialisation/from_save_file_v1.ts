@@ -7,7 +7,8 @@ import {
 	type SavedGridConfigV1,
 	type SavedGridRowV1,
 	type SavedGridV1,
-	type SavedInstrumentHitV1
+	type SavedInstrumentHitV1,
+	generateGridId
 } from '$lib';
 
 // Maps a saved grid from a save file to grid models
@@ -36,7 +37,7 @@ export function mapSavedGridV1ToGrid(
 		})
 		.filter((r) => r != null);
 	let grid: Grid = {
-		id: savedGrid.id,
+		id: generateGridId(),
 		index: 0, // Not present in V1
 		config: {
 			name: '', // Doesn't exist in V1 save file
