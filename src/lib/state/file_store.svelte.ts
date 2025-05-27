@@ -1,27 +1,43 @@
-import { defaultFile, defaultFileName, DomainEvent, FileRepository, saveWorkingFileId, type Grid, type GridId, type GrvMkrFile, type GrvMkrFileId, type InstrumentWithId, type OnEvent, type SaveFileV2, type SaveFileV3, type SaveFileV4 } from "$lib";
-import { SvelteMap } from "svelte/reactivity";
+import {
+    defaultFile,
+    defaultFileName,
+    DomainEvent,
+    FileRepository,
+    GridRepository,
+    saveWorkingFileId,
+    type Grid,
+    type GridId,
+    type GrvMkrFile,
+    type GrvMkrFileId,
+    type InstrumentWithId,
+    type OnEvent,
+    type SaveFileV2,
+    type SaveFileV3,
+    type SaveFileV4
+} from '$lib';
+import { SvelteMap } from 'svelte/reactivity';
 
 // Responsible for storing, and modifying files
 export class FileStore {
-    private onEvent: OnEvent
-    private fileRepository: FileRepository
+    private onEvent: OnEvent;
+    private fileRepository: FileRepository = new FileRepository();
+    private gridRepository: GridRepository = new GridRepository();
 
     // Working file
-    public file: GrvMkrFile = $state(defaultFile())
+    public file: GrvMkrFile = $state(defaultFile());
 
     // A list of all locally stored files. Never store a $state wrapped object in here
-    public files: Map<GrvMkrFileId, GrvMkrFile> = new SvelteMap<GrvMkrFileId, GrvMkrFile>()
+    public files: Map<GrvMkrFileId, GrvMkrFile> = new SvelteMap<GrvMkrFileId, GrvMkrFile>();
 
     constructor(onEvent: OnEvent) {
-        this.fileRepository = new FileRepository()
-        this.onEvent = onEvent
+        this.onEvent = onEvent;
     }
 
     // Get or create the working file, and populate the full list of available files
     async initialise(): Promise<GrvMkrFile> {
-        const workingFile = await this.initialiseWorkingFile()
+        const workingFile = await this.initialiseWorkingFile();
         await this.updateAllFiles();
-        return workingFile
+        return workingFile;
     }
 
     // Get or create the working file in the db and state
@@ -29,23 +45,23 @@ export class FileStore {
         try {
             let workingFileFromDb = await this.fileRepository.getWorkingFile();
             if (workingFileFromDb) {
-                this.file = workingFileFromDb
-                console.log("Initialised file from DB", workingFileFromDb)
+                this.file = workingFileFromDb;
+                console.log('Initialised file from DB', workingFileFromDb);
             } else {
                 // If no file exists in db, create the working file
-                await this.fileRepository.saveFile(this.file)
-                saveWorkingFileId(this.file.id)
-                console.log("Created default file in DB", $state.snapshot(this.file))
+                await this.fileRepository.saveFile(this.file);
+                saveWorkingFileId(this.file.id);
+                console.log('Created default file in DB', $state.snapshot(this.file));
             }
-            return this.file
+            return this.file;
         } catch (e: any) {
-            console.error("Error getting file", e)
+            console.error('Error getting file', e);
             this.onEvent({
                 event: DomainEvent.DatabaseError,
-                doingWhat: "initialising file name",
+                doingWhat: 'initialising file name',
                 error: e.target.error
-            })
-            return Promise.reject(e)
+            });
+            return Promise.reject(e);
         }
     }
 
@@ -56,51 +72,79 @@ export class FileStore {
             return Promise.reject(new Error(`File with id ${fileId} not found`));
         }
         this.file = newFile;
-        saveWorkingFileId(this.file.id)
-        return newFile
+        saveWorkingFileId(this.file.id);
+        return newFile;
+    }
+
+    async deleteGroove(id: GrvMkrFileId): Promise<void> {
+        // delete grids from the file
+        const file = await this.fileRepository.getFile(id);
+        if (file?.grids) {
+            for (const [id, grid] of this.file.grids) {
+                this.gridRepository.deleteGrid(id);
+            }
+        }
+        this.fileRepository.deleteFile(id)
+        this.updateAllFiles();
     }
 
     async setGrids(grids: Map<GridId, Grid>) {
-        this.file.grids = grids
-        this.trySaveFile()
+        this.file.grids = grids;
+        this.trySaveFile();
     }
 
     async setInstruments(instruments: Map<string, InstrumentWithId>) {
-        this.file.instruments = instruments
-        this.trySaveFile()
+        this.file.instruments = instruments;
+        this.trySaveFile();
     }
 
     async saveWorkingFile() {
-        const fileCopy: GrvMkrFile = { ...this.file }
-        fileCopy.id = `file_${crypto.randomUUID()}`
-        await this.trySaveFile(fileCopy)
-        this.files.set(fileCopy.id, $state.snapshot(fileCopy))
-        
-        // Set current working file name to the default 
-        this.file.name = defaultFileName()
-        await this.trySaveFile()
+        const fileCopy: GrvMkrFile = { ...this.file };
+        fileCopy.id = `file_${crypto.randomUUID()}`;
+        await this.trySaveFile(fileCopy);
+        this.files.set(fileCopy.id, $state.snapshot(fileCopy));
+
+        // Set current working file name to the default
+        this.file.name = defaultFileName();
+        await this.trySaveFile();
     }
 
-    async loadFileV2(saveFile: SaveFileV2, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
+    async loadFileV2(
+        saveFile: SaveFileV2,
+        instruments: SvelteMap<string, InstrumentWithId>,
+        grids: SvelteMap<string, Grid>
+    ) {
         await this.loadFile(saveFile.name, instruments, grids);
     }
 
-    async loadFileV3(saveFile: SaveFileV3, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
+    async loadFileV3(
+        saveFile: SaveFileV3,
+        instruments: SvelteMap<string, InstrumentWithId>,
+        grids: SvelteMap<string, Grid>
+    ) {
         await this.loadFile(saveFile.name, instruments, grids);
     }
 
-    async loadFileV4(saveFile: SaveFileV4, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
+    async loadFileV4(
+        saveFile: SaveFileV4,
+        instruments: SvelteMap<string, InstrumentWithId>,
+        grids: SvelteMap<string, Grid>
+    ) {
         await this.loadFile(saveFile.name, instruments, grids);
     }
 
-    async loadFile(fileName: string, instruments: SvelteMap<string, InstrumentWithId>, grids: SvelteMap<string, Grid>) {
-        this.file.name = fileName
-        this.file.instruments = instruments
-        this.file.grids = grids
+    async loadFile(
+        fileName: string,
+        instruments: SvelteMap<string, InstrumentWithId>,
+        grids: SvelteMap<string, Grid>
+    ) {
+        this.file.name = fileName;
+        this.file.instruments = instruments;
+        this.file.grids = grids;
 
-        await this.trySaveFile()
+        await this.trySaveFile();
         // todo populate grids and instruments
-        saveWorkingFileId(this.file.id)
+        saveWorkingFileId(this.file.id);
     }
 
     async trySaveFile(file: GrvMkrFile = this.file) {
@@ -111,21 +155,21 @@ export class FileStore {
             const error = e?.target?.error ?? e;
             this.onEvent({
                 event: DomainEvent.DatabaseError,
-                doingWhat: "saving file to database",
-                error,
+                doingWhat: 'saving file to database',
+                error
             });
         }
     }
 
     async reset() {
-        await this.fileRepository.deleteAllFiles()
+        await this.fileRepository.deleteAllFiles();
     }
 
     // Populate the internal state of all available files
-    // Currently only triggered when we open the groove selector 
+    // Currently only triggered when we open the groove selector
     async updateAllFiles() {
         const filesArray = await this.fileRepository.getAllFiles();
-        this.files.clear()
+        this.files.clear();
         for (const file of filesArray) {
             this.files.set(file.id, file);
         }

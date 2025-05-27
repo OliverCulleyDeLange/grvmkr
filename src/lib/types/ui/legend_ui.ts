@@ -1,8 +1,8 @@
 export type LegendUi = {
-    instruments: LegendInstrument[]
-}
+	instruments: LegendInstrument[];
+};
 
 export type LegendInstrument = {
-    name: string
-    hits: string[]
-}
+	name: string;
+	hits: string[];
+};

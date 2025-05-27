@@ -1,23 +1,23 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
+	import type { Snippet } from 'svelte';
 
 	let {
 		onClick,
-		classes = "",
+		classes = '',
 		disabled = false,
 		children
 	}: {
-        classes?: string;
+		classes?: string;
 		disabled?: boolean;
 		onClick: () => void;
-		children: Snippet
+		children: Snippet;
 	} = $props();
 </script>
 
 <button
 	onclick={onClick}
-	class={`btn btn-outline btn-xs m-2 disabled:cursor-not-allowed bg-white dark:bg-[#1D232A] ${classes}`}
-	disabled={disabled}
+	class={`btn btn-outline btn-xs m-2 bg-white disabled:cursor-not-allowed dark:bg-[#1D232A] ${classes}`}
+	{disabled}
 >
 	{@render children()}
 </button>

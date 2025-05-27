@@ -1,4 +1,4 @@
-import type { GrvMkrFileId } from "$lib/types/domain/file_domain";
+import type { GrvMkrFileId } from '$lib/types/domain/file_domain';
 
 const WORKING_FILE_ID_KEY = 'WORKING_FILE_ID_KEY';
 

@@ -1,1 +1,267 @@
-{"type":"savefile","version":1,"instruments":[{"type":"instrument","version":1,"id":"instrument_95ea3e22-52ea-4b92-aec2-3bcb9a2d141d","name":"Hi Hat","hits":[{"type":"hit","version":1,"id":"hit_12f15a9f-f7d9-4ca0-96e8-7b1e48b24401","key":"C","description":"Closed","audio_file_name":"hat_closed.wav"},{"type":"hit","version":1,"id":"hit_cbf5e3e4-9485-4cb8-9aeb-67411c07985c","key":"O","description":"Open","audio_file_name":"hat_open.wav"}]},{"type":"instrument","version":1,"id":"instrument_6666d94f-bdaa-49c8-b149-1fa8aa3fc866","name":"Snare","hits":[{"type":"hit","version":1,"id":"hit_683ae518-5755-48e9-814e-05a4815eee44","key":"X","description":"","audio_file_name":"snare.wav"}]},{"type":"instrument","version":1,"id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","name":"Kick","hits":[{"type":"hit","version":1,"id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb","key":"X","description":"","audio_file_name":"kick.wav"}]}],"grids":[{"type":"grid","version":1,"id":"grid_cbc05001-5b87-4bdd-820d-53e4524445f4","config":{"bpm":120,"bars":3,"beats_per_bar":4,"beat_divisions":4},"rows":[{"instrument_id":"instrument_95ea3e22-52ea-4b92-aec2-3bcb9a2d141d","hits":[{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""}]},{"instrument_id":"instrument_6666d94f-bdaa-49c8-b149-1fa8aa3fc866","hits":[{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""}]},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hits":[{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"instrument_84b1a52b-e2d3-4904-b890-994fd7672abe","hit_id":"hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""},{"instrument_id":"","hit_id":""}]}]}]}
+{
+	"type": "savefile",
+	"version": 1,
+	"instruments": [
+		{
+			"type": "instrument",
+			"version": 1,
+			"id": "instrument_95ea3e22-52ea-4b92-aec2-3bcb9a2d141d",
+			"name": "Hi Hat",
+			"hits": [
+				{
+					"type": "hit",
+					"version": 1,
+					"id": "hit_12f15a9f-f7d9-4ca0-96e8-7b1e48b24401",
+					"key": "C",
+					"description": "Closed",
+					"audio_file_name": "hat_closed.wav"
+				},
+				{
+					"type": "hit",
+					"version": 1,
+					"id": "hit_cbf5e3e4-9485-4cb8-9aeb-67411c07985c",
+					"key": "O",
+					"description": "Open",
+					"audio_file_name": "hat_open.wav"
+				}
+			]
+		},
+		{
+			"type": "instrument",
+			"version": 1,
+			"id": "instrument_6666d94f-bdaa-49c8-b149-1fa8aa3fc866",
+			"name": "Snare",
+			"hits": [
+				{
+					"type": "hit",
+					"version": 1,
+					"id": "hit_683ae518-5755-48e9-814e-05a4815eee44",
+					"key": "X",
+					"description": "",
+					"audio_file_name": "snare.wav"
+				}
+			]
+		},
+		{
+			"type": "instrument",
+			"version": 1,
+			"id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+			"name": "Kick",
+			"hits": [
+				{
+					"type": "hit",
+					"version": 1,
+					"id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb",
+					"key": "X",
+					"description": "",
+					"audio_file_name": "kick.wav"
+				}
+			]
+		}
+	],
+	"grids": [
+		{
+			"type": "grid",
+			"version": 1,
+			"id": "grid_cbc05001-5b87-4bdd-820d-53e4524445f4",
+			"config": { "bpm": 120, "bars": 3, "beats_per_bar": 4, "beat_divisions": 4 },
+			"rows": [
+				{
+					"instrument_id": "instrument_95ea3e22-52ea-4b92-aec2-3bcb9a2d141d",
+					"hits": [
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" }
+					]
+				},
+				{
+					"instrument_id": "instrument_6666d94f-bdaa-49c8-b149-1fa8aa3fc866",
+					"hits": [
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" }
+					]
+				},
+				{
+					"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+					"hits": [
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{
+							"instrument_id": "instrument_84b1a52b-e2d3-4904-b890-994fd7672abe",
+							"hit_id": "hit_5c2a309b-6722-40a6-8195-3d83b99b1ebb"
+						},
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" },
+						{ "instrument_id": "", "hit_id": "" }
+					]
+				}
+			]
+		}
+	]
+}

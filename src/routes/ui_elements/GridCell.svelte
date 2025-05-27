@@ -7,7 +7,7 @@
 		ui,
 		onTap,
 		onpointerdown,
-		onpointermove,
+		onpointermove
 	}: {
 		ui: GridCellUi;
 		onTap: (shiftKey: boolean) => void;
@@ -27,7 +27,7 @@
 		(event.currentTarget as HTMLElement)?.releasePointerCapture(event.pointerId);
 		onpointerdown(event);
 	}}
-	onpointermove={onpointermove}
+	{onpointermove}
 	class="right-click-area relative flex h-8 flex-row flex-nowrap items-center justify-between font-bold
 	text-gray-800 print:border print:border-gray-400"
 	style="grid-column: span {ui.cellsOccupied};"
@@ -40,7 +40,9 @@
 	class:outline-2={ui.selected}
 >
 	{#each ui.content.split('') as char}
-		<div class="pointer-events-none" style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>{char}</div>
+		<div class="pointer-events-none" style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>
+			{char}
+		</div>
 	{/each}
 	<div id="spacer"></div>
 	<div

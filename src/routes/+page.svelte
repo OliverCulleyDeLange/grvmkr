@@ -49,7 +49,9 @@
 			appStateStore.cellToolsStore.cellTools
 		)
 	);
-	let grooveSelectorUi = $derived(mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files));
+	let grooveSelectorUi = $derived(
+		mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files, appStateStore.fileStore.file.id)
+	);
 </script>
 
 <div class="box-border w-full bg-white p-4 dark:bg-[#1D232A]">

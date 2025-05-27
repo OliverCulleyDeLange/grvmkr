@@ -1,8 +1,8 @@
 export type GrooveSelectorUi = {
-    files: SelectableFile[];
-}
+	files: SelectableFile[];
+};
 
 export type SelectableFile = {
-    id: string;
-    name: string;
-}
+	id: string;
+	name: string;
+};
