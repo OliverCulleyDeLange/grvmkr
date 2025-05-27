@@ -1,21 +1,19 @@
 import {
 	CellToolsEvent,
 	CellToolsStore,
-	createErrorStore,
-	createPlaybackStore,
+	ErrorStore,
 	FileStore,
 	GridEvent,
 	InstrumentStore,
+	PlaybackStore,
 	serialiseToSaveFileV4,
 	ToolbarEvent,
 	UiEvent,
 	type CellLocator,
-	type ErrorStore,
 	type Grid,
 	type GridId,
 	type GrvMkrFile,
 	type GrvMkrFileId,
-	type PlaybackStore,
 	type SaveFile,
 	type SaveFileV1,
 	type SaveFileV2,
@@ -35,8 +33,8 @@ export class AppStateStore {
 	public instrumentStore: InstrumentStore = new InstrumentStore(this.onEvent.bind(this));
 	public fileStore: FileStore = new FileStore(this.onEvent.bind(this));
 	public gridStore: GridStore = new GridStore(this.onEvent.bind(this));
-	public errorStore: ErrorStore = createErrorStore();
-	public playbackStore: PlaybackStore = createPlaybackStore(this.instrumentStore);
+	public errorStore: ErrorStore = new ErrorStore();
+	public playbackStore: PlaybackStore = new PlaybackStore(this.instrumentStore);
 	public cellToolsStore: CellToolsStore = new CellToolsStore();
 
 	onEvent(event: AppEvent) {

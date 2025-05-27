@@ -10,7 +10,7 @@ export class AudioManager {
 	private audioDb = new AudioDb();
 
 	private hits: Map<HitId, AudioPlayer> = new Map();
-	private initialisationFailed: HitId[] = []
+	private initialisationFailed: HitId[] = [];
 
 	constructor(onEvent: OnEvent) {
 		this.onEvent = onEvent;
@@ -51,10 +51,10 @@ export class AudioManager {
 			if (e == 'loadAudio: onsuccess but no result') {
 				this.onEvent({
 					event: ProblemEvent.MissingSampleAudio,
-					hit: hit,
+					hit: hit
 				});
 				hit.audioFileName = '';
-				this.initialisationFailed.push(hit.id)
+				this.initialisationFailed.push(hit.id);
 			}
 		}
 	}

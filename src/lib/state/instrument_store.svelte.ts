@@ -27,11 +27,11 @@ export class InstrumentStore {
 	private audioManager: AudioManager;
 	private audioDb: AudioDb = new AudioDb();
 	private instrumentRepository: InstrumentRepository = new InstrumentRepository();
-	
+
 	public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap();
-	
+
 	private instrumentSoloed = false;
-	
+
 	constructor(onEvent: OnEvent) {
 		this.onEvent = onEvent;
 		this.audioManager = new AudioManager(onEvent);

@@ -86,7 +86,6 @@
 			{toolbarUi.dark ? '☀️ Light' : '🌙 Dark'}
 		</button>
 	</div>
-
 </div>
 
 <!-- TODO Errors are floating and scrollable  -->

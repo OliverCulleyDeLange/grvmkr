@@ -1,4 +1,4 @@
-import type { HitTypeWithId } from "./instrument_domain";
+import type { HitTypeWithId } from './instrument_domain';
 
 export type OnErrorEvent = (event: ProblemEvents) => void;
 
@@ -12,7 +12,7 @@ export enum ProblemEvent {
 
 export type MissingSampleAudio = {
 	event: ProblemEvent.MissingSampleAudio;
-	hit: HitTypeWithId
+	hit: HitTypeWithId;
 };
 
 export type DatabaseError = {
