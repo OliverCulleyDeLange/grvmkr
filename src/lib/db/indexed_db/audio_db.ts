@@ -38,7 +38,7 @@ export class AudioDb {
 
 	// Returns the blob URL of the audio file from the DB
 	// Rejects promise if nothing found
-	loadAudio(fileName: string): Promise<string> {
+	async loadAudio(fileName: string): Promise<string> {
 		return this.onDb((db, resolve, reject) => {
 			const transaction = db.transaction(SAMPLE_STORE, 'readonly');
 			const store = transaction.objectStore(SAMPLE_STORE);

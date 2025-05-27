@@ -1,9 +1,10 @@
-import { SvelteMap } from 'svelte/reactivity';
 import {
 	AudioDb,
+	AudioManager,
 	defaultInstruments,
 	defaultVolume,
 	InstrumentEvent,
+	InstrumentRepository,
 	type HitId,
 	type HitType,
 	type HitTypeWithId,
@@ -15,26 +16,26 @@ import {
 	type SavedInstrumentV3,
 	type SavedInstrumentV4
 } from '$lib';
-import { AudioManager, InstrumentRepository } from '$lib';
-import { clamp } from '$lib/util/math';
-import { DomainEvent } from '$lib/types/domain/event';
 import type { OnEvent } from '$lib/types/event';
+import { clamp } from '$lib/util/math';
+import { SvelteMap } from 'svelte/reactivity';
 
 // Responsible for storing, modifying and playing instruments
 export class InstrumentStore {
 	private onEvent: OnEvent;
 
-	constructor(onEvent: OnEvent) {
-		this.onEvent = onEvent;
-	}
-
-	private audioManager = new AudioManager();
+	private audioManager: AudioManager;
 	private audioDb: AudioDb = new AudioDb();
 	private instrumentRepository: InstrumentRepository = new InstrumentRepository();
-
+	
 	public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap();
-
+	
 	private instrumentSoloed = false;
+	
+	constructor(onEvent: OnEvent) {
+		this.onEvent = onEvent;
+		this.audioManager = new AudioManager(onEvent);
+	}
 
 	// Populate instruments state from the working files instruments, defaulting to default config
 	// Also downloads default sound files
@@ -72,24 +73,14 @@ export class InstrumentStore {
 			if (this.instrumentSoloed && !instrument?.soloed) return;
 
 			if (!this.audioManager.isHitInitialised(hit)) {
-				console.log("Hit not init'd");
+				console.log("Hit not init'd", hit);
 				let hitType = instrument?.hitTypes.get(hit.hitId);
 				if (hitType) {
 					try {
 						await this.audioManager.initialiseHit(hitType);
 						this.audioManager.playHit(hit);
 					} catch (e) {
-						if (e == 'loadAudio: onsuccess but no result') {
-							console.error('Sound file not present in database. Removing existing sample', e);
-							this.onEvent({
-								event: DomainEvent.DatabaseError,
-								doingWhat: 'playing hit',
-								error: `Sound file "${hitType.audioFileName}" for hit ${hitType.key} not found. Please re-upload.`
-							});
-							hitType.audioFileName = '';
-						} else {
-							console.error('Unhandled error when loading uninitialised instrument hit:', e);
-						}
+						console.error('Unhandled error when loading uninitialised instrument hit:', e);
 					}
 				} else {
 					console.error(

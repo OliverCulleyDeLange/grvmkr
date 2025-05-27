@@ -4,7 +4,7 @@ import { GridRepository } from '$lib/repository/grid_repository';
 import { mapSavedGridV1ToGrid } from '$lib/serialisation/from_save_file_v1';
 import { mapSavedGridV2ToGrid } from '$lib/serialisation/from_save_file_v2';
 import { mapSavedGridV3ToGrid } from '$lib/serialisation/from_save_file_v3';
-import { DomainEvent } from '$lib/types/domain/event';
+import { ProblemEvent } from '$lib/types/domain/error_event';
 import type {
 	CellLocator,
 	Grid,
@@ -61,7 +61,7 @@ export class GridStore {
 		} catch (e: any) {
 			console.error('Error getting all grids:', e);
 			this.onEvent({
-				event: DomainEvent.DatabaseError,
+				event: ProblemEvent.DatabaseError,
 				doingWhat: 'initialising grids',
 				error: e.target.error
 			});
@@ -536,7 +536,7 @@ export class GridStore {
 		});
 	}
 
-	updatePlaying(playing: boolean, gridId: string) {
+	async updatePlaying(playing: boolean, gridId: string) {
 		if (this.currentlyPlayingGrid) {
 			this.currentlyPlayingGrid.playing = false;
 		}
@@ -546,7 +546,7 @@ export class GridStore {
 		} else {
 			this.currentlyPlayingGrid = undefined;
 		}
-		this.updateGrid(
+		await this.updateGrid(
 			gridId,
 			(grid) => {
 				grid.playing = playing;
@@ -564,11 +564,11 @@ export class GridStore {
 	}
 
 	// Updates grid in state and DB
-	updateGrid(id: GridId, withGrid: (grid: Grid) => void, persist: boolean = true) {
+	async updateGrid(id: GridId, withGrid: (grid: Grid) => void, persist: boolean = true) {
 		let grid = this.grids.get(id);
 		if (grid) {
 			withGrid(grid);
-			if (persist) this.trySaveGrid(grid);
+			if (persist) await this.trySaveGrid(grid);
 		} else {
 			console.error("Couldn't find grid to update with id ", id);
 		}
@@ -599,7 +599,7 @@ export class GridStore {
 			console.error('Error saving grid', e, grid);
 			let error = e.target.error;
 			this.onEvent({
-				event: DomainEvent.DatabaseError,
+				event: ProblemEvent.DatabaseError,
 				doingWhat: 'saving grid to database',
 				error
 			});

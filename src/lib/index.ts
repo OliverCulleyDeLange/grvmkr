@@ -35,7 +35,7 @@ export * from './types/data/grid_data';
 export * from './types/data/instrument_data';
 export * from './types/data/file_data';
 
-export * from './types/domain/event';
+export * from './types/domain/error_event';
 export * from './types/domain/error';
 export * from './types/domain/grid_domain';
 export * from './types/domain/instrument_domain';

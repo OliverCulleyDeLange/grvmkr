@@ -87,22 +87,24 @@
 		</button>
 	</div>
 
-	{#if toolbarUi.errors.length > 0}
-		<div class="my-4 flex flex-col gap-2">
-			{#each toolbarUi.errors as error}
-				<div class="alert alert-error">
-					{error.message}
-					<button
-						class="btn btn-circle btn-ghost btn-xs"
-						onclick={() => onEvent({ event: ToolbarEvent.DismissError, id: error.id })}
-					>
-						✕
-					</button>
-				</div>
-			{/each}
-		</div>
-	{/if}
 </div>
+
+<!-- TODO Errors are floating and scrollable  -->
+{#if toolbarUi.errors.length > 0}
+	<div class="my-4 flex flex-col gap-2">
+		{#each toolbarUi.errors as error}
+			<div class="alert alert-error">
+				{error.message}
+				<button
+					class="btn btn-circle btn-ghost btn-xs"
+					onclick={() => onEvent({ event: ToolbarEvent.DismissError, id: error.id })}
+				>
+					✕
+				</button>
+			</div>
+		{/each}
+	</div>
+{/if}
 
 <!-- Filename input -->
 <div class="relative mb-2 w-full print:hidden">

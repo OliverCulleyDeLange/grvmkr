@@ -25,7 +25,7 @@ import {
 	type TappedGridCell
 } from '$lib';
 import { defaultInstrumentConfig } from '$lib/audio/default_instruments';
-import { DomainEvent } from '$lib/types/domain/event';
+import { ProblemEvent } from '$lib/types/domain/error_event';
 import type { AppEvent } from '$lib/types/event';
 import { InstrumentEvent } from '$lib/types/ui/instruments';
 import { GridStore } from './grid_store.svelte';
@@ -154,10 +154,13 @@ export class AppStateStore {
 			case ToolbarEvent.GrooveSelectorShown:
 				this.fileStore.updateAllFiles();
 				break;
-			case DomainEvent.DatabaseError:
+			case ProblemEvent.MissingSampleAudio:
 				this.errorStore.addError(event);
 				break;
-			case DomainEvent.DebugLog:
+			case ProblemEvent.DatabaseError:
+				this.errorStore.addError(event);
+				break;
+			case ProblemEvent.DebugLog:
 				this.errorStore.debugLog(event);
 				break;
 		}
@@ -201,7 +204,7 @@ export class AppStateStore {
 	}
 
 	async onTogglePlayingGrid(newPlaying: boolean, gridId: GridId): Promise<void> {
-		this.gridStore.updatePlaying(newPlaying, gridId);
+		await this.gridStore.updatePlaying(newPlaying, gridId);
 
 		if (newPlaying) {
 			await this.instrumentStore.ensureInstrumentsInitialised();

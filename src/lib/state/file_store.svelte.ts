@@ -1,7 +1,7 @@
 import {
 	defaultFile,
 	defaultFileName,
-	DomainEvent,
+	ProblemEvent,
 	FileRepository,
 	GridRepository,
 	keyValueRepository,
@@ -57,7 +57,7 @@ export class FileStore {
 		} catch (e: any) {
 			console.error('Error getting file', e);
 			this.onEvent({
-				event: DomainEvent.DatabaseError,
+				event: ProblemEvent.DatabaseError,
 				doingWhat: 'initialising file name',
 				error: e.target.error
 			});
@@ -154,7 +154,7 @@ export class FileStore {
 			console.error(`Error saving file. Error: [${e}]`, this.file);
 			const error = e?.target?.error ?? e;
 			this.onEvent({
-				event: DomainEvent.DatabaseError,
+				event: ProblemEvent.DatabaseError,
 				doingWhat: 'saving file to database',
 				error
 			});
