@@ -444,30 +444,6 @@ export class GridStore implements GridRepositoryI {
 		});
 	}
 
-	async loadSaveFileV1(saveFile: SaveFileV1, instrumentStore: InstrumentStore) {
-		this.grids.clear();
-		saveFile.grids.forEach((grid) => {
-			let gridModel: Grid = mapSavedGridV1ToGrid(grid, instrumentStore);
-			this.addGrid(gridModel);
-		});
-	}
-
-	async loadSaveFileV2(saveFile: SaveFileV2, instrumentStore: InstrumentStore) {
-		this.grids.clear();
-		saveFile.grids.forEach((grid) => {
-			let gridModel: Grid = mapSavedGridV2ToGrid(grid, instrumentStore);
-			this.addGrid(gridModel);
-		});
-	}
-
-	async loadSaveFileV3(grids: SavedGridV3[], instrumentStore: InstrumentStore) {
-		this.grids.clear();
-		for (const grid of grids) {
-			let gridModel: Grid = mapSavedGridV3ToGrid(grid, instrumentStore);
-			await this.addGrid(gridModel);
-		}
-	}
-
 	async addDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>) {
 		const index = this.getNextGridIndex();
 		//TODO I think this $state can be removed as its being added in addGrid
@@ -614,12 +590,12 @@ export class GridStore implements GridRepositoryI {
 		});
 	}
 
-	async replaceGrids(grids: Map<string, Grid>) {
+	async replaceGrids(grids: Grid[], persist: boolean) {
 		this.resetState();
 		console.log('Replacing grids with', grids);
 		this.grids.clear();
-		for (const [id, grid] of grids) {
-			await this.addGrid(grid, false);
+		for (const grid of grids) {
+			await this.addGrid(grid, persist);
 		}
 	}
 

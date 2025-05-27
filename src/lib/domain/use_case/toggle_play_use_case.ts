@@ -1,5 +1,5 @@
 import type { GridRepositoryI } from "../interface/GridRepositoryI";
-import type { PlaybackControllerI } from "../interface/PlaybackControlllerI";
+import type { PlaybackControllerI } from "../interface/PlaybackControllerI";
 
 // Space key toggles playing the currently playing grid.
 export async function togglePlayUseCase(

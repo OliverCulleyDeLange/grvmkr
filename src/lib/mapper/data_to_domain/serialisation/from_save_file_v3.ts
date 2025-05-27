@@ -5,6 +5,8 @@ import {
 	type Grid,
 	type GridCell,
 	type GridRow,
+	type InstrumentId,
+	type InstrumentWithId,
 	type SavedGridCellV3,
 	type SavedGridV3
 } from '$lib';
@@ -12,11 +14,11 @@ import {
 // Maps a saved grid from a save file to grid models
 export function mapSavedGridV3ToGrid(
 	savedGrid: SavedGridV3,
-	instrumentManager: InstrumentStore
+	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
 	let newRows: GridRow[] = savedGrid.rows
 		.map((savedRow, i) => {
-			let instrument = instrumentManager.instruments.get(savedRow.instrument_id);
+			let instrument = instruments.get(savedRow.instrument_id);
 			if (instrument) {
 				let gridRow: GridRow = {
 					instrument: instrument,

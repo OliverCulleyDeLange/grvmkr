@@ -27,7 +27,13 @@ export * from './data/types/file_data';
 // DOMAIN
 export * from './domain/event';
 
+export * from './domain/interface/FileRepositoryI';
+export * from './domain/interface/GridRepositoryI';
+export * from './domain/interface/InstrumentRepositoryI';
+export * from './domain/interface/PlaybackControllerI';
+
 export * from './domain/use_case/toggle_play_use_case';
+export * from './domain/use_case/load_file_use_case';
 
 export * from './domain/audio/audio_player';
 export * from './domain/audio/audio_manager';
@@ -79,6 +85,8 @@ export * from './ui/instrument/instrument_events';
 export * from './ui/groove_selector/GrooveSelectorUi';
 
 // Mappers
+export * from './mapper/domain_to_domain/HitType_to_HitTypeWithId';
+
 export * from './mapper/domain_to_ui/grid_to_grid_ui';
 export * from './mapper/domain_to_ui/to_toolbar_ui';
 export * from './mapper/domain_to_ui/to_cell_tools_ui';
@@ -91,6 +99,10 @@ export * from './mapper/domain_to_data/instrument_to_instrument_dto';
 export * from './mapper/data_to_domain/grid_dto_to_grid';
 export * from './mapper/data_to_domain/file_dto_to_file';
 export * from './mapper/data_to_domain/instrument_dto_to_instrument';
+export * from './mapper/data_to_domain/SavedHitV1_to_HitTypeWithId';
+export * from './mapper/data_to_domain/SavedInstrumentV1_to_InstrumentWithId';
+export * from './mapper/data_to_domain/SavedInstrumentV3_to_InstrumentWithId';
+export * from './mapper/data_to_domain/SavedInstrumentV4_to_InstrumentWithId';
 
 export * from './mapper/misc_mapper_funcs';
 

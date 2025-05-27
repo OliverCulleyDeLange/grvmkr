@@ -1,7 +1,6 @@
 import {
 	GridTable,
 	InstrumentRepository,
-	InstrumentStore,
 	mapGridDtoToGrid,
 	mapGridToGridDto,
 	type Grid,
@@ -57,7 +56,9 @@ export class GridRepository {
 		const instrumentIds = gridDto.rows.map((row) => row.instrumentId);
 		const instrumentsArray = await this.instrumentRepository.getInstruments(instrumentIds);
 		const instruments = new Map(instrumentsArray.map((i) => [i.id, i]));
-
+		if (instrumentIds.length != instruments.size){
+			console.error("Couldn't get all instruments. needed:", instrumentIds, " got:", instrumentsArray)
+		}
 		return mapGridDtoToGrid(gridDto, instruments);
 	}
 }

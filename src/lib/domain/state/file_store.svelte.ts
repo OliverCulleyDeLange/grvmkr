@@ -1,24 +1,22 @@
 import {
 	defaultFile,
 	defaultFileName,
-	ProblemEvent,
 	FileRepository,
 	GridRepository,
 	keyValueRepository,
+	ProblemEvent,
+	type FileRepositoryI,
 	type Grid,
 	type GridId,
 	type GrvMkrFile,
 	type GrvMkrFileId,
 	type InstrumentWithId,
-	type OnEvent,
-	type SaveFileV2,
-	type SaveFileV3,
-	type SaveFileV4
+	type OnEvent
 } from '$lib';
 import { SvelteMap } from 'svelte/reactivity';
 
 // Responsible for storing, and modifying files
-export class FileStore {
+export class FileStore implements FileRepositoryI {
 	private onEvent: OnEvent;
 	private fileRepository: FileRepository = new FileRepository();
 	private gridRepository: GridRepository = new GridRepository();
@@ -103,45 +101,18 @@ export class FileStore {
 		fileCopy.id = `file_${crypto.randomUUID()}`;
 		await this.trySaveFile(fileCopy);
 		this.files.set(fileCopy.id, $state.snapshot(fileCopy));
+	}
 
+	async resetWorkingFile() {
 		// Set current working file name to the default
 		this.file.name = defaultFileName();
 		await this.trySaveFile();
 	}
 
-	async loadFileV2(
-		saveFile: SaveFileV2,
-		instruments: SvelteMap<string, InstrumentWithId>,
-		grids: SvelteMap<string, Grid>
-	) {
-		await this.loadFile(saveFile.name, instruments, grids);
-	}
-
-	async loadFileV3(
-		saveFile: SaveFileV3,
-		instruments: SvelteMap<string, InstrumentWithId>,
-		grids: SvelteMap<string, Grid>
-	) {
-		await this.loadFile(saveFile.name, instruments, grids);
-	}
-
-	async loadFileV4(
-		saveFile: SaveFileV4,
-		instruments: SvelteMap<string, InstrumentWithId>,
-		grids: SvelteMap<string, Grid>
-	) {
-		await this.loadFile(saveFile.name, instruments, grids);
-	}
-
 	async loadFile(
-		fileName: string,
-		instruments: SvelteMap<string, InstrumentWithId>,
-		grids: SvelteMap<string, Grid>
+		file: GrvMkrFile,
 	) {
-		this.file.name = fileName;
-		this.file.instruments = instruments;
-		this.file.grids = grids;
-
+		this.file = file
 		await this.trySaveFile();
 		// todo populate grids and instruments
 		keyValueRepository.saveWorkingFileId(this.file.id);

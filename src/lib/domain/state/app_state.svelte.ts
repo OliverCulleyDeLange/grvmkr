@@ -5,6 +5,7 @@ import {
 	FileStore,
 	GridEvent,
 	InstrumentStore,
+	loadFileUseCase,
 	PlaybackStore,
 	ProblemEvent,
 	serialiseToSaveFileV4,
@@ -16,16 +17,12 @@ import {
 	type GridId,
 	type GrvMkrFile,
 	type GrvMkrFileId,
-	type SaveFile,
-	type SaveFileV1,
-	type SaveFileV2,
-	type SaveFileV3,
 	type SaveFileV4,
 	type StartCellSelection,
 	type TappedGridCell
 } from '$lib';
-import { defaultInstrumentConfig } from '$lib/domain/model/default_instruments';
 import type { AppEvent } from '$lib/domain/event';
+import { defaultInstrumentConfig } from '$lib/domain/model/default_instruments';
 import { InstrumentEvent } from '$lib/ui/instrument/instrument_events';
 import { GridStore } from './grid_store.svelte';
 
@@ -138,7 +135,12 @@ export class AppStateStore {
 				this.save();
 				break;
 			case ToolbarEvent.LoadFile:
-				this.loadFile(event.file);
+				loadFileUseCase(event.file,
+					this.fileStore,
+					this.instrumentStore,
+					this.gridStore,
+					this.playbackStore,
+				);
 				break;
 			case ToolbarEvent.LoadLocalGroove:
 				this.loadGroove(event.id);
@@ -238,76 +240,15 @@ export class AppStateStore {
 		URL.revokeObjectURL(a.href);
 	}
 
-	async loadFile(file: File) {
-		// Save the current working file before loading a new one
-		this.fileStore.saveWorkingFile();
-
-		this.playbackStore.stop();
-		let fileText = await file.text();
-		let saveFileBase: SaveFile = JSON.parse(fileText);
-		switch (saveFileBase.version) {
-			case 1:
-				this.loadSaveFileV1(fileText);
-				break;
-			case 2:
-				this.loadSaveFileV2(fileText);
-				break;
-			case 3:
-				this.loadSaveFileV3(fileText);
-				break;
-			case 4:
-				this.loadSaveFileV4(fileText);
-				break;
-		}
-	}
-
-	async loadSaveFileV1(saveFileContent: string) {
-		let saveFile: SaveFileV1 = JSON.parse(saveFileContent);
-		await this.instrumentStore.replaceInstrumentsV1(saveFile.instruments);
-		await this.gridStore.loadSaveFileV1(saveFile, this.instrumentStore);
-		await this.fileStore.setInstruments(this.instrumentStore.instruments);
-		await this.fileStore.setGrids(this.gridStore.grids);
-	}
-
-	async loadSaveFileV2(saveFileContent: string) {
-		let saveFile: SaveFileV2 = JSON.parse(saveFileContent);
-		await this.instrumentStore.replaceInstrumentsV1(saveFile.instruments);
-		await this.gridStore.loadSaveFileV2(saveFile, this.instrumentStore);
-		await this.fileStore.loadFileV2(
-			saveFile,
-			this.instrumentStore.instruments,
-			this.gridStore.grids
-		);
-	}
-
-	async loadSaveFileV3(saveFileContent: string) {
-		let saveFile: SaveFileV3 = JSON.parse(saveFileContent);
-		await this.instrumentStore.replaceInstrumentsV3(saveFile.instruments);
-		await this.gridStore.loadSaveFileV3(saveFile.grids, this.instrumentStore);
-		await this.fileStore.loadFileV3(
-			saveFile,
-			this.instrumentStore.instruments,
-			this.gridStore.grids
-		);
-	}
-
-	async loadSaveFileV4(saveFileContent: string) {
-		let saveFile: SaveFileV4 = JSON.parse(saveFileContent);
-		await this.instrumentStore.replaceInstrumentsV4(saveFile.instruments);
-		await this.gridStore.loadSaveFileV3(saveFile.grids, this.instrumentStore);
-		await this.fileStore.loadFileV4(
-			saveFile,
-			this.instrumentStore.instruments,
-			this.gridStore.grids
-		);
-	}
-
 	async loadGroove(id: GrvMkrFileId) {
 		this.playbackStore.stop();
 		const newWorkingFile = await this.fileStore.loadGroove(id);
 		console.log('Loaded file:', newWorkingFile);
-		await this.gridStore.replaceGrids(newWorkingFile.grids);
-		await this.instrumentStore.replaceInstruments(newWorkingFile.instruments);
+		await this.gridStore.replaceGrids(
+			Array.from(newWorkingFile.grids.values()),
+			false
+		);
+		await this.instrumentStore.replaceInstruments(Array.from(newWorkingFile.instruments.values()));
 	}
 
 	async deleteGroove(id: GrvMkrFileId) {
@@ -327,6 +268,7 @@ export class AppStateStore {
 	// Creates a new groove with a default grid and instruments
 	async newGroove() {
 		this.fileStore.saveWorkingFile();
+		this.fileStore.resetWorkingFile();
 
 		// Init with empty grids and same instruments as previous file
 		// TODO Select instruments from all
@@ -337,7 +279,7 @@ export class AppStateStore {
 		await this.fileStore.setGrids(grid);
 	}
 
-	// Gets the working files instruments and grids, and initialises the stores.
+	// Gets the working file's instruments and grids, and initialises the stores.
 	async initialise() {
 		const workingFile = await this.fileStore.initialise();
 		console.log('Working file:', $state.snapshot(workingFile));

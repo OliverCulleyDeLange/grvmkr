@@ -5,15 +5,15 @@ import {
 	defaultVolume,
 	InstrumentEvent,
 	InstrumentRepository,
+	mapHitTypeToHitTypeWithId,
 	type HitId,
 	type HitType,
 	type HitTypeWithId,
 	type InstrumentConfig,
 	type InstrumentHit,
 	type InstrumentId,
+	type InstrumentRepositoryI,
 	type InstrumentWithId,
-	type SavedInstrumentV1,
-	type SavedInstrumentV3,
 	type SavedInstrumentV4
 } from '$lib';
 import type { OnEvent } from '$lib/domain/event';
@@ -21,7 +21,7 @@ import { clamp } from '$lib/util/math';
 import { SvelteMap } from 'svelte/reactivity';
 
 // Responsible for storing, modifying and playing instruments
-export class InstrumentStore {
+export class InstrumentStore implements InstrumentRepositoryI {
 	private onEvent: OnEvent;
 
 	private audioManager: AudioManager;
@@ -264,24 +264,6 @@ export class InstrumentStore {
 		}
 	}
 
-	// Add missing fields to V1 and process
-	async replaceInstrumentsV1(instruments: SavedInstrumentV1[]) {
-		await this.replaceInstrumentsV3(
-			instruments.map((i) => {
-				return { ...i, version: 3, gridIndex: 0 };
-			})
-		);
-	}
-
-	// Add missising fields to V3 and process
-	async replaceInstrumentsV3(instruments: SavedInstrumentV3[]) {
-		await this.replaceInstrumentsV4(
-			instruments.map((i) => {
-				return { ...i, version: 4, volume: defaultVolume };
-			})
-		);
-	}
-
 	// When loading from file, replace all instruments
 	async replaceInstrumentsV4(instruments: SavedInstrumentV4[]) {
 		this.instruments.clear();
@@ -294,7 +276,7 @@ export class InstrumentStore {
 						audioFileName: hit.audio_file_name,
 						volume: instrument.volume
 					};
-					let hitWithId: HitTypeWithId = this.createHitWithId(hit.id, hitType);
+					let hitWithId: HitTypeWithId = mapHitTypeToHitTypeWithId(hit.id, hitType);
 					return [hitWithId.id, hitWithId];
 				})
 			);
@@ -308,13 +290,10 @@ export class InstrumentStore {
 		}
 	}
 
-	// Replace instruments from local file, so has domain object already
-	async replaceInstruments(instruments: Map<InstrumentId, InstrumentWithId>) {
+	async replaceInstruments(instruments: InstrumentWithId[]) {
 		this.instruments.clear();
-		for (const instrument of instruments.values()) {
-			// Make sure hits are reactive
-			let reactiveInstrument = makeInstrumentReactive(instrument);
-			this.instruments.set(reactiveInstrument.id, reactiveInstrument);
+		for (const instrument of instruments) {
+			await this.saveInstrumentToStateAndDb(instrument, true)
 		}
 	}
 
@@ -326,18 +305,7 @@ export class InstrumentStore {
 
 	private buildHitFromConfig(hit: HitType): HitTypeWithId {
 		let hitId = `hit_${crypto.randomUUID()}`;
-		return this.createHitWithId(hitId, hit);
-	}
-
-	private createHitWithId(hitId: string, hit: HitType): HitTypeWithId {
-		let hitWithId: HitTypeWithId = {
-			id: hitId,
-			key: hit.key,
-			description: hit.description,
-			audioFileName: hit.audioFileName,
-			volume: hit.volume
-		};
-		return hitWithId;
+		return mapHitTypeToHitTypeWithId(hitId, hit);
 	}
 
 	private updateInstrument(
