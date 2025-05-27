@@ -34,6 +34,7 @@ export * from './domain/interface/PlaybackControllerI';
 
 export * from './domain/use_case/toggle_play_use_case';
 export * from './domain/use_case/load_file_use_case';
+export * from './domain/use_case/new_groove_use_case';
 
 export * from './domain/audio/audio_player';
 export * from './domain/audio/audio_manager';

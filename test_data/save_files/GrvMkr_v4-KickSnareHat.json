@@ -1,1 +1,569 @@
-{"type":"savefile","version":4,"name":"Kick snare hat","instruments":[{"type":"instrument","version":4,"id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","name":"Hi Hat","hits":[{"type":"hit","version":1,"id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b","key":"C","description":"Closed","audio_file_name":"hat_closed.wav"},{"type":"hit","version":1,"id":"hit_0bc8980e-d6fb-4346-a66e-2bebab05d3ca","key":"O","description":"Open","audio_file_name":"hat_open.wav"}],"gridIndex":1,"volume":0.8},{"type":"instrument","version":4,"id":"instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55","name":"Snare","hits":[{"type":"hit","version":1,"id":"hit_c09c9678-2a49-4447-9a0d-d721c3dceaea","key":"X","description":"","audio_file_name":"snare.wav"}],"gridIndex":2,"volume":0.8},{"type":"instrument","version":4,"id":"instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36","name":"Kick","hits":[{"type":"hit","version":1,"id":"hit_1cb02b98-8f19-4ead-9107-c527285bf6bb","key":"X","description":"","audio_file_name":"kick.wav"}],"gridIndex":3,"volume":0.8}],"grids":[{"type":"grid","version":3,"id":"grid_da2dd414-502c-4f63-950d-dd7ee8983670","config":{"name":"KSH 1","bpm":120,"bars":2,"beats_per_bar":4,"beat_divisions":4},"rows":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","cells":[{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1","hit_id":"hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"}]}]},{"instrument_id":"instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55","cells":[{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55","hit_id":"hit_c09c9678-2a49-4447-9a0d-d721c3dceaea"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55","hit_id":"hit_c09c9678-2a49-4447-9a0d-d721c3dceaea"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]}]},{"instrument_id":"instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36","cells":[{"cells_occupied":1,"hits":[{"instrument_id":"instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36","hit_id":"hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36","hit_id":"hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36","hit_id":"hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[{"instrument_id":"instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36","hit_id":"hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"}]},{"cells_occupied":1,"hits":[]},{"cells_occupied":1,"hits":[]}]}]}]}
+{
+    "type": "savefile",
+    "version": 4,
+    "name": "Kick snare hat",
+    "instruments": [
+        {
+            "type": "instrument",
+            "version": 4,
+            "id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+            "name": "Hi Hat",
+            "hits": [
+                {
+                    "type": "hit",
+                    "version": 1,
+                    "id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b",
+                    "key": "C",
+                    "description": "Closed",
+                    "audio_file_name": "hat_closed.wav"
+                },
+                {
+                    "type": "hit",
+                    "version": 1,
+                    "id": "hit_0bc8980e-d6fb-4346-a66e-2bebab05d3ca",
+                    "key": "O",
+                    "description": "Open",
+                    "audio_file_name": "hat_open.wav"
+                }
+            ],
+            "gridIndex": 1,
+            "volume": 0.5
+        },
+        {
+            "type": "instrument",
+            "version": 4,
+            "id": "instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55",
+            "name": "Snare",
+            "hits": [
+                {
+                    "type": "hit",
+                    "version": 1,
+                    "id": "hit_c09c9678-2a49-4447-9a0d-d721c3dceaea",
+                    "key": "X",
+                    "description": "",
+                    "audio_file_name": "snare.wav"
+                }
+            ],
+            "gridIndex": 2,
+            "volume": 0.8
+        },
+        {
+            "type": "instrument",
+            "version": 4,
+            "id": "instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36",
+            "name": "Kick",
+            "hits": [
+                {
+                    "type": "hit",
+                    "version": 1,
+                    "id": "hit_1cb02b98-8f19-4ead-9107-c527285bf6bb",
+                    "key": "X",
+                    "description": "",
+                    "audio_file_name": "kick.wav"
+                }
+            ],
+            "gridIndex": 3,
+            "volume": 0.8
+        }
+    ],
+    "grids": [
+        {
+            "type": "grid",
+            "version": 3,
+            "id": "grid_da2dd414-502c-4f63-950d-dd7ee8983670",
+            "config": {
+                "name": "KSH 1",
+                "bpm": 120,
+                "bars": 2,
+                "beats_per_bar": 4,
+                "beat_divisions": 4
+            },
+            "rows": [
+                {
+                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                    "cells": [
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_ffb8fda0-04ab-45f9-b118-efd135b090d1",
+                                    "hit_id": "hit_a2c671f8-ed4a-418c-8b02-7b93e832e83b"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "instrument_id": "instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55",
+                    "cells": [
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55",
+                                    "hit_id": "hit_c09c9678-2a49-4447-9a0d-d721c3dceaea"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_0e0cdfe7-9f89-4569-84da-4329b50faa55",
+                                    "hit_id": "hit_c09c9678-2a49-4447-9a0d-d721c3dceaea"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        }
+                    ]
+                },
+                {
+                    "instrument_id": "instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36",
+                    "cells": [
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36",
+                                    "hit_id": "hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36",
+                                    "hit_id": "hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36",
+                                    "hit_id": "hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": [
+                                {
+                                    "instrument_id": "instrument_9a616a25-b1ae-4bb4-a3a7-104374b02f36",
+                                    "hit_id": "hit_1cb02b98-8f19-4ead-9107-c527285bf6bb"
+                                }
+                            ]
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        },
+                        {
+                            "cells_occupied": 1,
+                            "hits": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

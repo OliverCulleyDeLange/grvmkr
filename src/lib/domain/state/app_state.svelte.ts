@@ -6,6 +6,7 @@ import {
 	GridEvent,
 	InstrumentStore,
 	loadFileUseCase,
+	newGrooveUseCase,
 	PlaybackStore,
 	ProblemEvent,
 	serialiseToSaveFileV4,
@@ -129,7 +130,11 @@ export class AppStateStore {
 				this.syncInstruments();
 				break;
 			case ToolbarEvent.New:
-				this.newGroove();
+				newGrooveUseCase(
+					this.fileStore, 
+					this.gridStore, 
+					this.instrumentStore
+				)
 				break;
 			case ToolbarEvent.Save:
 				this.save();
@@ -263,20 +268,6 @@ export class AppStateStore {
 		await this.instrumentStore.reset();
 
 		window.location.reload();
-	}
-
-	// Creates a new groove with a default grid and instruments
-	async newGroove() {
-		this.fileStore.saveWorkingFile();
-		this.fileStore.resetWorkingFile();
-
-		// Init with empty grids and same instruments as previous file
-		// TODO Select instruments from all
-		const grid = await this.gridStore.initialise(
-			new Map<GridId, Grid>(),
-			this.instrumentStore.instruments
-		);
-		await this.fileStore.setGrids(grid);
 	}
 
 	// Gets the working file's instruments and grids, and initialises the stores.

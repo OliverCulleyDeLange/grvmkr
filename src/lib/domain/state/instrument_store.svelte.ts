@@ -37,6 +37,10 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		this.audioManager = new AudioManager(onEvent);
 	}
 
+	getInstruments(): Map<InstrumentId, InstrumentWithId> {
+		return this.instruments
+	}
+
 	// Populate instruments state from the working files instruments, defaulting to default config
 	// Also downloads default sound files
 	async initialise(

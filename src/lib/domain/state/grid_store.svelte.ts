@@ -59,7 +59,7 @@ export class GridStore implements GridRepositoryI {
 			this.grids.clear();
 			let grids = Array.from(gridMap.values());
 			if (grids.length == 0) {
-				console.log('No grids found, adding default grid');
+				console.log('No grids top initialise, adding default grid');
 				await this.addDefaultGrid(instruments);
 			} else {
 				for (const grid of grids) {
@@ -67,13 +67,12 @@ export class GridStore implements GridRepositoryI {
 				}
 			}
 		} catch (e: any) {
-			console.error('Error getting all grids:', e);
+			console.error('Error initialising grids:', e);
 			this.onEvent({
 				event: ProblemEvent.DatabaseError,
 				doingWhat: 'initialising grids',
 				error: e.target.error
 			});
-			await this.addDefaultGrid(instruments);
 		}
 		return this.grids;
 	}
@@ -446,8 +445,7 @@ export class GridStore implements GridRepositoryI {
 
 	async addDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>) {
 		const index = this.getNextGridIndex();
-		//TODO I think this $state can be removed as its being added in addGrid
-		let grid: Grid = $state(buildDefaultGrid(instruments, index));
+		let grid: Grid = buildDefaultGrid(instruments, index);
 		this.addGrid(grid);
 	}
 

@@ -1,0 +1,20 @@
+import type { InstrumentRepositoryI } from "$lib";
+import type { FileRepositoryI } from "../interface/FileRepositoryI";
+import type { GridRepositoryI } from "../interface/GridRepositoryI";
+import { defaultFile } from "../model/default_file";
+
+// Creates a new empty groove
+export async function newGrooveUseCase(
+    fileRepository: FileRepositoryI,
+    gridRepository: GridRepositoryI,
+    instrumentRepository: InstrumentRepositoryI,
+) {
+    const newFile = defaultFile()
+    const instruments = instrumentRepository.getInstruments()
+    newFile.instruments = instruments
+
+    const newGrids = await gridRepository.initialise(new Map(), instruments)
+    newFile.grids = newGrids
+    fileRepository.saveWorkingFileInStateAndDB(newFile)
+}
+

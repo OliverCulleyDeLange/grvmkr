@@ -47,9 +47,7 @@ export class FileStore implements FileRepositoryI {
 				console.log('Initialised file from DB', workingFileFromDb);
 			} else {
 				// If no file exists in db, create the working file
-				await this.fileRepository.saveFile(this.file);
-				keyValueRepository.saveWorkingFileId(this.file.id);
-				console.log('Created default file in DB', $state.snapshot(this.file));
+				await this.saveWorkingFileInStateAndDB(this.file);
 			}
 			return this.file;
 		} catch (e: any) {
@@ -61,6 +59,13 @@ export class FileStore implements FileRepositoryI {
 			});
 			return Promise.reject(e);
 		}
+	}
+
+	async saveWorkingFileInStateAndDB(file: GrvMkrFile) {
+		this.file = file
+		await this.fileRepository.saveFile(file);
+		keyValueRepository.saveWorkingFileId(file.id);
+		console.log('Saved working file in state and DB', $state.snapshot(file));
 	}
 
 	async loadGroove(fileId: GrvMkrFileId): Promise<GrvMkrFile> {
@@ -86,11 +91,13 @@ export class FileStore implements FileRepositoryI {
 		this.updateAllFiles();
 	}
 
+	// TODO Remove
 	async setGrids(grids: Map<GridId, Grid>) {
 		this.file.grids = grids;
 		this.trySaveFile();
 	}
-
+	
+	// TODO Remove
 	async setInstruments(instruments: Map<string, InstrumentWithId>) {
 		this.file.instruments = instruments;
 		this.trySaveFile();
