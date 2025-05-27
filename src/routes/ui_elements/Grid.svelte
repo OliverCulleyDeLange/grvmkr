@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { GridEvent, type CellLocator, type GridUi, type OnUiEvent } from '$lib';
-	import type { OnEvent } from '$lib/types/event';
+	import type { OnEvent } from '$lib/domain/event';
 	import { onMount } from 'svelte';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';

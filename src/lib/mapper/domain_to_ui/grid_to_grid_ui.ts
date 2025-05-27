@@ -1,25 +1,22 @@
 import {
+	type BeatIndicator,
+	type CellTools,
+	defaultVolume,
 	type Grid,
+	type GridCell,
 	type GridCellUi,
+	type GridConfig,
+	type GridId,
+	type GridRow,
+	type GridRowUi,
 	type GridUi,
+	type GridUis,
 	type InstrumentId,
 	type InstrumentStore,
 	type InstrumentWithId,
-	type NotationSection,
-	type GridConfig,
-	type GridRowUi,
-	type GridId,
-	type GridUis,
-	type BeatIndicator,
-	type GridRow,
-	type GridCell,
 	mapCellToolsUi,
-	type CellToolsUi,
-	type OnUiEvent,
-	type CellToolsForSingleCellSelection,
-	defaultVolume,
-	type VolumeControlUi,
-	type CellTools
+	type NotationSection,
+	type VolumeControlUi
 } from '$lib';
 
 export function mapGridUi(

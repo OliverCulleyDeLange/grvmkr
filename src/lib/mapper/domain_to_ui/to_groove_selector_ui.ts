@@ -1,5 +1,5 @@
-import type { GrvMkrFile, GrvMkrFileId } from '$lib/types/domain/file_domain';
-import type { GrooveSelectorUi } from '$lib/types/ui/groove_selector';
+import type { GrvMkrFile, GrvMkrFileId } from '$lib';
+import type { GrooveSelectorUi } from '$lib/ui/groove_selector/GrooveSelectorUi';
 
 export function mapGrvMkrFilesToGrooveSelectorUi(
 	files: Map<GrvMkrFileId, GrvMkrFile>,

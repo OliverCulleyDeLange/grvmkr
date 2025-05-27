@@ -83,7 +83,7 @@
 		<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}> ? </button>
 
 		<button onclick={() => toggleLightDark()} class="btn btn-outline btn-sm">
-			{toolbarUi.dark ? '☀️ Light' : '🌙 Dark'}
+			{toolbarUi.darkMode ? '☀️ Light' : '🌙 Dark'}
 		</button>
 	</div>
 </div>

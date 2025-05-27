@@ -1,62 +1,75 @@
 // place files you want to import through the `$lib` alias in this folder.
 
-export * from './audio/default_instruments';
-export * from './audio/audio_player';
+export * from './domain/model/default_instruments';
+export * from './domain/audio/audio_player';
 
-export * from './manager/audio_manager';
+export * from './domain/audio_manager';
 
-export * from './model/default_grid';
-export * from './model/default_file';
+export * from './domain/model/default_grid';
+export * from './domain/model/default_file';
 
-export * from './state/app_state.svelte';
-export * from './state/file_store.svelte';
-export * from './state/error_store';
-export * from './state/instrument_store.svelte';
-export * from './state/playback_store';
-export * from './state/cell_tools_store.svelte';
-export * from './state/date';
-export * from './state/theme_store';
+export * from './domain/state/app_state.svelte';
+export * from './domain/state/file_store.svelte';
+export * from './domain/state/error_store';
+export * from './domain/state/instrument_store.svelte';
+export * from './domain/state/playback_store';
+export * from './domain/state/cell_tools_store.svelte';
+export * from './domain/state/date';
+export * from './domain/state/theme_store';
 
-export * from './repository/instrument_repository';
-export * from './repository/file_repository';
-export * from './repository/grid_repository';
+export * from './data/repository/instrument_repository';
+export * from './data/repository/file_repository';
+export * from './data/repository/grid_repository';
 
-export * from './db/local_storage/key_value_repository';
+export * from './data/db/local_storage/key_value_repository';
 
-export * from './db/indexed_db/audio_db';
-export * from './db/indexed_db/instrument_table';
-export * from './db/indexed_db/hit_table';
-export * from './db/indexed_db/grid_table';
-export * from './db/indexed_db/file_table';
+export * from './data/db/indexed_db/audio_db';
+export * from './data/db/indexed_db/instrument_table';
+export * from './data/db/indexed_db/hit_table';
+export * from './data/db/indexed_db/grid_table';
+export * from './data/db/indexed_db/file_table';
 
-export * from './types/event';
+export * from './domain/event';
 
-export * from './types/data/grid_data';
-export * from './types/data/instrument_data';
-export * from './types/data/file_data';
+export * from './data/types/grid_data';
+export * from './data/types/instrument_data';
+export * from './data/types/file_data';
+export * from './domain/types/error_event';
+export * from './domain/types/error';
+export * from './domain/types/grid_domain';
+export * from './domain/types/instrument_domain';
+export * from './domain/types/file_domain';
+export * from './domain/types/cell_tools';
 
-export * from './types/domain/error_event';
-export * from './types/domain/error';
-export * from './types/domain/grid_domain';
-export * from './types/domain/instrument_domain';
-export * from './types/domain/file_domain';
-export * from './types/domain/cell_tools';
+export * from './ui/events';
 
-export * from './types/ui/event';
-export * from './types/ui/grid_ui';
-export * from './types/ui/legend_ui';
-export * from './types/ui/toolbar';
-export * from './types/ui/toolbar';
-export * from './types/ui/cell_tools';
-export * from './types/ui/volume_control';
-export * from './types/ui/instruments';
-export * from './types/ui/groove_selector';
+export * from './ui/grid/grid_ui_events';
+export * from './ui/grid/volume_control/VolumeControlUi';
+export * from './ui/grid/BeatIndicator';
+export * from './ui/grid/GridCellUi';
+export * from './ui/grid/GridRowUi';
+export * from './ui/grid/GridUi';
+export * from './ui/grid/GridUis';
+export * from './ui/grid/NotationSection';
 
-export * from './types/serialisation/savefile';
-export * from './types/serialisation/savefile_v1';
-export * from './types/serialisation/savefile_v2';
-export * from './types/serialisation/savefile_v3';
-export * from './types/serialisation/savefile_v4';
+export * from './ui/legend/LegendUi';
+
+export * from './ui/toolbar/toolbar_events';
+export * from './ui/toolbar/AppErrorUi';
+export * from './ui/toolbar/ToolbarUi';
+
+export * from './ui/cell_tools/cell_tools_events';
+export * from './ui/cell_tools/CellToolsUi';
+
+export * from './ui/instrument/instrument_events';
+
+export * from './ui/groove_selector/GrooveSelectorUi';
+
+export * from './data/types/serialisation/savefile';
+export * from './data/types/serialisation/savefile_v1';
+export * from './data/types/serialisation/savefile_v2';
+export * from './data/types/serialisation/savefile_v3';
+export * from './data/types/serialisation/savefile_v4';
 
 // Mappers
 export * from './mapper/domain_to_ui/grid_to_grid_ui';
@@ -75,7 +88,7 @@ export * from './mapper/data_to_domain/instrument_dto_to_instrument';
 export * from './mapper/misc_mapper_funcs';
 
 // Serialisation
-export * from './serialisation/to_save_file_v4';
-export * from './serialisation/from_save_file_v1';
-export * from './serialisation/from_save_file_v2';
-export * from './serialisation/from_save_file_v3';
+export * from './mapper/domain_to_data/serialisation/to_save_file_v4';
+export * from './mapper/data_to_domain/serialisation/from_save_file_v1';
+export * from './mapper/data_to_domain/serialisation/from_save_file_v2';
+export * from './mapper/data_to_domain/serialisation/from_save_file_v3';

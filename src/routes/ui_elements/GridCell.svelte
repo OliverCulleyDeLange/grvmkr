@@ -1,7 +1,5 @@
 <script lang="ts">
 	import type { GridCellUi } from '$lib';
-	import { ProblemEvent } from '$lib/types/domain/error_event';
-	import type { OnEvent } from '$lib/types/event';
 
 	let {
 		ui,

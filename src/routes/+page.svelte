@@ -11,7 +11,7 @@
 		type GridUis
 	} from '$lib';
 	import '$lib/util/polyfills';
-	import type { AppEvent } from '$lib/types/event';
+	import type { AppEvent } from '$lib/domain/event';
 	import { onMount } from 'svelte';
 	import Button from './ui_elements/Button.svelte';
 	import Grid from './ui_elements/Grid.svelte';
