@@ -52,6 +52,9 @@ export class AppStateStore {
 			case UiEvent.Paste:
 				this.gridStore.pasteCells(this.instrumentStore.instruments);
 				break;
+			case UiEvent.PlayPause:
+				this.onTogglePlaying();
+				break;
 			case CellToolsEvent.Merge:
 				this.gridStore.mergeCurrentlySelectedCell(event.side);
 				this.updateCellTools();
@@ -69,7 +72,7 @@ export class AppStateStore {
 				});
 				break;
 			case GridEvent.TogglePlaying:
-				this.onTogglePlaying(event.playing, event.gridId);
+				this.onTogglePlayingGrid(event.playing, event.gridId);
 				break;
 			case GridEvent.TappedGridCell:
 				this.onTapGridCell(event);
@@ -173,7 +176,31 @@ export class AppStateStore {
 		console.log('Event:', event.event, event);
 	}
 
-	async onTogglePlaying(newPlaying: boolean, gridId: GridId): Promise<void> {
+	// Space key toggles playing the currently playing grid.
+	async onTogglePlaying(): Promise<void> {
+		const recentlyPlayed = this.gridStore.mostRecentlyPlayedGrid;
+		if (recentlyPlayed) {
+			if (recentlyPlayed.playing) {
+				// If currently playing, stop it
+				this.playbackStore.stop();
+				this.gridStore.updatePlaying(false, recentlyPlayed.id);
+				return;
+			} else {
+				// Play
+				this.playbackStore.play(recentlyPlayed);
+				this.gridStore.updatePlaying(true, recentlyPlayed.id);
+			}
+		} else {
+			// Find first grid and play it
+			const firstGrid = this.gridStore.grids.values().next().value;
+			if (firstGrid) {
+				this.playbackStore.play(firstGrid);
+				this.gridStore.updatePlaying(true, firstGrid.id);
+			}
+		}
+	}
+
+	async onTogglePlayingGrid(newPlaying: boolean, gridId: GridId): Promise<void> {
 		this.gridStore.updatePlaying(newPlaying, gridId);
 
 		if (newPlaying) {
@@ -302,8 +329,8 @@ export class AppStateStore {
 		await this.gridStore.replaceGrids(newWorkingFile.grids);
 		await this.instrumentStore.replaceInstruments(newWorkingFile.instruments);
 	}
-    
-    async deleteGroove(id: GrvMkrFileId) {
+
+	async deleteGroove(id: GrvMkrFileId) {
 		await this.fileStore.deleteGroove(id);
 	}
 

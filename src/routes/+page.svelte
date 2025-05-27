@@ -20,6 +20,7 @@
 	import Legend from './ui_elements/Legend.svelte';
 	import Toolbar from './ui_elements/Toolbar.svelte';
 	import GrooveSelector from './ui_elements/GrooveSelector.svelte';
+	import { registerAppKeyboardShortcuts } from '$lib/util/keyboard_shortcuts';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let showGrooveSelector: boolean = $state(false);
@@ -32,26 +33,16 @@
 
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
-		// Initialise theme 
+		// Initialise theme
 		themeStore.initTheme();
 		const unsubscribeThemeStore = themeStore.dark.subscribe((v) => (dark = v));
 
-		window.addEventListener('keydown', handleKeyDown);
+		const unregisterShortcuts = registerAppKeyboardShortcuts(onEvent);
 		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
+			unregisterShortcuts();
 			unsubscribeThemeStore();
 		};
 	});
-
-	function handleKeyDown(event: KeyboardEvent) {
-		if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-			onEvent({ event: UiEvent.Copy });
-		}
-
-		if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
-			onEvent({ event: UiEvent.Paste });
-		}
-	}
 
 	let toolbarUi = $derived(
 		mapToolbarUi(appStateStore.fileStore.file.name, appStateStore.errorStore.errors, dark)

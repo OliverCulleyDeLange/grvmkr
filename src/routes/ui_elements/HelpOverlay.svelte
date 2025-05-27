@@ -26,6 +26,7 @@
 			On desktop, you can multi-select cells by holding shift and clicking. Then you can copy and
 			paste them with ctrl+c and ctrl+v.
 		</p>
+		<p class="py-4">Play and pause by pressing space.</p>
 
 		<h3 class="text-lg font-bold">Issues & Feature Requests</h3>
 		<p>

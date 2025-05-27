@@ -8,7 +8,9 @@
   - Modify the grid and hear the results immediately, even when playing.
   - Multi select grid cells in a row. On desktop, shift click or click and drag cursor. On mobile press and drag cells.
   - Merge cells + uneven hits like triplets
-- ✅ Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users.
+- ✅ Keyboard shortcuts:
+  - Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users.
+  - Space to play / pause
 - ✅ Choose the BPM for your composition (obviously)
 - ✅ Create your own instruments
   - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
@@ -25,7 +27,6 @@
 
 ### Coming soon (maybe)
 
-- Keyboard Shortcuts (space to play)
 - Play grids in order like a song
 - Configurable instruments per grid / groove
 - Undo / Redo? In case you delete something you didn't mean to

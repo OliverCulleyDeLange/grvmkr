@@ -3,7 +3,7 @@ import type { GrooveSelectorUi } from '$lib/types/ui/groove_selector';
 
 export function mapGrvMkrFilesToGrooveSelectorUi(
 	files: Map<GrvMkrFileId, GrvMkrFile>,
-	workingFileId: GrvMkrFileId | undefined,
+	workingFileId: GrvMkrFileId | undefined
 ): GrooveSelectorUi {
 	return {
 		files: Array.from(files.values())

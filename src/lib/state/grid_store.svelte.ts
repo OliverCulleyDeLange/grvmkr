@@ -38,6 +38,7 @@ export class GridStore {
 
 	public grids: SvelteMap<GridId, Grid> = new SvelteMap();
 	public currentlyPlayingGrid: Grid | undefined = $state();
+	public mostRecentlyPlayedGrid: Grid | undefined = $state();
 	public currentlySelectedCells: CellLocator[] = $state([]);
 	public selectionStartCell: CellLocator | null = $state(null);
 	public copiedCells: GridCell[] = [];
@@ -541,6 +542,7 @@ export class GridStore {
 		}
 		if (playing) {
 			this.currentlyPlayingGrid = this.grids.get(gridId);
+			this.mostRecentlyPlayedGrid = this.currentlyPlayingGrid;
 		} else {
 			this.currentlyPlayingGrid = undefined;
 		}
@@ -626,6 +628,7 @@ export class GridStore {
 
 	resetState() {
 		this.currentlyPlayingGrid = undefined;
+		this.mostRecentlyPlayedGrid = undefined;
 		this.currentlySelectedCells = [];
 		this.selectionStartCell = null;
 		this.copiedCells = [];

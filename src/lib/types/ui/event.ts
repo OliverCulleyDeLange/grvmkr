@@ -10,12 +10,14 @@ export type UiEvents =
 	| CellToolsEvents
 	| Mounted
 	| Copy
-	| Paste;
+	| Paste
+	| PlayPause;
 
 export enum UiEvent {
 	Mounted = 'Mounted',
 	Copy = 'Copy',
-	Paste = 'Paste'
+	Paste = 'Paste',
+	PlayPause = 'PlayPause'
 }
 
 export type Mounted = {
@@ -26,4 +28,7 @@ export type Copy = {
 };
 export type Paste = {
 	event: UiEvent.Paste;
+};
+export type PlayPause = {
+	event: UiEvent.PlayPause;
 };
