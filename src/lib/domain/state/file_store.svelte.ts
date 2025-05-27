@@ -78,7 +78,7 @@ export class FileStore implements FileRepositoryI {
 		// delete grids from the file
 		const file = await this.fileRepository.getFile(id);
 		if (file?.grids) {
-			for (const [id, grid] of this.file.grids) {
+			for (const [id, grid] of file.grids) {
 				this.gridRepository.deleteGrid(id);
 			}
 		}
