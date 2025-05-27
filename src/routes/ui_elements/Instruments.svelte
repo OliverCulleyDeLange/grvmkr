@@ -41,30 +41,30 @@
 					onclick={() =>
 						onEvent({ event: InstrumentEvent.RemoveInstrument, instrumentId: instrument.id })}
 				>
-					X
+					🗑️ Delete
 				</button>
 				<button
 					class="btn btn-outline btn-xs"
 					onclick={() => onEvent({ event: InstrumentEvent.MoveUp, instrumentId: instrument.id })}
 				>
-					⬆︎
+					⬆️ Move Up
 				</button>
 				<button
 					class="btn btn-outline btn-xs"
 					onclick={() => onEvent({ event: InstrumentEvent.MoveDown, instrumentId: instrument.id })}
 				>
-					⬇︎
+					⬇️ Move Down
 				</button>
 				<button
 					class="btn btn-outline btn-xs"
 					onclick={() => instrumentManager.addHit(defaultHitType, instrument.id)}
 				>
-					Add Hit
+					＋ Add Hit
 				</button>
 			</div>
 
 			{#each [...instrument.hitTypes] as [hitId, hit]}
-				<ul class="text-sm text-gray-600">
+				<ul class="ml-8 text-sm text-gray-600">
 					<li class="flex-right flex gap-2 p-1">
 						<input
 							value={hit.key}
@@ -92,14 +92,16 @@
 							class="btn btn-outline btn-xs"
 							onclick={() => instrumentManager.removeHit(instrument.id, hitId)}
 						>
-							X
+							🗑️ Delete
 						</button>
 						<!-- Play button -->
 						{#if hit.audioFileName != ''}
 							<button
 								class="btn btn-outline btn-xs"
-								onclick={() => instrumentManager.play(instrument.id, hitId)}>▶︎</button
+								onclick={() => instrumentManager.play(instrument.id, hitId)}
 							>
+								▶︎ Play
+							</button>
 						{/if}
 
 						<!-- This button is a proxy for the input below it to hide the un-needed file input UI -->

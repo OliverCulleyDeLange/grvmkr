@@ -87,7 +87,7 @@
 					class="btn btn-outline btn-xs print:invisible"
 					onclick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}
 				>
-					X
+					Delete Grid
 				</button>
 				<div class="beat-indicator">
 					{#each section.beatIndicator as indicator}
