@@ -10,7 +10,7 @@
 <script>
 	(() => {
 		// We set dark mode here before svelte hydration so we don't see a flicker
-		const theme = localStorage.getItem("THEME"); //TODO How to use the const in keyValueStore
+		const theme = localStorage.getItem("THEME"); // Can't use KeyValuerRepository here, so hard coding the key. 
 		const systemWantsDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
 		dark = theme ? theme === 'dark' : systemWantsDarkMode;
 		if (dark) {

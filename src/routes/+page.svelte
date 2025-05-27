@@ -6,6 +6,7 @@
 		mapGridUi,
 		mapGrvMkrFilesToGrooveSelectorUi,
 		mapToolbarUi,
+		themeStore,
 		UiEvent,
 		type GridUis
 	} from '$lib';
@@ -25,40 +26,21 @@
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
 	let dark = $state(true);
 
-	onMount(() => {
-		// On mount, check saved preference or system setting to set theme
-		if (typeof window !== 'undefined') {
-			const theme = keyValueRepository.getTheme();
-			const systemWantsDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			dark = theme === 'dark' || (!theme && systemWantsDarkMode);
-			updateTheme();
-		}
-	});
-
 	function toggleTheme() {
-		dark = !dark;
-		updateTheme();
-	}
-
-	function updateTheme() {
-		const html = document.documentElement;
-		if (dark) {
-			// Set for tailwind
-			html.classList.add('dark');
-			// Set for daisy ui
-			html.setAttribute('data-theme', 'dark');
-			keyValueRepository.saveTheme('dark');
-		} else {
-			html.classList.remove('dark');
-			html.setAttribute('data-theme', 'light');
-			keyValueRepository.saveTheme('light');
-		}
+		themeStore.toggleTheme();
 	}
 
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
+		// Initialise theme 
+		themeStore.initTheme();
+		const unsubscribeThemeStore = themeStore.dark.subscribe((v) => (dark = v));
+
 		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+			unsubscribeThemeStore();
+		};
 	});
 
 	function handleKeyDown(event: KeyboardEvent) {

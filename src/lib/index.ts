@@ -15,6 +15,7 @@ export * from './state/instrument_store.svelte';
 export * from './state/playback_store';
 export * from './state/cell_tools_store.svelte';
 export * from './state/date';
+export * from './state/theme_store';
 
 export * from './repository/instrument_repository';
 export * from './repository/file_repository';
