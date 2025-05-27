@@ -92,7 +92,7 @@
 			class="input input-sm input-bordered flex-1"
 		/>
 
-		<Button onClick={() => (gridConfigExpanded = !gridConfigExpanded)}>⚙️</Button>
+		<Button onClick={() => (gridConfigExpanded = !gridConfigExpanded)}>Settings</Button>
 	</div>
 	<!-- Grid config -->
 	{#if gridConfigExpanded}
