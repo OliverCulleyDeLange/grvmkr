@@ -9,5 +9,7 @@ export default {
 		extend: {}
 	},
 
+	darkMode: 'class',
+
 	plugins: [typography, daisyui]
 } satisfies Config;

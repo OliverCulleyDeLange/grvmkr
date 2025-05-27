@@ -20,7 +20,7 @@ export * from './repository/instrument_repository';
 export * from './repository/file_repository';
 export * from './repository/grid_repository';
 
-export * from './db/local_storage/working_file';
+export * from './db/local_storage/key_value_repository';
 
 export * from './db/audio_db';
 export * from './db/instrument_table';

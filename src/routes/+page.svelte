@@ -2,6 +2,7 @@
 	import {
 		AppStateStore,
 		GridEvent,
+		keyValueRepository,
 		mapGridUi,
 		mapGrvMkrFilesToGrooveSelectorUi,
 		mapToolbarUi,
@@ -22,6 +23,37 @@
 	let appStateStore: AppStateStore = new AppStateStore();
 	let showGrooveSelector: boolean = $state(false);
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
+	let dark = $state(true);
+
+	onMount(() => {
+		// On mount, check saved preference or system setting to set theme
+		if (typeof window !== 'undefined') {
+			const theme = keyValueRepository.getTheme();
+			const systemWantsDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			dark = theme === 'dark' || (!theme && systemWantsDarkMode);
+			updateTheme();
+		}
+	});
+
+	function toggleTheme() {
+		dark = !dark;
+		updateTheme();
+	}
+
+	function updateTheme() {
+		const html = document.documentElement;
+		if (dark) {
+			// Set for tailwind
+			html.classList.add('dark');
+			// Set for daisy ui
+			html.setAttribute('data-theme', 'dark');
+			keyValueRepository.saveTheme('dark');
+		} else {
+			html.classList.remove('dark');
+			html.setAttribute('data-theme', 'light');
+			keyValueRepository.saveTheme('light');
+		}
+	}
 
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
@@ -40,7 +72,7 @@
 	}
 
 	let toolbarUi = $derived(
-		mapToolbarUi(appStateStore.fileStore.file.name, appStateStore.errorStore.errors)
+		mapToolbarUi(appStateStore.fileStore.file.name, appStateStore.errorStore.errors, dark)
 	);
 	let gridsUi: GridUis = $derived(
 		mapGridUi(
@@ -59,6 +91,7 @@
 		{onEvent}
 		{toolbarUi}
 		toggleGrooveSelector={() => (showGrooveSelector = !showGrooveSelector)}
+		toggleLightDark={() => toggleTheme()}
 	/>
 	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">

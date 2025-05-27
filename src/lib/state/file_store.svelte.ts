@@ -4,7 +4,7 @@ import {
     DomainEvent,
     FileRepository,
     GridRepository,
-    saveWorkingFileId,
+    keyValueRepository,
     type Grid,
     type GridId,
     type GrvMkrFile,
@@ -50,7 +50,7 @@ export class FileStore {
             } else {
                 // If no file exists in db, create the working file
                 await this.fileRepository.saveFile(this.file);
-                saveWorkingFileId(this.file.id);
+                keyValueRepository.saveWorkingFileId(this.file.id);
                 console.log('Created default file in DB', $state.snapshot(this.file));
             }
             return this.file;
@@ -72,7 +72,7 @@ export class FileStore {
             return Promise.reject(new Error(`File with id ${fileId} not found`));
         }
         this.file = newFile;
-        saveWorkingFileId(this.file.id);
+        keyValueRepository.saveWorkingFileId(this.file.id);
         return newFile;
     }
 
@@ -144,7 +144,7 @@ export class FileStore {
 
         await this.trySaveFile();
         // todo populate grids and instruments
-        saveWorkingFileId(this.file.id);
+        keyValueRepository.saveWorkingFileId(this.file.id);
     }
 
     async trySaveFile(file: GrvMkrFile = this.file) {

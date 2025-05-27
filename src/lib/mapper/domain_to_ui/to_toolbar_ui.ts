@@ -1,7 +1,7 @@
 import type { AppError } from '$lib';
 import type { AppErrorUi, ToolbarUi } from '$lib';
 
-export function mapToolbarUi(filename: string, errors: Map<string, AppError>): ToolbarUi {
+export function mapToolbarUi(filename: string, errors: Map<string, AppError>, dark: boolean): ToolbarUi {
 	let errorUi: AppErrorUi[] = [...errors.values()].map((e) => {
 		return {
 			id: e.id,
@@ -10,7 +10,8 @@ export function mapToolbarUi(filename: string, errors: Map<string, AppError>): T
 	});
 	let ui: ToolbarUi = {
 		errors: errorUi,
-		fileName: filename
+		fileName: filename,
+		dark
 	};
 	return ui;
 }

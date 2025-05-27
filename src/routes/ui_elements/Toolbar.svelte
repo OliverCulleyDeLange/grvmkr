@@ -5,11 +5,13 @@
 	let {
 		toolbarUi,
 		onEvent,
-		toggleGrooveSelector
+		toggleGrooveSelector,
+		toggleLightDark
 	}: {
 		toolbarUi: ToolbarUi;
 		onEvent: OnUiEvent;
 		toggleGrooveSelector: () => void;
+		toggleLightDark: () => void;
 	} = $props();
 
 	let showHelp: boolean = $state(false);
@@ -79,6 +81,10 @@
 		<button class="btn btn-outline btn-sm" onclick={reset}> Reset </button>
 
 		<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}> ? </button>
+
+		<button onclick={() => toggleLightDark()} class="btn btn-outline btn-sm">
+			{toolbarUi.dark ? '☀️ Light' : '🌙 Dark'}
+		</button>
 	</div>
 
 	{#if toolbarUi.errors.length > 0}

@@ -57,6 +57,7 @@ export type GrooveSelectorShown = {
 
 // Toolbar UI components
 export type ToolbarUi = {
+	dark: boolean;
 	errors: AppErrorUi[];
 	fileName: string;
 };

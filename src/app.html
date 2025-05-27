@@ -1,13 +1,32 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		%sveltekit.head%
-	</head>
 
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+<head>
+	<meta charset="utf-8" />
+	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	%sveltekit.head%
+</head>
+<script>
+	(() => {
+		// We set dark mode here before svelte hydration so we don't see a flicker
+		const theme = localStorage.getItem("THEME"); //TODO How to use the const in keyValueStore
+		const systemWantsDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		dark = theme ? theme === 'dark' : systemWantsDarkMode;
+		if (dark) {
+			// Set for tailwind
+			document.documentElement.classList.add('dark');
+			// Set for daisy ui
+			document.documentElement.setAttribute('data-theme', 'dark');
+		} else {
+			document.documentElement.classList.remove('dark');
+			document.documentElement.setAttribute('data-theme', 'light');
+		}
+	})();
+</script>
+
+<body data-sveltekit-preload-data="hover">
+	<div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>

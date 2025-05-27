@@ -1,7 +1,6 @@
 import {
 	type FileDto,
 	FileTable,
-	getWorkingFileId,
 	type Grid,
 	type GridId,
 	GridRepository,
@@ -11,6 +10,7 @@ import {
 	InstrumentRepository,
 	InstrumentStore,
 	type InstrumentWithId,
+	keyValueRepository,
 	mapFileDtoToFile,
 	mapToDto
 } from '$lib';
@@ -27,7 +27,7 @@ export class FileRepository {
 	}
 
 	async getWorkingFile(): Promise<GrvMkrFile | null> {
-		const workingFileId: GrvMkrFileId | null = getWorkingFileId();
+		const workingFileId: GrvMkrFileId | null = keyValueRepository.getWorkingFileId();
 		if (!workingFileId) {
 			return null;
 		}
