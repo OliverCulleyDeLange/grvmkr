@@ -22,11 +22,11 @@ export * from './repository/grid_repository';
 
 export * from './db/local_storage/key_value_repository';
 
-export * from './db/audio_db';
-export * from './db/instrument_table';
-export * from './db/hit_table';
-export * from './db/grid_table';
-export * from './db/file_table';
+export * from './db/indexed_db/audio_db';
+export * from './db/indexed_db/instrument_table';
+export * from './db/indexed_db/hit_table';
+export * from './db/indexed_db/grid_table';
+export * from './db/indexed_db/file_table';
 
 export * from './types/event';
 
