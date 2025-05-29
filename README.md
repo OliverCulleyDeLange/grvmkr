@@ -4,10 +4,11 @@
 
 ## Features
 
-- ✅ Live editing
+- ✅ Live editing and playback
   - Modify the grid and hear the results immediately, even when playing.
   - Multi select grid cells in a row. On desktop, shift click or click and drag cursor. On mobile press and drag cells.
   - Merge cells + uneven hits like triplets
+  - Grids play in order like a song
 - ✅ Keyboard shortcuts:
   - Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users.
   - Space to play / pause
@@ -15,7 +16,7 @@
 - ✅ Create your own instruments
   - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
 - ✅ Built in instruments
-  - There are currently some standard built ins for making beats / samba grooves
+  - There are currently some standard built ins for making  samba grooves
 - ✅ Save and load grids in the app (saved to your browsers internal database)
 - ✅ Save your composition grids as a file, which can be re-loaded on other computers. Useful for sharing with band members!
 - ✅ Save or print your composition grids as a PDF file for sharing with others
@@ -25,10 +26,11 @@
 - ✅ Dark mode theme
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
+
 ### Coming soon (maybe)
-- Play grids in order like a song
 - Highlight every other row with a tint color to distinguish
 - Configurable instruments per grid / groove
+- Groove repetitions for playback
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
 
@@ -36,8 +38,6 @@
 
 Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful.
 
-- ❓ Create a 'Playlist' which brings all the sections of your composition together
-  - Er, kinda - You can create multiple grids, and play them seperately, but you can't create a playlist per se. If this is a useful feature, let me know, but the main purpose of this tool isn't to create songs, its to create grid notation.
 - ❌ ~~Metronome~~: Didn't seem that useful. Just create an instrument with a beep sound file and fill in some squares?
 
 ## Developing
