@@ -346,7 +346,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 				if (!exists) {
 					console.log('Downloading default audio file', hit.audioFileName);
 					try {
-						const res = await fetch(`./${hit.audioFileName}`);
+						const res = await fetch(`./mp3/${hit.audioFileName}`);
 						const blob = await res.blob();
 						const file = new File([blob], hit.audioFileName, { type: blob.type });
 						await this.audioDb.storeAudio(file);
