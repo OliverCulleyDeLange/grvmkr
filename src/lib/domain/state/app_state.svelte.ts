@@ -9,7 +9,8 @@ import {
 	newGrooveUseCase,
 	PlaybackStore,
 	ProblemEvent,
-	togglePlayUseCase,
+	togglePlayRecentlyPlayedUseCase,
+	togglePlaySpecificGridUseCase,
 	ToolbarEvent,
 	UiEvent,
 	type CellLocator,
@@ -47,7 +48,7 @@ export class AppStateStore {
 				this.gridStore.pasteCells(this.instrumentStore.instruments);
 				break;
 			case UiEvent.PlayPause:
-				togglePlayUseCase(
+				togglePlayRecentlyPlayedUseCase(
 					this.gridStore,
 					this.playbackStore
 				);
@@ -69,7 +70,7 @@ export class AppStateStore {
 				});
 				break;
 			case GridEvent.TogglePlaying:
-				this.onTogglePlayingGrid(event.playing, event.gridId);
+				togglePlaySpecificGridUseCase(event.playing, event.gridId, this.gridStore, this.instrumentStore, this.playbackStore)
 				break;
 			case GridEvent.TappedGridCell:
 				this.onTapGridCell(event);
@@ -195,21 +196,6 @@ export class AppStateStore {
 	// Filters chatty events, and logs
 	private logEvent(event: AppEvent) {
 		console.log('Event:', event.event, event);
-	}
-
-	async onTogglePlayingGrid(newPlaying: boolean, gridId: GridId): Promise<void> {
-		await this.gridStore.updatePlaying(newPlaying, gridId);
-
-		if (newPlaying) {
-			await this.instrumentStore.ensureInstrumentsInitialised();
-			this.playbackStore.stop();
-			const currentlyPlaying = this.gridStore.currentlyPlayingGrid;
-			if (currentlyPlaying) {
-				this.playbackStore.play(currentlyPlaying);
-			}
-		} else {
-			this.playbackStore.stop();
-		}
 	}
 
 	// Combined all actions to be complete when a cell is clicked:

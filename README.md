@@ -26,9 +26,8 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-- Highlight every other row with a tint color to distinguish
 - Play grids in order like a song
-- Bundle sound files with json to import everything. Custom .grv file ext?
+- Highlight every other row with a tint color to distinguish
 - Configurable instruments per grid / groove
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument

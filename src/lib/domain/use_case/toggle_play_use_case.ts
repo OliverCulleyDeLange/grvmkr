@@ -1,8 +1,31 @@
+import type { GridId, InstrumentRepositoryI } from "$lib";
 import type { GridRepositoryI } from "../interface/GridRepositoryI";
 import type { PlaybackControllerI } from "../interface/PlaybackControllerI";
 
-// Space key toggles playing the currently playing grid.
-export async function togglePlayUseCase(
+// Play button should play the specified grid
+export async function togglePlaySpecificGridUseCase(
+    newPlaying: boolean,
+    gridId: GridId,
+    gridRepo: GridRepositoryI,
+    instrumentRepo: InstrumentRepositoryI,
+    player: PlaybackControllerI,
+) {
+    await gridRepo.updatePlaying(newPlaying, gridId);
+
+    if (newPlaying) {
+        await instrumentRepo.ensureInstrumentsInitialised();
+        player.stop();
+        const currentlyPlaying = gridRepo.getCurrentlyPlayingGrid();
+        if (currentlyPlaying) {
+            player.play(currentlyPlaying);
+        }
+    } else {
+        player.stop();
+    }
+}
+
+// Space key toggles playing the most recently played grid.
+export async function togglePlayRecentlyPlayedUseCase(
     gridRepo: GridRepositoryI,
     player: PlaybackControllerI,
 ) {

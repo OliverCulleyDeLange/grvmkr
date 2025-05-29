@@ -36,6 +36,10 @@ export class GridStore implements GridRepositoryI {
 		return this.mostRecentlyPlayedGrid;
 	}
 
+	getCurrentlyPlayingGrid(): Grid | null {
+		return this.currentlyPlayingGrid
+	}
+
 	setPlaying(id: GridId, playing: boolean) {
 		this.updatePlaying(playing, id);
 	}
