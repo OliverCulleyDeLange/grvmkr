@@ -34,8 +34,11 @@ export async function saveFileUseCase(
         for (const hit of instrument.hitTypes.values()) {
             if (!hit.audioFileName) continue;
 
-            const blob = await audioDb.loadAudio(hit.audioFileName);
-            if (blob) {
+            const audioFileUrl = await audioDb.loadAudioFileUrl(hit.audioFileName);
+            if (audioFileUrl) {
+                const response = await fetch(audioFileUrl);
+                const blob = await response.blob();
+
                 instrumentFolder?.file(hit.audioFileName, blob);
             }
         }

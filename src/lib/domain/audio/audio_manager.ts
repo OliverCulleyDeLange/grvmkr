@@ -42,7 +42,7 @@ export class AudioManager {
 		try {
 			let audioFileName = hit.audioFileName;
 			// Loading audio can fail if the sample isn't found
-			let fileUrl = await this.audioDb.loadAudio(audioFileName);
+			let fileUrl = await this.audioDb.loadAudioFileUrl(audioFileName);
 			let player = new AudioPlayer(fileUrl);
 			await player.loadAudio(this.audioContext!);
 			player.setVolume(hit.volume);
