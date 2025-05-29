@@ -300,6 +300,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 
 	async reset() {
 		await this.instrumentRepository.deleteAllInstruments();
+		await this.audioDb.deleteAllAudio()
 		this.instruments.clear();
 		this.audioManager.reset();
 	}

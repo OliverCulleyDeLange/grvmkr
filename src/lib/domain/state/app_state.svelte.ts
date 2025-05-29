@@ -243,7 +243,7 @@ export class AppStateStore {
 
 	// Clears the DBs and refreshes
 	async reset() {
-		// Clear DBs (except sounds db)
+		// Clear Stores
 		await this.gridStore.reset();
 		await this.fileStore.reset();
 		await this.instrumentStore.reset();
