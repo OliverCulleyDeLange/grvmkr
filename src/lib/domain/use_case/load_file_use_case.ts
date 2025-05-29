@@ -45,7 +45,10 @@ async function loadFromZip(file: File, audioDb: AudioDb): Promise<GrvMkrFile> {
         await Promise.all(
             Object.values(audioFiles.files).map(async (entry) => {
                 const blob = await entry.async('blob');
-                await audioDb.storeAudio(blob, entry.name);
+                const fileName = entry.name.split('/').pop(); // get just "kick.wav"
+                if (fileName) {
+                    await audioDb.storeAudio(blob, fileName);
+                }
             })
         );
     }
