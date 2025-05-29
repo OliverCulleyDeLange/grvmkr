@@ -9,22 +9,20 @@ import {
 	newGrooveUseCase,
 	PlaybackStore,
 	ProblemEvent,
-	serialiseToSaveFileV4,
 	togglePlayUseCase,
 	ToolbarEvent,
 	UiEvent,
 	type CellLocator,
-	type Grid,
 	type GridId,
 	type GrvMkrFile,
 	type GrvMkrFileId,
-	type SaveFileV4,
 	type StartCellSelection,
 	type TappedGridCell
 } from '$lib';
 import type { AppEvent } from '$lib/domain/event';
 import { defaultInstrumentConfig } from '$lib/domain/model/default_instruments';
 import { InstrumentEvent } from '$lib/ui/instrument/instrument_events';
+import { saveFileUseCase } from '../use_case/save_file_use_case';
 import { GridStore } from './grid_store.svelte';
 
 export class AppStateStore {
@@ -131,13 +129,17 @@ export class AppStateStore {
 				break;
 			case ToolbarEvent.New:
 				newGrooveUseCase(
-					this.fileStore, 
-					this.gridStore, 
+					this.fileStore,
+					this.gridStore,
 					this.instrumentStore
 				)
 				break;
 			case ToolbarEvent.Save:
-				this.save();
+				saveFileUseCase(
+					this.fileStore,
+					this.gridStore,
+					this.instrumentStore
+				)
 				break;
 			case ToolbarEvent.LoadFile:
 				loadFileUseCase(event.file,
@@ -228,21 +230,6 @@ export class AppStateStore {
 	onChangeCellSelection(locator: CellLocator) {
 		this.gridStore.selectUpTo(locator);
 		this.updateCellTools();
-	}
-
-	save() {
-		let saveFile: SaveFileV4 = serialiseToSaveFileV4(
-			this.fileStore.file.name,
-			Array.from(this.gridStore.grids.values()),
-			Array.from(this.instrumentStore.instruments.values())
-		);
-		const text = JSON.stringify(saveFile);
-		const blob = new Blob([text], { type: 'application/json' });
-		const a = document.createElement('a');
-		a.href = URL.createObjectURL(blob);
-		a.download = `GrvMkr_v${saveFile.version}-${new Date().toISOString()}.json`;
-		a.click();
-		URL.revokeObjectURL(a.href);
 	}
 
 	async loadGroove(id: GrvMkrFileId) {
