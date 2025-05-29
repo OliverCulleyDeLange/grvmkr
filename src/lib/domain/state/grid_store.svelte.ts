@@ -32,16 +32,24 @@ export class GridStore implements GridRepositoryI {
 	public selectionStartCell: CellLocator | null = $state(null);
 	public copiedCells: GridCell[] = [];
 
-	getMostRecentlyPlayedGrid(): Grid | null {
-		return this.mostRecentlyPlayedGrid;
+	getGridsFromMostRecentlyPlayedGrid(): Grid[] {
+		if (!this.mostRecentlyPlayedGrid) return [];
+		return this.getGridsFromGridOnwards(this.mostRecentlyPlayedGrid)
 	}
 
-	getCurrentlyPlayingGrid(): Grid | null {
-		return this.currentlyPlayingGrid
+	getGridsFromCurrentlyPlaying(): Grid[] {
+		if (!this.currentlyPlayingGrid) return [];
+		return this.getGridsFromGridOnwards(this.currentlyPlayingGrid)
 	}
+	
+	getGridsFromGridOnwards(grid: Grid): Grid[] {
+		const gridsArray = Array.from(this.grids.values());
+		const sortedGrids = gridsArray.sort((a, b) => a.index - b.index);
+		const startIndex = sortedGrids.findIndex(g => g.id === grid.id);
 
-	setPlaying(id: GridId, playing: boolean) {
-		this.updatePlaying(playing, id);
+		if (startIndex === -1) return [];
+
+		return sortedGrids.slice(startIndex);
 	}
 
 	getFirstGrid(): Grid | null {

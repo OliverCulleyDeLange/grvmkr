@@ -12,12 +12,36 @@ export class PlaybackStore implements PlaybackControllerI {
 		this.instrumentStore = instrumentStore;
 	}
 
-	play(grid: Grid) {
+	play(grid: Grid, onComplete?: (grid: Grid) => void) {
+		this.stop(); // Stop any existing playback
 		this.playingGrid = grid;
-		this.onBeat();
+		this.nextCount = 0;
+
+		const totalSteps = grid.gridCols;
+
 		this.playingIntervalId = setInterval(() => {
 			this.onBeat();
+
+			if (this.nextCount >= totalSteps) {
+				this.stop();
+				onComplete?.(grid); // Call after playing whole grid
+			}
 		}, grid.msPerBeatDivision);
+	}
+
+	async playGridsInSequence(grids: Grid[], 
+		onPlay?: (grid: Grid) => void,
+		onStop?: (grid: Grid) => void
+	) {
+		for (const grid of grids.sort((a, b) => a.index - b.index)) {
+			await new Promise<void>((resolve) => {
+				onPlay?.(grid)
+				this.play(grid, (grid: Grid) => {
+					resolve()
+					onStop?.(grid)
+				});
+			});
+		}
 	}
 
 	stop() {

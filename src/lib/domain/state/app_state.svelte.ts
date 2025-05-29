@@ -50,6 +50,7 @@ export class AppStateStore {
 			case UiEvent.PlayPause:
 				togglePlayRecentlyPlayedUseCase(
 					this.gridStore,
+					this.instrumentStore,
 					this.playbackStore
 				);
 				break;
