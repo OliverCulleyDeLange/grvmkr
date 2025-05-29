@@ -82,12 +82,15 @@ export class AppStateStore {
 				break;
 			case GridEvent.RemoveGrid:
 				this.gridStore.removeGrid(event);
+				this.syncGrids()
 				break;
 			case GridEvent.AddGrid:
 				this.gridStore.addDefaultGrid(this.instrumentStore.instruments);
+				this.syncGrids()
 				break;
 			case GridEvent.DuplicateGrid:
 				this.gridStore.duplicateGrid();
+				this.syncGrids()
 				break;
 			case GridEvent.BpmChanged:
 				this.gridStore.updateBpm(event.gridId, event.bpm);
@@ -178,6 +181,11 @@ export class AppStateStore {
 
 	syncInstruments() {
 		this.gridStore.syncInstruments(this.instrumentStore.instruments);
+		this.fileStore.setInstruments(this.instrumentStore.instruments)
+	}
+
+	syncGrids() {
+		this.fileStore.setGrids(this.gridStore.grids)
 	}
 
 	updateCellTools() {
