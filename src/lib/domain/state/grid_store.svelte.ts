@@ -52,7 +52,7 @@ export class GridStore implements GridRepositoryI {
 			this.grids.clear();
 			let grids = Array.from(gridMap.values());
 			if (grids.length == 0) {
-				console.log('No grids top initialise, adding default grid');
+				console.log('No grids to initialise, adding default grid');
 				await this.addDefaultGrid(instruments);
 			} else {
 				for (const grid of grids) {

@@ -170,6 +170,7 @@ function splitRowsIntoSections(
 			};
 			return gridRowUi;
 		});
+		if (sectionRows.length == 0) continue;
 
 		let sectionColumns = sectionRows[0].gridCells.reduce(
 			(acc, cell) => acc + cell.cellsOccupied,

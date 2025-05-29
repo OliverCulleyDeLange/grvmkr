@@ -71,7 +71,7 @@
 			id="hidden-file-input-for-load"
 			type="file"
 			onchange={load}
-			accept="application/json"
+			accept=".json,.zip,.grv"
 			hidden
 		/>
 		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>

@@ -18,18 +18,18 @@ export class AudioDb {
 		});
 	}
 
-	storeAudio(file: File): Promise<string> {
+	storeAudio(blob: Blob, filename: string): Promise<string> {
 		return this.onDb((db, resolve, reject) => {
 			const reader = new FileReader();
-			reader.readAsArrayBuffer(file);
+			reader.readAsArrayBuffer(blob);
 
 			reader.onload = () => {
 				const transaction = db.transaction(SAMPLE_STORE, 'readwrite');
 				const store = transaction.objectStore(SAMPLE_STORE);
 
-				const request = store.put({ name: file.name, data: reader.result });
-				request.onsuccess = () => resolve(file.name);
-				request.onerror = () => reject(`Failed to store audio file ${file.name}`);
+				const request = store.put({ name: filename, data: reader.result });
+				request.onsuccess = () => resolve(filename);
+				request.onerror = () => reject(`Failed to store audio file ${filename}`);
 			};
 
 			reader.onerror = (err) => reject(err);

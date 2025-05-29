@@ -1,24 +1,53 @@
-import { FileStore, InstrumentStore, serialiseToSaveFileV4, type SaveFileV4 } from "$lib";
-import type { GridStore } from "../state/grid_store.svelte";
+import JSZip from 'jszip';
+import {
+    AudioDb,
+    FileStore,
+    InstrumentStore,
+    serialiseToSaveFileV4,
+    type SaveFileV4
+} from '$lib';
+import type { GridStore } from '../state/grid_store.svelte';
 
-// This use case doesn't rely on interfaces.
-// It could, as they exist, but i'm curious to see how this pans out. 
 export async function saveFileUseCase(
     fileStore: FileStore,
     gridStore: GridStore,
     instrumentStore: InstrumentStore
 ) {
+    const audioDb = new AudioDb()
     const saveFile: SaveFileV4 = serialiseToSaveFileV4(
         fileStore.file.name,
         Array.from(gridStore.grids.values()),
         Array.from(instrumentStore.instruments.values())
     );
 
-    const text = JSON.stringify(saveFile);
-    const blob = new Blob([text], { type: 'application/json' });
+    const zip = new JSZip();
+
+    // Add metadata.json
+    zip.file('groovefile.json', JSON.stringify(saveFile, null, 2));
+
+    // Add audio files from instruments
+    const audioFolder = zip.folder('audio');
+    for (const instrument of instrumentStore.instruments.values()) {
+        if (!instrument.hitTypes || !instrument.name) continue;
+        const instrumentFolder = audioFolder?.folder(instrument.name);
+
+        for (const hit of instrument.hitTypes.values()) {
+            if (!hit.audioFileName) continue;
+
+            const blob = await audioDb.loadAudio(hit.audioFileName);
+            if (blob) {
+                instrumentFolder?.file(hit.audioFileName, blob);
+            }
+        }
+    }
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+
+    const filename = `GrvMkr_${fileStore.file.name}_${new Date().toISOString()}.grv`;
+
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `GrvMkr_v${saveFile.version}-${new Date().toISOString()}.json`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(a.href);
 }

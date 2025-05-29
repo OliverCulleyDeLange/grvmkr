@@ -74,7 +74,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 			if (this.instrumentSoloed && !instrument?.soloed) return;
 
 			if (!this.audioManager.isHitInitialised(hit)) {
-				console.log("Hit not init'd", hit);
+				console.log("Hit not init'd", $state.snapshot(hit));
 				let hitType = instrument?.hitTypes.get(hit.hitId);
 				if (hitType) {
 					try {
@@ -122,7 +122,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	}
 
 	async onChangeSample(file: File, instrumentId: InstrumentId, hitId: HitId) {
-		let storedFilename = await this.audioDb.storeAudio(file);
+		let storedFilename = await this.audioDb.storeAudio(file, file.name);
 		this.updateInstrumentHit(instrumentId, hitId, (hit) => {
 			hit.audioFileName = storedFilename;
 		});
@@ -349,7 +349,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 						const res = await fetch(`./mp3/${hit.audioFileName}`);
 						const blob = await res.blob();
 						const file = new File([blob], hit.audioFileName, { type: blob.type });
-						await this.audioDb.storeAudio(file);
+						await this.audioDb.storeAudio(file, file.name);
 					} catch (error) {
 						console.error(`Failed to download/store ${hit.audioFileName}:`, error);
 					}
