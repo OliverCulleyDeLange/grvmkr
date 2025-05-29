@@ -64,7 +64,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		for (const instrument of defaultInstruments) {
 			await this.addInstrumentFromConfig(instrument);
 		}
-		await this.downloadDefaultAudioFiles();
+		this.downloadDefaultAudioFiles(); // No await so it happens in the background 
 	}
 
 	async playHit(hit: InstrumentHit | undefined) {
