@@ -22,8 +22,6 @@ import { SvelteMap } from 'svelte/reactivity';
 
 // Responsible for storing, modifying and playing instruments
 export class InstrumentStore implements InstrumentRepositoryI {
-	private onEvent: OnEvent;
-
 	private audioManager: AudioManager;
 	private audioDb: AudioDb = new AudioDb();
 	private instrumentRepository: InstrumentRepository = new InstrumentRepository();
@@ -33,7 +31,6 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	private instrumentSoloed = false;
 
 	constructor(onEvent: OnEvent) {
-		this.onEvent = onEvent;
 		this.audioManager = new AudioManager(onEvent);
 	}
 

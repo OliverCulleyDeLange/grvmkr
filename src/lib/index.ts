@@ -49,7 +49,7 @@ export * from './domain/state/error_store';
 export * from './domain/state/instrument_store.svelte';
 export * from './domain/state/playback_store';
 export * from './domain/state/cell_tools_store.svelte';
-export * from './domain/state/date';
+export * from './util/date';
 export * from './domain/state/theme_store';
 
 export * from './domain/types/problem_events';

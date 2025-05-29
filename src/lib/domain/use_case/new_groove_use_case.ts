@@ -10,6 +10,7 @@ export async function newGrooveUseCase(
     instrumentRepository: InstrumentRepositoryI,
 ) {
     const newFile = defaultFile()
+    // Currently just uses the same instruments as the current file
     const instruments = instrumentRepository.getInstruments()
     newFile.instruments = instruments
 

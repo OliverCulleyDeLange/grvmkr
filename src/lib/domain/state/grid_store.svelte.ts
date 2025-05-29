@@ -1,9 +1,4 @@
-import { calculateMsPerBeatDivision } from '$lib/mapper/misc_mapper_funcs';
-import { buildDefaultGrid, defaultGridRow, generateGridId } from '$lib/domain/model/default_grid';
-import { GridRepository } from '$lib/data/repository/grid_repository';
-import { mapSavedGridV1ToGrid } from '$lib/mapper/data_to_domain/serialisation/from_save_file_v1';
-import { mapSavedGridV2ToGrid } from '$lib/mapper/data_to_domain/serialisation/from_save_file_v2';
-import { mapSavedGridV3ToGrid } from '$lib/mapper/data_to_domain/serialisation/from_save_file_v3';
+import type { HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from '$lib';
 import {
 	ProblemEvent,
 	type CellLocator,
@@ -13,14 +8,12 @@ import {
 	type GridRow,
 	type InstrumentHit
 } from '$lib';
-import type { HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from '$lib';
+import { GridRepository } from '$lib/data/repository/grid_repository';
 import type { OnEvent } from '$lib/domain/event';
-import type { SaveFileV1 } from '$lib/data/types/serialisation/savefile_v1';
-import type { SaveFileV2 } from '$lib/data/types/serialisation/savefile_v2';
-import type { SavedGridV3 } from '$lib/data/types/serialisation/savefile_v3';
+import { buildDefaultGrid, defaultGridRow, generateGridId } from '$lib/domain/model/default_grid';
+import { calculateMsPerBeatDivision } from '$lib/mapper/misc_mapper_funcs';
 import type { RemoveGrid } from '$lib/ui/grid/grid_ui_events';
 import { SvelteMap } from 'svelte/reactivity';
-import type { InstrumentStore } from './instrument_store.svelte';
 import type { GridRepositoryI } from '../interface/GridRepositoryI';
 
 // Responsible for storing, and modifying grids
