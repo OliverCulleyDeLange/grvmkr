@@ -78,10 +78,6 @@
 			Print / Save PDF
 		</button>
 
-		{#if typeof window !== 'undefined' && window.location.hostname === 'localhost'}
-			<button class="btn btn-outline btn-sm" onclick={reset}> Reset </button>
-		{/if}
-
 		<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}> ? </button>
 
 		<button onclick={() => toggleLightDark()} class="btn btn-outline btn-sm">
@@ -140,5 +136,11 @@
 {/if}
 
 {#if showHelp}
-	<HelpOverlay closeDialog={() => (showHelp = !showHelp)} />
+	<HelpOverlay
+		closeDialog={() => (showHelp = !showHelp)}
+		reset={() => {
+			showHelp = false;
+			reset()
+		}}
+	/>
 {/if}
