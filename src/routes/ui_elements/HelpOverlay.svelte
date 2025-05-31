@@ -10,6 +10,15 @@
 
 <dialog open class="modal">
 	<div class="modal-box border border-2 border-gray-400">
+
+		<button
+			class="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
+			aria-label="Close"
+			onclick={closeDialog}
+		>
+			╳
+		</button>
+
 		<h3 class="text-lg font-bold">What is this?</h3>
 		<p class="py-4">
 			This is GrvMkr (Groove Maker), a percussion grid notation tool. It is designed to easily
