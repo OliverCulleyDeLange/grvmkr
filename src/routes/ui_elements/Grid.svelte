@@ -19,7 +19,7 @@
 	let selectionStart: CellLocator | null = null;
 	let selectionEnd: CellLocator | null = null;
 
-	// Toolsbar pin state
+	// Toolbar pin state
 	let gridRef: HTMLElement;
 	let toolsRef: HTMLElement;
 	let isPinned = false;
@@ -108,7 +108,7 @@
 				</div>
 
 				{#each section.sectionRows as row}
-					<div class="select-none px-2 text-xs print:text-lg">
+					<div class={"select-none px-2 text-xs print:text-lg"}>
 						<div>{row.instrumentName}</div>
 						<div class="flex gap-2">
 							<VolumeControls

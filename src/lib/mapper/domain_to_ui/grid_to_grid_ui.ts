@@ -80,7 +80,7 @@ function mapRow(
 			if (cell.cells_occupied < 1) {
 				return;
 			} else {
-				return mapCellToCellUi(cell, instruments, cellIndex, config, gridId, rowIndex);
+				return mapCellToCellUi(cell, row.instrument, cellIndex, config, gridId, rowIndex);
 			}
 		})
 		.filter((x) => x != undefined);
@@ -104,7 +104,7 @@ function mapRow(
 
 function mapCellToCellUi(
 	cell: GridCell,
-	instruments: Map<string, InstrumentWithId>,
+	instrument: InstrumentWithId,
 	cellIndex: number,
 	config: GridConfig,
 	gridId: string,
@@ -112,7 +112,6 @@ function mapCellToCellUi(
 ): GridCellUi {
 	let cellContent = '';
 	cell.hits.forEach((instrumentHit) => {
-		let instrument: InstrumentWithId | undefined = instruments.get(instrumentHit.instrumentId);
 		let hit = instrument?.hitTypes.get(instrumentHit.hitId);
 		if (hit) {
 			cellContent += hit.key;
@@ -132,7 +131,8 @@ function mapCellToCellUi(
 		},
 		cellsOccupied: cell.cells_occupied,
 		cellDescription: `${bar + 1}.${beat + 1}.${beat_division + 1}`,
-		selected: cell.selected
+		selected: cell.selected,
+		addColorTint: instrument.gridIndex % 2 == 1
 	};
 	return cellUi;
 }

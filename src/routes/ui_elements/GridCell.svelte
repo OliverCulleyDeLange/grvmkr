@@ -37,19 +37,25 @@
 	class:outline-green-500={ui.selected}
 	class:outline-2={ui.selected}
 >
+	{#if ui.addColorTint}
+		<div class="print:hidden pointer-events-none absolute inset-0 bg-yellow-300 opacity-10"></div>
+	{/if}
+
 	{#each ui.content.split('') as char}
 		<div class="pointer-events-none" style={`width: calc(1/${ui.cellsOccupied} * 100%)`}>
 			{char}
 		</div>
 	{/each}
 	<div id="spacer"></div>
-	<div
-		class="absolute left-px top-px text-[8px]"
-		class:text-gray-500={ui.isFirstBeatOfBar}
-		class:text-gray-400={!ui.isFirstBeatOfBar}
-	>
-		<!-- {ui.cellDescription} -->
-	</div>
+	{#if typeof window !== 'undefined' && window.location.hostname === 'localhost'}
+		<div
+			class="absolute left-px top-px text-[8px]"
+			class:text-gray-500={ui.isFirstBeatOfBar}
+			class:text-gray-400={!ui.isFirstBeatOfBar}
+		>
+			{ui.locator.row} {ui.locator.cell}
+		</div>
+	{/if}
 </button>
 
 <style>

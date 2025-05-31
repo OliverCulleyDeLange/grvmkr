@@ -8,4 +8,5 @@ export type GridCellUi = {
 	cellsOccupied: number;
 	cellDescription: string;
 	selected: boolean;
+	addColorTint: boolean;
 };

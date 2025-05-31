@@ -28,7 +28,6 @@
 
 
 ### Coming soon (maybe)
-- Highlight every other row with a tint color to distinguish
 - Configurable instruments per grid / groove
 - Groove repetitions for playback
 - Premade grooves for classic rhythms for community samba bands
