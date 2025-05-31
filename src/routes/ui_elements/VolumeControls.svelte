@@ -28,6 +28,7 @@
 	}
 
 	function handlePointerMoveForVolume(event: PointerEvent) {
+		event.preventDefault()
 		if (!isDragging) return;
 		const dx = event.clientX - startX;
 		const dy = startY - event.clientY; // Y increases downward, invert so up = +gain
@@ -58,7 +59,7 @@
 	<button class="text-xs" class:text-orange-400={model.soloed} onclick={() => onSolo()}>S</button>
 
 	<div
-		class="flex flex-row gap-2 cursor-ew-resize text-xs text-gray-500"
+		class="touch-none flex flex-row gap-2 cursor-ew-resize text-xs text-gray-500"
 		onpointerdown={(e) => handlePointerDownForVolume(e)}
 	>
 		<svg
