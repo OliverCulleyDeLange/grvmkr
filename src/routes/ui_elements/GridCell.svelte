@@ -47,7 +47,7 @@
 		</div>
 	{/each}
 	<div id="spacer"></div>
-	{#if typeof window !== 'undefined' && window.location.hostname === 'localhost'}
+	<!-- {#if typeof window !== 'undefined' && window.location.hostname === 'localhost'}
 		<div
 			class="absolute left-px top-px text-[8px]"
 			class:text-gray-500={ui.isFirstBeatOfBar}
@@ -55,7 +55,7 @@
 		>
 			{ui.locator.row} {ui.locator.cell}
 		</div>
-	{/if}
+	{/if} -->
 </button>
 
 <style>

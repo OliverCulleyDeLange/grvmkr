@@ -28,9 +28,9 @@
 
 
 ### Coming soon (maybe)
-- Configurable instruments per grid / groove
-- Groove repetitions for playback
 - Premade grooves for classic rhythms for community samba bands
+- Groove repetitions for playback
+- Configurable instruments per grid / groove
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
 

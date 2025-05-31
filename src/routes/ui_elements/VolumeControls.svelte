@@ -15,7 +15,7 @@
 	let startY = 0;
 	let startVolume = model.volume;
 
-	function handlePointerDownForSlider(event: PointerEvent) {
+	function handlePointerDownForVolume(event: PointerEvent) {
 		const rect = (event.target as SVGElement).getBoundingClientRect();
 		startX = event.clientX;
 		startY = event.clientY;
@@ -23,17 +23,11 @@
 		isDragging = true;
 
 		updateVolumeFromDelta(0, 0); // init
-		window.addEventListener('pointermove', handlePointerMoveForSlider);
-		window.addEventListener('pointerup', handlePointerUp);
+		window.addEventListener('pointermove', handlePointerMoveForVolume);
+		window.addEventListener('pointerup', handlePointerUpForVolume);
 	}
 
-	function handlePointerDownForText(event: PointerEvent) {
-		startX = event.clientX;
-		window.addEventListener('pointermove', handlePointerMoveForText);
-		window.addEventListener('pointerup', handlePointerUp);
-	}
-
-	function handlePointerMoveForSlider(event: PointerEvent) {
+	function handlePointerMoveForVolume(event: PointerEvent) {
 		if (!isDragging) return;
 		const dx = event.clientX - startX;
 		const dy = startY - event.clientY; // Y increases downward, invert so up = +gain
@@ -41,16 +35,10 @@
 		updateVolumeFromDelta(dx, dy);
 	}
 
-	function handlePointerMoveForText(event: PointerEvent) {
-		onChange(undefined, event.clientX - startX);
-		startX = event.clientX;
-	}
-
-	function handlePointerUp() {
+	function handlePointerUpForVolume() {
 		isDragging = false;
-		window.removeEventListener('pointermove', handlePointerMoveForSlider);
-		window.removeEventListener('pointermove', handlePointerMoveForText);
-		window.removeEventListener('pointerup', handlePointerUp);
+		window.removeEventListener('pointermove', handlePointerMoveForVolume);
+		window.removeEventListener('pointerup', handlePointerUpForVolume);
 	}
 
 	function updateVolumeFromDelta(dx: number, dy: number) {
@@ -69,32 +57,33 @@
 	<button class="text-xs" class:text-blue-500={model.muted} onclick={() => onMute()}>M</button>
 	<button class="text-xs" class:text-orange-400={model.soloed} onclick={() => onSolo()}>S</button>
 
-	<svg
-		width={volumeSliderWidth}
-		height={volumeSliderHeight}
-		viewBox={`0 0 ${volumeSliderWidth} ${volumeSliderHeight}`}
-		onpointerdown={handlePointerDownForSlider}
-		style="touch-action: none; cursor: ew-resize;"
-	>
-		<!-- Triangle outline -->
-		<polygon
-			points={`${volumeSliderWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${volumeSliderWidth},0`}
-			fill="none"
-			stroke="black"
-		/>
-
-		<!-- Shaded volume triangle -->
-		<polygon
-			points={`${fillWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${fillWidth},${volumeSliderHeight - fillHeight}`}
-			fill="green"
-			opacity="0.6"
-		/>
-	</svg>
-
 	<div
-		class="cursor-ew-resize text-xs text-gray-500"
-		onpointerdown={(e) => handlePointerDownForText(e)}
+		class="flex flex-row gap-2 cursor-ew-resize text-xs text-gray-500"
+		onpointerdown={(e) => handlePointerDownForVolume(e)}
 	>
-		{model.volumeString}
+		<svg
+			width={volumeSliderWidth}
+			height={volumeSliderHeight}
+			viewBox={`0 0 ${volumeSliderWidth} ${volumeSliderHeight}`}
+			style="touch-action: none; cursor: ew-resize;"
+		>
+			<!-- Triangle outline -->
+			<polygon
+				points={`${volumeSliderWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${volumeSliderWidth},0`}
+				fill="none"
+				stroke="black"
+			/>
+
+			<!-- Shaded volume triangle -->
+			<polygon
+				points={`${fillWidth},${volumeSliderHeight} 0,${volumeSliderHeight} ${fillWidth},${volumeSliderHeight - fillHeight}`}
+				fill="green"
+				opacity="0.6"
+			/>
+		</svg>
+
+		<div class="cursor-ew-resize text-xs text-gray-500">
+			{model.volumeString}
+		</div>
 	</div>
 </div>
