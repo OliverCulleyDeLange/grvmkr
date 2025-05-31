@@ -31,6 +31,7 @@
 - Highlight every other row with a tint color to distinguish
 - Configurable instruments per grid / groove
 - Groove repetitions for playback
+- Premade grooves for classic rhythms for community samba bands
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
 

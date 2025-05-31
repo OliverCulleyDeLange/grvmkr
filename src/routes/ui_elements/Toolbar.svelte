@@ -78,7 +78,9 @@
 			Print / Save PDF
 		</button>
 
-		<button class="btn btn-outline btn-sm" onclick={reset}> Reset </button>
+		{#if typeof window !== 'undefined' && window.location.hostname === 'localhost'}
+			<button class="btn btn-outline btn-sm" onclick={reset}> Reset </button>
+		{/if}
 
 		<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}> ? </button>
 
