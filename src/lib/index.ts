@@ -97,6 +97,7 @@ export * from './ui/cell_tools/cell_tools_events';
 export * from './ui/cell_tools/CellToolsUi';
 
 export * from './ui/instrument/instrument_events';
+export * from './ui/instrument/InstrumentUi';
 
 export * from './ui/groove_selector/GrooveSelectorUi';
 
@@ -107,6 +108,7 @@ export * from './mapper/domain_to_ui/grid_to_grid_ui';
 export * from './mapper/domain_to_ui/to_toolbar_ui';
 export * from './mapper/domain_to_ui/to_cell_tools_ui';
 export * from './mapper/domain_to_ui/to_groove_selector_ui';
+export * from './mapper/domain_to_ui/instruments_to_instruments_ui';
 
 export * from './mapper/domain_to_data/grid_to_grid_dto';
 export * from './mapper/domain_to_data/file_to_file_dto';

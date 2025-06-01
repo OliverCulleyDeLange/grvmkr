@@ -17,6 +17,6 @@ export type InstrumentDto = {
 export type HitDto = {
 	id: HitDtoId;
 	key: HitKey;
-	description: string | undefined;
+	description: string;
 	audioFileName: string;
 };

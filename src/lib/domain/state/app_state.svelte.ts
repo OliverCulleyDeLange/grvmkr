@@ -124,14 +124,32 @@ export class AppStateStore {
 			case InstrumentEvent.AddInstrument:
 				addInstrumentUseCase(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
 				break;
+			case InstrumentEvent.RenameInstrument:
+				this.instrumentStore.onChangeName(event.newName, event.instrumentId);
+				break;
 			case InstrumentEvent.AddHit:
 				addHitUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
 				break;
 			case InstrumentEvent.MoveUp:
 				moveInstrumentUpUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
 				break;
-				case InstrumentEvent.MoveDown:
+			case InstrumentEvent.MoveDown:
 				moveInstrumentDownUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
+				break;
+			case InstrumentEvent.ChangeHitKey:
+				this.instrumentStore.onChangeHitKey(event.newKey, event.instrumentId, event.hitId);
+				break;
+			case InstrumentEvent.ChangeHitDescription:
+				this.instrumentStore.onChangeHitDescription(event.description, event.instrumentId, event.hitId);
+				break;
+			case InstrumentEvent.ChangeSample:
+				this.instrumentStore.onChangeSample(event.file, event.instrumentId, event.hitId);
+				break;
+			case InstrumentEvent.RemoveHit:
+				this.instrumentStore.removeHit(event.instrumentId, event.hitId)
+				break;
+			case InstrumentEvent.PlayHit:
+				this.instrumentStore.playHit(event.instrumentHit)
 				break;
 			case ToolbarEvent.New:
 				newGrooveUseCase(

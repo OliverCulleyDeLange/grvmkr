@@ -5,6 +5,7 @@
 		keyValueRepository,
 		mapGridUi,
 		mapGrvMkrFilesToGrooveSelectorUi,
+		mapInstrumentsUi,
 		mapToolbarUi,
 		themeStore,
 		UiEvent,
@@ -54,6 +55,9 @@
 			appStateStore.cellToolsStore.cellTools
 		)
 	);
+	const instrumentsUi = $derived(
+		mapInstrumentsUi(appStateStore.instrumentStore.getInstruments())
+	)
 	let grooveSelectorUi = $derived(
 		mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files, appStateStore.fileStore.file.id)
 	);
@@ -90,7 +94,7 @@
 		</div>
 
 		<div class="print:hidden">
-			<Instruments instrumentManager={appStateStore.instrumentStore} {onEvent} />
+			<Instruments ui={instrumentsUi} {onEvent} />
 		</div>
 	{/if}
 

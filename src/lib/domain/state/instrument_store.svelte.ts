@@ -267,13 +267,13 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		await this.instrumentRepository.deleteInstrument(id);
 	}
 
-	removeHit(instrumentId: InstrumentId, hitId: HitId) {
-		let updatedInstrument = this.updateInstrument(instrumentId, (instrument) => {
+	async removeHit(instrumentId: InstrumentId, hitId: HitId) {
+		let updatedInstrument = await this.updateInstrument(instrumentId, (instrument) => {
 			instrument.hitTypes.delete(hitId);
 		});
 		this.audioManager.removeHit(hitId);
 		if (updatedInstrument) {
-			this.instrumentRepository.saveInstrument(updatedInstrument);
+			await this.instrumentRepository.saveInstrument(updatedInstrument);
 		}
 	}
 

@@ -22,7 +22,7 @@ export type InstrumentWithId = {
 export type HitTypeWithId = HitType & { id: HitId };
 export type HitType = {
 	key: HitTypeKey;
-	description: string | undefined;
+	description: string;
 	audioFileName: string;
 	volume: number;
 };
