@@ -263,7 +263,6 @@ export class GridStore implements GridRepositoryI {
 			} else {
 				nextHits = cell.hits.map((h) => nextHit);
 			}
-			// console.log(`Tapped location ${JSON.stringify(locator)} ${currentValue} -> ${newInstrumentHit}`);
 			this.updateGridCell(locator, (cell) => {
 				cell.hits = nextHits;
 			});
@@ -396,7 +395,6 @@ export class GridStore implements GridRepositoryI {
 				i >= 0 || i < grid.rows[locator.row].cells.length;
 				i += cellIndexAddition
 			) {
-				console.log('Getting cell ', i);
 				let cell = grid.rows[locator.row].cells[i];
 				if (cell.cells_occupied > 0) {
 					cellNextToClickedCell = cell;
@@ -488,7 +486,6 @@ export class GridStore implements GridRepositoryI {
 	duplicateGrid() {
 		let lastGrid = [...this.grids.values()].pop();
 		if (lastGrid) {
-			console.log(lastGrid);
 			let newGrid = $state.snapshot(lastGrid);
 			newGrid.index = this.getNextGridIndex();
 			newGrid.id = generateGridId();

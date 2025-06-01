@@ -10,7 +10,6 @@ export async function syncInstruments(
     cellToolsStore: CellToolsRepositoryI,
 ) {
     const instruments = instrumentStore.getInstruments()
-    console.log(instruments)
     // Add or remove instrument from grids
     await gridStore.syncInstruments(instruments);
     // Replace instruments in the file store 

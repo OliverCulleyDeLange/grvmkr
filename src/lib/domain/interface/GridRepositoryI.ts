@@ -10,7 +10,7 @@ export interface GridRepositoryI {
 	getFirstGrid(): Grid | null;
     getGridsFromCurrentlyPlaying(): Grid[];
 	getGridsFromMostRecentlyPlayedGrid(): Grid[];
-    updatePlaying(newPlaying: boolean, gridId: string): unknown;
-    replaceGrids(grids: Grid[], persist: boolean): unknown;
+    updatePlaying(newPlaying: boolean, gridId: string): Promise<void>;
+    replaceGrids(grids: Grid[], persist: boolean): Promise<void>;
     stopPlayingGrid(): void  
 }

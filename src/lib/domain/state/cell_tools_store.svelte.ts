@@ -26,14 +26,13 @@ export class CellToolsStore implements CellToolsRepositoryI {
 
 		if (firstCurrentlySelectedCell) {
 			const locator = firstCurrentlySelectedCell;
-			const rowInstrument = grid.rows[locator.row].instrument;
-			const instrument = instrumentStore.getInstrument(rowInstrument.id)
+			const rowInstrument = grid.rows[locator.row]?.instrument;
+			const instrument = instrumentStore.getInstrument(rowInstrument?.id)
 			const currentCell = grid.rows[locator.row]?.cells[locator.cell];
 			const gridCols = grid.gridCols;
 			const cellsOccupied = currentCell?.cells_occupied ?? 0;
 			const cellsSelected = currentlySelectedCells.length;
 			if (instrument) {
-				console.log("Instrument", instrument)
 				if (cellsSelected > 1) {
 					this.cellTools = {
 						kind: 'multi',

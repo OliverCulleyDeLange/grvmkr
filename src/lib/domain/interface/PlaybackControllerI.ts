@@ -8,5 +8,5 @@ export interface PlaybackControllerI {
         grids: Grid[],
         onPlay?: (grid: Grid) => void,
         onStop?: (grid: Grid) => void
-    ): void;
+    ): Promise<void>;
 }

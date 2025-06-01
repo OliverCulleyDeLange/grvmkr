@@ -34,6 +34,7 @@ export class FileStore implements FileRepositoryI {
 	getFile(): GrvMkrFile {
 		return this.file
 	}
+	
 	// Get or create the working file, and populate the full list of available files
 	async initialise(): Promise<GrvMkrFile> {
 		const workingFile = await this.initialiseWorkingFile();
