@@ -21,11 +21,11 @@ import {
 
 export function mapGridUi(
 	grids: Map<GridId, Grid>,
-	instrumentManager: InstrumentStore,
+	instrumentStore: InstrumentStore,
 	cellTools: CellTools | undefined
 ): GridUis {
 	let gridUis: GridUi[] = [...grids.values()].map((grid) =>
-		mapRowsToGridUi(grid, instrumentManager, cellTools)
+		mapRowsToGridUi(grid, instrumentStore, cellTools)
 	);
 	let ui: GridUis = {
 		grids: gridUis.sort((a, b) => a.index - b.index)
@@ -38,7 +38,7 @@ export function mapRowsToGridUi(
 	instrumentManager: InstrumentStore,
 	cellTools: CellTools | undefined
 ): GridUi {
-	let instruments = instrumentManager.instruments;
+	let instruments = instrumentManager.getInstruments();
 	let rows = mapRows(grid, instruments);
 	let sections = splitRowsIntoSections(
 		rows,

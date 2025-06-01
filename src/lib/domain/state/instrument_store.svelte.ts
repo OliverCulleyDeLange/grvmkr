@@ -1,6 +1,7 @@
 import {
 	AudioDb,
 	AudioManager,
+	defaultInstrumentConfig,
 	defaultInstruments,
 	defaultVolume,
 	InstrumentEvent,
@@ -26,7 +27,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	private audioDb: AudioDb = new AudioDb();
 	private instrumentRepository: InstrumentRepository = new InstrumentRepository();
 
-	public instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap();
+	private instruments: SvelteMap<InstrumentId, InstrumentWithId> = new SvelteMap();
 
 	private instrumentSoloed = false;
 
@@ -34,8 +35,14 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		this.audioManager = new AudioManager(onEvent);
 	}
 
+	// TODO Should i state.snapshot, or is it ok to return a mutable domain object?
+	// Feels like it should return a snapshot so others can't modify instrument state
 	getInstruments(): Map<InstrumentId, InstrumentWithId> {
 		return this.instruments
+	}
+
+	async addDefaultInstrument(): Promise<void> {
+		await this.addInstrumentFromConfig(defaultInstrumentConfig)
 	}
 
 	// Populate instruments state from the working files instruments, defaulting to default config
@@ -206,15 +213,15 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		await this.saveInstrumentToStateAndDb(instrument);
 	}
 
-	moveInstrument(event: InstrumentEvent, instrumentId: InstrumentId) {
+	async moveInstrument(direction: "up" | "down", instrumentId: InstrumentId) {
 		let movingInstrument = this.instruments.get(instrumentId);
 		if (!movingInstrument) return;
 		let movingIndex = movingInstrument.gridIndex;
 
 		let swappingIndex;
-		if (event == InstrumentEvent.MoveDown) {
+		if (direction == "down") {
 			swappingIndex = movingIndex + 1;
-		} else if (event == InstrumentEvent.MoveUp) {
+		} else if (direction == "up") {
 			swappingIndex = movingIndex - 1;
 		} else {
 			return;
@@ -223,10 +230,10 @@ export class InstrumentStore implements InstrumentRepositoryI {
 			(i) => i.gridIndex == swappingIndex
 		);
 		if (!swappingInstrument) return;
-		this.updateInstrument(movingInstrument.id, (i) => {
+		await this.updateInstrument(movingInstrument.id, (i) => {
 			i.gridIndex = swappingIndex;
 		});
-		this.updateInstrument(swappingInstrument.id, (i) => {
+		await this.updateInstrument(swappingInstrument.id, (i) => {
 			i.gridIndex = movingIndex;
 		});
 	}
@@ -240,19 +247,20 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	}
 
 	// Adds a new hit to the instrument, generating a new id
-	addHit(hit: HitType, instrumentId: InstrumentId) {
+	async addHit(hit: HitType, instrumentId: InstrumentId) {
 		let hitWithId = this.buildHitFromConfig(hit);
 		let reactiveHit = $state(hitWithId);
 		let instrument = this.instruments.get(instrumentId);
 		if (instrument) {
 			instrument.hitTypes.set(reactiveHit.id, reactiveHit);
-			this.instrumentRepository.saveInstrument(instrument);
+			console.log("Saving hit for instrument", instrument)
+			await this.instrumentRepository.saveInstrument(instrument);
 		}
 	}
 
-	removeInstrument(id: InstrumentId) {
+	async removeInstrument(id: InstrumentId) {
 		this.instruments.delete(id);
-		this.instrumentRepository.deleteInstrument(id);
+		await this.instrumentRepository.deleteInstrument(id);
 	}
 
 	removeHit(instrumentId: InstrumentId, hitId: HitId) {
@@ -310,14 +318,14 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		return mapHitTypeToHitTypeWithId(hitId, hit);
 	}
 
-	private updateInstrument(
+	private async updateInstrument(
 		id: InstrumentId,
 		callback: (config: InstrumentWithId) => void
-	): InstrumentWithId | undefined {
+	): Promise<InstrumentWithId | undefined> {
 		let instrument = this.instruments.get(id);
 		if (instrument) {
 			callback(instrument);
-			this.instrumentRepository.saveInstrument(instrument);
+			await this.instrumentRepository.saveInstrument(instrument);
 		} else {
 			console.error(`Couldn't update instrument ${id} as it doesn't exist`);
 		}

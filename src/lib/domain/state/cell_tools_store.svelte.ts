@@ -14,19 +14,23 @@ export class CellToolsStore {
 	}
 
 	updateCellTools(gridStore: GridStore) {
-		const currentlySelectedCell = gridStore.currentlySelectedCells[0];
-		const grid = currentlySelectedCell
-			? gridStore.grids.get(currentlySelectedCell.grid)
-			: undefined;
+		// We assume that all selected cells have the same options as they're in the same row
+		const firstCurrentlySelectedCell = gridStore.currentlySelectedCells[0];
+		const grid = gridStore.getGridOfCurrentlySelectedCell()
+		if (!grid) {
+			this.cellTools = this.defaultCellTools;
+			return
+		}
 
-		if (currentlySelectedCell) {
-			const locator = currentlySelectedCell;
-			const instrument = grid?.rows[locator.row].instrument;
-			const currentCell = grid?.rows[locator.row]?.cells[locator.cell];
-			const gridCols = grid?.gridCols;
+		if (firstCurrentlySelectedCell) {
+			const locator = firstCurrentlySelectedCell;
+			const instrument = grid.rows[locator.row].instrument;
+			const currentCell = grid.rows[locator.row]?.cells[locator.cell];
+			const gridCols = grid.gridCols;
 			const cellsOccupied = currentCell?.cells_occupied ?? 0;
 			const cellsSelected = gridStore.currentlySelectedCells.length;
 			if (instrument) {
+				console.log("Instrument", instrument)
 				if (cellsSelected > 1) {
 					this.cellTools = {
 						kind: 'multi',

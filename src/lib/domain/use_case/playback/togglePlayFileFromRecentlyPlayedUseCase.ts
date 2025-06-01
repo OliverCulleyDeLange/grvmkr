@@ -1,6 +1,4 @@
-import type { GridId, InstrumentRepositoryI } from "$lib";
-import type { GridRepositoryI } from "../interface/GridRepositoryI";
-import type { PlaybackControllerI } from "../interface/PlaybackControllerI";
+import type { GridId, GridRepositoryI, InstrumentRepositoryI, PlaybackControllerI } from "$lib";
 
 // Space key toggles playing whole file from the most recently played grid.
 export async function togglePlayFileFromRecentlyPlayedUseCase(

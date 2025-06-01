@@ -9,7 +9,7 @@
 	} = $props();
 
 	let ui: LegendUi = $derived.by(() => {
-		let instruments: LegendInstrument[] = [...instrumentManager.instruments.values()]
+		let instruments: LegendInstrument[] = [...instrumentManager.getInstruments().values()]
 			.map((instrument) => {
 				let hits: string[] = [...instrument.hitTypes.values()]
 					.map((hit) => (hit.description ? ` ${hit.key}: ${hit.description}` : null))

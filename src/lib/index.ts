@@ -31,11 +31,24 @@ export * from './domain/interface/FileRepositoryI';
 export * from './domain/interface/GridRepositoryI';
 export * from './domain/interface/InstrumentRepositoryI';
 export * from './domain/interface/PlaybackControllerI';
+export * from './domain/interface/CellToolsRepository';
 
-export * from './domain/use_case/togglePlayFileFromRecentlyPlayedUseCase';
-export * from './domain/use_case/togglePlayGridUseCase';
-export * from './domain/use_case/loadFileUseCase';
-export * from './domain/use_case/newGrooveUseCase';
+export * from './domain/use_case/playback/togglePlayFileFromRecentlyPlayedUseCase';
+export * from './domain/use_case/playback/togglePlayFileUseCase';
+export * from './domain/use_case/playback/togglePlayGridUseCase';
+
+export * from './domain/use_case/file/loadFileUseCase';
+export * from './domain/use_case/file/newGrooveUseCase';
+export * from './domain/use_case/file/saveFileUseCase';
+
+export * from './domain/use_case/instrument/removeInstrumentUseCase';
+export * from './domain/use_case/instrument/addInstrumentUseCase';
+export * from './domain/use_case/instrument/addHitUseCase';
+export * from './domain/use_case/instrument/moveInstrumentUpUseCase';
+export * from './domain/use_case/instrument/moveInstrumentDownUseCase';
+export * from './domain/use_case/instrument/sync';
+
+export * from './domain/use_case/grid/sync';
 
 export * from './domain/audio/audio_player';
 export * from './domain/audio/audio_manager';
@@ -45,6 +58,7 @@ export * from './domain/model/default_grid';
 export * from './domain/model/default_file';
 
 export * from './domain/state/app_state.svelte';
+export * from './domain/state/grid_store.svelte';
 export * from './domain/state/file_store.svelte';
 export * from './domain/state/error_store';
 export * from './domain/state/instrument_store.svelte';

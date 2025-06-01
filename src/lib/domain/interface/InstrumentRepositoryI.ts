@@ -1,7 +1,11 @@
-import type { InstrumentId, InstrumentWithId } from "$lib";
+import type { HitType, InstrumentId, InstrumentWithId } from "$lib";
 
 export interface InstrumentRepositoryI {
-    ensureInstrumentsInitialised(): void;
+    addDefaultInstrument(): void;
+    addHit(defaultHitType: HitType, instrumentId: InstrumentId): Promise<void>;
+    removeInstrument(instrumentId: InstrumentId): Promise<void>;
+    ensureInstrumentsInitialised(): Promise<void>;
     getInstruments(): Map<InstrumentId, InstrumentWithId>;
-    replaceInstruments(instruments: InstrumentWithId[]): unknown;
+    replaceInstruments(instruments: InstrumentWithId[]): Promise<void>;
+    moveInstrument(direction: "up" | "down", instrumentId: string): Promise<void>;
 }

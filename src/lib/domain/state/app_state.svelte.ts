@@ -1,31 +1,37 @@
 import {
 	CellToolsEvent,
 	CellToolsStore,
+	defaultHitType,
+	defaultInstrumentConfig,
 	ErrorStore,
 	FileStore,
 	GridEvent,
+	InstrumentEvent,
 	InstrumentStore,
 	loadFileUseCase,
 	newGrooveUseCase,
 	PlaybackStore,
 	ProblemEvent,
+	removeInstrumentUseCase,
+	saveFileUseCase,
 	togglePlayFileFromRecentlyPlayedUseCase,
+	togglePlayFileUseCase,
 	togglePlayGridUseCase,
 	ToolbarEvent,
 	UiEvent,
+	GridStore,
+	type AppEvent,
 	type CellLocator,
-	type GridId,
 	type GrvMkrFile,
 	type GrvMkrFileId,
 	type StartCellSelection,
-	type TappedGridCell
+	type TappedGridCell,
+	addInstrumentUseCase,
+	addHitUseCase,
+	moveInstrumentDownUseCase,
+	syncGrids,
 } from '$lib';
-import type { AppEvent } from '$lib/domain/event';
-import { defaultInstrumentConfig } from '$lib/domain/model/default_instruments';
-import { InstrumentEvent } from '$lib/ui/instrument/instrument_events';
-import { saveFileUseCase } from '../use_case/saveFileUseCase';
-import { togglePlayFileUseCase } from '../use_case/togglePlayFileUseCase copy';
-import { GridStore } from './grid_store.svelte';
+import { moveInstrumentUpUseCase } from '../use_case/instrument/moveInstrumentUpUseCase';
 
 export class AppStateStore {
 	public instrumentStore: InstrumentStore = new InstrumentStore(this.onEvent.bind(this));
@@ -46,7 +52,7 @@ export class AppStateStore {
 				this.cellToolsStore.setCellsCopied();
 				break;
 			case UiEvent.Paste:
-				this.gridStore.pasteCells(this.instrumentStore.instruments);
+				this.gridStore.pasteCells(this.instrumentStore.getInstruments());
 				break;
 			case UiEvent.PlayPause:
 				togglePlayFileFromRecentlyPlayedUseCase(
@@ -80,15 +86,15 @@ export class AppStateStore {
 				break;
 			case GridEvent.RemoveGrid:
 				this.gridStore.removeGrid(event);
-				this.syncGrids()
+				syncGrids(this.fileStore, this.gridStore)
 				break;
 			case GridEvent.AddGrid:
-				this.gridStore.addDefaultGrid(this.instrumentStore.instruments);
-				this.syncGrids()
+				this.gridStore.addDefaultGrid(this.instrumentStore.getInstruments());
+				syncGrids(this.fileStore, this.gridStore)
 				break;
 			case GridEvent.DuplicateGrid:
 				this.gridStore.duplicateGrid();
-				this.syncGrids()
+				syncGrids(this.fileStore, this.gridStore)
 				break;
 			case GridEvent.BpmChanged:
 				this.gridStore.updateBpm(event.gridId, event.bpm);
@@ -113,20 +119,19 @@ export class AppStateStore {
 				this.instrumentStore.onToggleSolo(event.instrumentId);
 				break;
 			case InstrumentEvent.RemoveInstrument:
-				this.instrumentStore.removeInstrument(event.instrumentId);
-				this.syncInstruments();
+				removeInstrumentUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
 				break;
 			case InstrumentEvent.AddInstrument:
-				this.instrumentStore.addInstrumentFromConfig(defaultInstrumentConfig);
-				this.syncInstruments();
+				addInstrumentUseCase(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
+				break;
+			case InstrumentEvent.AddHit:
+				addHitUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
 				break;
 			case InstrumentEvent.MoveUp:
-				this.instrumentStore.moveInstrument(event.event, event.instrumentId);
-				this.syncInstruments();
+				moveInstrumentUpUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
 				break;
-			case InstrumentEvent.MoveDown:
-				this.instrumentStore.moveInstrument(event.event, event.instrumentId);
-				this.syncInstruments();
+				case InstrumentEvent.MoveDown:
+				moveInstrumentDownUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
 				break;
 			case ToolbarEvent.New:
 				newGrooveUseCase(
@@ -183,15 +188,6 @@ export class AppStateStore {
 				this.errorStore.debugLog(event);
 				break;
 		}
-	}
-
-	syncInstruments() {
-		this.gridStore.syncInstruments(this.instrumentStore.instruments);
-		this.fileStore.setInstruments(this.instrumentStore.instruments)
-	}
-
-	syncGrids() {
-		this.fileStore.setGrids(this.gridStore.grids)
 	}
 
 	updateCellTools() {

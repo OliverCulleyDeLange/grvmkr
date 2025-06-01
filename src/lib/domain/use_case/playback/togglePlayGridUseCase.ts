@@ -1,7 +1,4 @@
-import type { GridRepositoryI } from "../interface/GridRepositoryI";
-import type { InstrumentRepositoryI } from "../interface/InstrumentRepositoryI";
-import type { PlaybackControllerI } from "../interface/PlaybackControllerI";
-import type { GridId, Grid } from "$lib";
+import type { GridId, Grid, GridRepositoryI, InstrumentRepositoryI, PlaybackControllerI } from "$lib";
 
 // Loops a single grid
 export async function togglePlayGridUseCase(

@@ -1,10 +1,4 @@
-import { AudioDb, generateFileId, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, mapSavedInstrumentsV4ToInstrumentWithIds, type Grid, type GrvMkrFile, type InstrumentId, type InstrumentWithId, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type SaveFileV4 } from "$lib";
-import { mapSavedInstrumentsV1ToInstrumentWithIds } from "../../mapper/data_to_domain/SavedInstrumentV1_to_InstrumentWithId";
-import { mapSavedInstrumentsV3ToInstrumentWithIds } from "../../mapper/data_to_domain/SavedInstrumentV3_to_InstrumentWithId";
-import type { FileRepositoryI } from "../interface/FileRepositoryI";
-import type { GridRepositoryI } from "../interface/GridRepositoryI";
-import type { InstrumentRepositoryI } from "../interface/InstrumentRepositoryI";
-import type { PlaybackControllerI } from "../interface/PlaybackControllerI";
+import { AudioDb, generateFileId, mapSavedGridV1ToGrid, mapSavedGridV2ToGrid, mapSavedGridV3ToGrid, mapSavedInstrumentsV1ToInstrumentWithIds, mapSavedInstrumentsV3ToInstrumentWithIds, mapSavedInstrumentsV4ToInstrumentWithIds, type FileRepositoryI, type Grid, type GridRepositoryI, type GrvMkrFile, type InstrumentId, type InstrumentRepositoryI, type InstrumentWithId, type PlaybackControllerI, type SaveFile, type SaveFileV1, type SaveFileV2, type SaveFileV3, type SaveFileV4 } from "$lib";
 import JSZip from 'jszip';
 
 export async function loadFileUseCase(

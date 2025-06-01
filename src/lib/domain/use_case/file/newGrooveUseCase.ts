@@ -1,7 +1,4 @@
-import type { InstrumentRepositoryI } from "$lib";
-import type { FileRepositoryI } from "../interface/FileRepositoryI";
-import type { GridRepositoryI } from "../interface/GridRepositoryI";
-import { defaultFile } from "../model/default_file";
+import { defaultFile, type FileRepositoryI, type GridRepositoryI, type InstrumentRepositoryI } from "$lib";
 
 // Creates a new empty groove
 export async function newGrooveUseCase(

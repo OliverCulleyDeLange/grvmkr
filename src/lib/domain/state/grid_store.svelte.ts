@@ -18,6 +18,7 @@ import type { GridRepositoryI } from '../interface/GridRepositoryI';
 
 // Responsible for storing, and modifying grids
 export class GridStore implements GridRepositoryI {
+
 	private onEvent: OnEvent;
 	private gridRepository: GridRepository = new GridRepository();
 
@@ -25,6 +26,7 @@ export class GridStore implements GridRepositoryI {
 		this.onEvent = onEvent;
 	}
 
+	// TODO make private
 	public grids: SvelteMap<GridId, Grid> = new SvelteMap();
 	public currentlyPlayingGrid: Grid | null = $state(null);
 	public mostRecentlyPlayedGrid: Grid | null = $state(null);
@@ -41,7 +43,7 @@ export class GridStore implements GridRepositoryI {
 		if (!this.currentlyPlayingGrid) return [];
 		return this.getGridsFromGridOnwards(this.currentlyPlayingGrid)
 	}
-	
+
 	getGridsFromGridOnwards(grid: Grid): Grid[] {
 		const gridsArray = Array.from(this.grids.values());
 		const sortedGrids = gridsArray.sort((a, b) => a.index - b.index);
@@ -52,8 +54,8 @@ export class GridStore implements GridRepositoryI {
 		return sortedGrids.slice(startIndex);
 	}
 
-	getGrids() {
-		return Array.from(this.grids.values())
+	getGrids(): Map<GridId, Grid> {
+		return this.grids
 	}
 
 	getGrid(gridId: GridId): Grid | null {
@@ -64,6 +66,13 @@ export class GridStore implements GridRepositoryI {
 		return this.grids.values().next().value ?? null;
 	}
 
+	getGridOfCurrentlySelectedCell(): Grid | null {
+		const firstCurrentlySelectedCell = this.currentlySelectedCells[0];
+		return firstCurrentlySelectedCell
+			? this.grids.get(firstCurrentlySelectedCell.grid) ?? null
+			: null;
+	}
+	
 	stopPlayingGrid() {
 		if (this.currentlyPlayingGrid != null) {
 			this.currentlyPlayingGrid.playing = false
@@ -138,7 +147,7 @@ export class GridStore implements GridRepositoryI {
 	// Paste the copied cells starting at the currently selected cell
 	// If pasting to a different row / instrument, we see if there's a hit with a matching HitKey
 	// Otherwise we default to pasting the first instrument hit
-	pasteCells(instruments: SvelteMap<string, InstrumentWithId>) {
+	pasteCells(instruments: Map<string, InstrumentWithId>) {
 		// Find the instrument for the currently selected cell[0]
 		const firstSelectedCell = this.currentlySelectedCells[0];
 		let instrumentForPaste = this.grids.get(firstSelectedCell.grid)?.rows[firstSelectedCell.row]
@@ -437,8 +446,9 @@ export class GridStore implements GridRepositoryI {
 
 	// When instruments are added / removed, we need to remove the rows for the
 	// deleted ones, and add rows for the new ones
-	syncInstruments(instruments: Map<InstrumentId, InstrumentWithId>) {
-		this.updateGrids((grid) => {
+	// TODO currently this doesn't update instrument hits. 
+	async syncInstruments(instruments: Map<InstrumentId, InstrumentWithId>) {
+		await this.updateGrids((grid) => {
 			// First remove all rows where the instrument is removed
 			let filteredRows = grid.rows.filter((row) => {
 				return instruments.has(row.instrument.id);
@@ -446,6 +456,7 @@ export class GridStore implements GridRepositoryI {
 			// console.log("Filtered rows -", filteredRows)
 			// Now add any new instruments
 			if (filteredRows.length < instruments.size) {
+				// Assuming instrument always added to end of list
 				let instrument = [...instruments.values()].pop();
 				if (instrument) {
 					filteredRows.push(
@@ -561,11 +572,11 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	// Updates grids in state and DB
-	updateGrids(withGrid: (grid: Grid) => void) {
-		this.grids.forEach((grid) => {
+	async updateGrids(withGrid: (grid: Grid) => void) {
+		for (const grid of this.grids.values()) {
 			withGrid(grid);
-			this.trySaveGrid(grid);
-		});
+			await this.trySaveGrid(grid);
+		}
 	}
 
 	// Updates grid in state and DB

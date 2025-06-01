@@ -16,7 +16,7 @@ export function mapSavedGridV3ToGrid(
 ): Grid {
 	let newRows: GridRow[] = savedGrid.rows
 		.map((savedRow, i) => {
-			let instrument = instrumentManager.instruments.get(savedRow.instrument_id);
+			let instrument = instrumentManager.getInstruments().get(savedRow.instrument_id);
 			if (instrument) {
 				let gridRow: GridRow = {
 					instrument: instrument,

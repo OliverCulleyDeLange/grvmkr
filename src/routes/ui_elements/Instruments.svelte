@@ -23,7 +23,7 @@
 
 <div class="w-full overflow-x-auto">
 	<h1 class="text-xl">Instruments</h1>
-	{#each [...instrumentManager.instruments.values()].sort((a, b) => a.gridIndex - b.gridIndex) as instrument}
+	{#each [...instrumentManager.getInstruments().values()].sort((a, b) => a.gridIndex - b.gridIndex) as instrument}
 		<div id="instrument-config-container" class="mb-2">
 			<div class="flex w-full gap-2 p-1">
 				<div class="">{instrument.gridIndex}</div>
@@ -57,7 +57,7 @@
 				</button>
 				<button
 					class="btn btn-outline btn-xs"
-					onclick={() => instrumentManager.addHit(defaultHitType, instrument.id)}
+					onclick={() => onEvent({ event: InstrumentEvent.AddHit, instrumentId: instrument.id })}
 				>
 					＋ Add Hit
 				</button>

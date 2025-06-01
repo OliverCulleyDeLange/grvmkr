@@ -1,23 +1,23 @@
-import JSZip from 'jszip';
 import {
     AudioDb,
-    FileStore,
-    InstrumentStore,
     serialiseToSaveFileV4,
+    type FileRepositoryI,
+    type GridRepositoryI,
+    type InstrumentRepositoryI,
     type SaveFileV4
 } from '$lib';
-import type { GridStore } from '../state/grid_store.svelte';
+import JSZip from 'jszip';
 
 export async function saveFileUseCase(
-    fileStore: FileStore,
-    gridStore: GridStore,
-    instrumentStore: InstrumentStore
+    fileStore: FileRepositoryI,
+    gridStore: GridRepositoryI,
+    instrumentStore: InstrumentRepositoryI
 ) {
     const audioDb = new AudioDb()
     const saveFile: SaveFileV4 = serialiseToSaveFileV4(
-        fileStore.file.name,
-        Array.from(gridStore.grids.values()),
-        Array.from(instrumentStore.instruments.values())
+        fileStore.getFile().name,
+        Array.from(gridStore.getGrids().values()),
+        Array.from(instrumentStore.getInstruments().values())
     );
 
     const zip = new JSZip();
@@ -27,7 +27,7 @@ export async function saveFileUseCase(
 
     // Add audio files from instruments
     const audioFolder = zip.folder('audio');
-    for (const instrument of instrumentStore.instruments.values()) {
+    for (const instrument of instrumentStore.getInstruments().values()) {
         if (!instrument.hitTypes || !instrument.name) continue;
         const instrumentFolder = audioFolder?.folder(instrument.name);
 
@@ -46,7 +46,7 @@ export async function saveFileUseCase(
 
     const blob = await zip.generateAsync({ type: 'blob' });
 
-    const filename = `GrvMkr_${fileStore.file.name}_${new Date().toISOString()}.grv`;
+    const filename = `GrvMkr_${fileStore.getFile().name}_${new Date().toISOString()}.grv`;
 
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);

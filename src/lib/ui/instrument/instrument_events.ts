@@ -1,13 +1,14 @@
 import type { InstrumentId } from '$lib';
 
 // Instrument UI Events
-export type InstrumentEvents = RemoveInstrument | AddInstrument | MoveUp | MoveDown;
+export type InstrumentEvents = RemoveInstrument | AddInstrument | MoveUp | MoveDown | AddHit;
 
 export enum InstrumentEvent {
 	RemoveInstrument = 'RemoveInstrument',
 	AddInstrument = 'AddInstrument',
 	MoveUp = 'MoveUp',
-	MoveDown = 'MoveDown'
+	MoveDown = 'MoveDown',
+	AddHit = 'AddHit'
 }
 
 export type RemoveInstrument = {
@@ -23,5 +24,10 @@ export type MoveUp = {
 };
 export type MoveDown = {
 	event: InstrumentEvent.MoveDown;
+	instrumentId: InstrumentId;
+};
+
+export type AddHit = {
+	event: InstrumentEvent.AddHit;
 	instrumentId: InstrumentId;
 };
