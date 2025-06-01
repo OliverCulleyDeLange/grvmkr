@@ -34,6 +34,10 @@ export class GridStore implements GridRepositoryI {
 	public selectionStartCell: CellLocator | null = $state(null);
 	public copiedCells: GridCell[] = [];
 
+	getCurrentlySelectedCells(): CellLocator[] {
+		return this.currentlySelectedCells
+	}
+	
 	getGridsFromMostRecentlyPlayedGrid(): Grid[] {
 		if (!this.mostRecentlyPlayedGrid) return [];
 		return this.getGridsFromGridOnwards(this.mostRecentlyPlayedGrid)

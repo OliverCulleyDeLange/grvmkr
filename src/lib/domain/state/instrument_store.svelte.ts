@@ -40,6 +40,10 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	getInstruments(): Map<InstrumentId, InstrumentWithId> {
 		return this.instruments
 	}
+	
+	getInstrument(id: InstrumentId): InstrumentWithId | null {
+		return this.instruments.get(id) ?? null
+	}
 
 	async addDefaultInstrument(): Promise<void> {
 		await this.addInstrumentFromConfig(defaultInstrumentConfig)

@@ -1,6 +1,7 @@
 import type { HitType, InstrumentId, InstrumentWithId } from "$lib";
 
 export interface InstrumentRepositoryI {
+	getInstrument(id: string): InstrumentWithId | null;
     addDefaultInstrument(): void;
     addHit(defaultHitType: HitType, instrumentId: InstrumentId): Promise<void>;
     removeInstrument(instrumentId: InstrumentId): Promise<void>;

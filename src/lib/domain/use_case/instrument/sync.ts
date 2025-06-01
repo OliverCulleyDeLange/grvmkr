@@ -16,5 +16,5 @@ export async function syncInstruments(
     // Replace instruments in the file store 
     await fileStore.setInstruments(instruments)
     // And finally, update the cell tools
-    cellToolsStore.updateCellTools(gridStore)
+    cellToolsStore.updateCellTools(gridStore, instrumentStore)
 }

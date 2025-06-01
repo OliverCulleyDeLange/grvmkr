@@ -191,7 +191,7 @@ export class AppStateStore {
 	}
 
 	updateCellTools() {
-		this.cellToolsStore.updateCellTools(this.gridStore);
+		this.cellToolsStore.updateCellTools(this.gridStore, this.instrumentStore);
 	}
 
 	// Filters chatty events, and logs

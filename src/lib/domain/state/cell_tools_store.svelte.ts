@@ -1,7 +1,7 @@
-import type { CellTools } from '$lib';
+import type { CellTools, CellToolsRepositoryI, GridRepositoryI, InstrumentRepositoryI } from '$lib';
 import type { GridStore } from './grid_store.svelte';
 
-export class CellToolsStore {
+export class CellToolsStore implements CellToolsRepositoryI {
 	private defaultCellTools: CellTools = {
 		kind: 'empty'
 	};
@@ -13,22 +13,25 @@ export class CellToolsStore {
 		this.cellsCopied = true;
 	}
 
-	updateCellTools(gridStore: GridStore) {
-		// We assume that all selected cells have the same options as they're in the same row
-		const firstCurrentlySelectedCell = gridStore.currentlySelectedCells[0];
+	updateCellTools(gridStore: GridRepositoryI, instrumentStore: InstrumentRepositoryI) {
 		const grid = gridStore.getGridOfCurrentlySelectedCell()
 		if (!grid) {
 			this.cellTools = this.defaultCellTools;
 			return
 		}
+		
+		const currentlySelectedCells = gridStore.getCurrentlySelectedCells();
+		// We assume that all selected cells have the same options as they're in the same row
+		const firstCurrentlySelectedCell = currentlySelectedCells[0];
 
 		if (firstCurrentlySelectedCell) {
 			const locator = firstCurrentlySelectedCell;
-			const instrument = grid.rows[locator.row].instrument;
+			const rowInstrument = grid.rows[locator.row].instrument;
+			const instrument = instrumentStore.getInstrument(rowInstrument.id)
 			const currentCell = grid.rows[locator.row]?.cells[locator.cell];
 			const gridCols = grid.gridCols;
 			const cellsOccupied = currentCell?.cells_occupied ?? 0;
-			const cellsSelected = gridStore.currentlySelectedCells.length;
+			const cellsSelected = currentlySelectedCells.length;
 			if (instrument) {
 				console.log("Instrument", instrument)
 				if (cellsSelected > 1) {
