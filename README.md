@@ -13,6 +13,7 @@
 - ✅ Grid Tools
   - Choose the BPM, number of bars, and grid size for each grid individually.
   - Duplicate any grid
+  - Move grids up or down in the file
 - ✅ Keyboard shortcuts:
   - Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users.
   - Space to play / pause
@@ -31,7 +32,6 @@
 
 
 ### Coming soon (maybe)
-- Move grids up or down
 - Example groove (samba)
 - Right click / hold press to delete
 - Premade grooves for classic rhythms for community samba bands
@@ -40,11 +40,6 @@
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
 
-### Unimplemented
-
-Some features from MangoDrum are still missing, i may or may not add them depending on whether anyone actually uses this tool and would find them useful.
-
-- ❌ ~~Metronome~~: Didn't seem that useful. Just create an instrument with a beep sound file and fill in some squares?
 
 ## Developing
 

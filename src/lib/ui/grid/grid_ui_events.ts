@@ -15,7 +15,9 @@ export type GridEvents =
 	| NameChanged
 	| VolumeChanged
 	| MuteInstrument
-	| SoloInstrument;
+	| SoloInstrument
+	| MoveGridDown
+	| MoveGridUp;
 
 export enum GridEvent {
 	TogglePlayingGrid = 'TogglePlayingGrid',
@@ -31,7 +33,9 @@ export enum GridEvent {
 	NameChanged = 'NameChanged',
 	VolumeChanged = 'VolumeChanged',
 	MuteInstrument = 'MuteInstrument',
-	SoloInstrument = 'SoloInstrument'
+	SoloInstrument = 'SoloInstrument',
+	MoveGridUp = 'MoveGridUp',
+	MoveGridDown = 'MoveGridDown',
 }
 
 export type TogglePlayingGrid = {
@@ -80,6 +84,16 @@ export type GridSizeChanged = {
 	beats_per_bar: number;
 	beat_divisions: number;
 };
+export type MoveGridDown = {
+	event: GridEvent.MoveGridDown;
+	gridId: GridId;
+};
+
+export type MoveGridUp = {
+	event: GridEvent.MoveGridUp;
+	gridId: GridId;
+};
+
 export type NameChanged = {
 	event: GridEvent.NameChanged;
 	gridId: GridId;

@@ -155,12 +155,26 @@
 			</div>
 		</div>
 
-		<div class="grid-tools w-full">
+		<div class="grid-tools flex flex-row w-full items-start gap-2">
 			<Button
 				onClick={() => onEvent({ event: GridEvent.DuplicateGrid, gridId: gridUi.id })}
-				classes="ml-auto print:hidden"
+				classes="print:hidden"
 			>
 				Duplicate Grid to End
+			</Button>
+			
+			<Button
+				onClick={() => onEvent({ event: GridEvent.MoveGridUp, gridId: gridUi.id })}
+				classes="print:hidden"
+			>
+				⬇️ Move Up
+			</Button>
+			
+			<Button
+				onClick={() => onEvent({ event: GridEvent.MoveGridDown, gridId: gridUi.id })}
+				classes="print:hidden"
+			>
+				⬇️ Move Down
 			</Button>
 		</div>
 	{/if}

@@ -110,6 +110,12 @@ export class AppStateStore {
 			case GridEvent.NameChanged:
 				this.gridStore.updateName(event.gridId, event.name);
 				break;
+			case GridEvent.MoveGridDown:
+				this.gridStore.moveGrid("down", event.gridId)
+				break;
+			case GridEvent.MoveGridUp:
+				this.gridStore.moveGrid("up", event.gridId)
+				break;
 			case GridEvent.VolumeChanged:
 				this.instrumentStore.onChangeVolume(event.instrumentId, event.volume, event.delta);
 				break;

@@ -638,6 +638,32 @@ export class GridStore implements GridRepositoryI {
 		this.resetState(); // Easier to reset than check a bunch of stuff
 	}
 
+	// TODO Could probably merge the logic with moveInstrument
+	async moveGrid(direction: "up" | "down", gridId: GridId) {
+		let movingGrid = this.grids.get(gridId);
+		if (!movingGrid) return;
+		let movingIndex = movingGrid.index;
+
+		let swappingIndex;
+		if (direction == "down") {
+			swappingIndex = movingIndex + 1;
+		} else if (direction == "up") {
+			swappingIndex = movingIndex - 1;
+		} else {
+			return;
+		}
+		let swappingGrid = [...this.grids.values()].find(
+			(i) => i.index == swappingIndex
+		);
+		if (!swappingGrid) return;
+		await this.updateGrid(movingGrid.id, (i) => {
+			i.index = swappingIndex;
+		});
+		await this.updateGrid(swappingGrid.id, (i) => {
+			i.index = movingIndex;
+		});
+	}
+
 	async reset() {
 		await this.gridRepository.deleteAllGrids();
 		this.resetState();
