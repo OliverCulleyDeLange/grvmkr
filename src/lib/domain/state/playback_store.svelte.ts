@@ -27,16 +27,17 @@ export class PlaybackStore implements PlaybackControllerI {
 		let completedLoops = 0;
 		const inifiniteLoop = loops == 0
 
+		this.onBeat();
 		this.playingIntervalId = setInterval(() => {
 			if (this.nextColumn % totalSteps == 0) {
 				// Grid finished playing 
-				if (!inifiniteLoop && completedLoops++ >= loops) {
+				if (!inifiniteLoop && ++completedLoops >= loops) {
 					clearInterval(this.playingIntervalId);
 					this.playingIntervalId = undefined;
 					this.nextColumn = 0;
 					console.log(`Finished playing ${loops} loops of ${grid.config.name}`, $state.snapshot(grid))
 					onComplete?.(grid);
-				} else {
+		 		} else {
 					this.onBeat();
 				}
 			} else {
