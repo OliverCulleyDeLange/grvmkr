@@ -5,8 +5,10 @@
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
+		<script data-goatcounter="https://grvmkr.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 	</head>
 	<script>
+		
 		(() => {
 			// We set dark mode here before svelte hydration so we don't see a flicker
 			const theme = localStorage.getItem('THEME'); // Can't use KeyValuerRepository here, so hard coding the key.

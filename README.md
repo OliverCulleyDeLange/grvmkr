@@ -31,7 +31,10 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-- When duplicating grid, the playing state should be set to false
+- When duplicating grid
+  - The playing state should be set to false
+  - We should scroll down to the new grid
+- When moving grids up or down, scroll to the one you just moved's new position and open grid tools
 - Groove repetitions for playback
 - Example groove (samba)
 - Right click / hold press to delete
@@ -39,6 +42,13 @@
 - Configurable instruments per grid / groove
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
+
+
+# Analytics
+I'm using goatcounter to provide simple analytics on who's using the tool. 
+[grvmkr.goatcounter.com](https://grvmkr.goatcounter.com/)
+
+Its fully anonymous and doesn't collect any personal information.
 
 ## Developing
 
