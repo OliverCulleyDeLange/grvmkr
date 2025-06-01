@@ -5,6 +5,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [sveltekit()],
 	test: {
+		environment: 'jsdom', // Needed for `indexedDB` polyfill to behave correctly
+		setupFiles: ['/src/test/setup.ts'],
 		workspace: [
 			{
 				extends: './vite.config.ts',
