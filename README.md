@@ -31,7 +31,7 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-
+- When duplicating grid, the playing state should be set to false
 - Groove repetitions for playback
 - Example groove (samba)
 - Right click / hold press to delete
