@@ -6,48 +6,68 @@ export class PlaybackStore implements PlaybackControllerI {
 	private instrumentStore: InstrumentStore;
 	private playingGrid: Grid | undefined;
 	private playingIntervalId: number | undefined;
-	private nextCount: number = 0;
+	private nextColumn: number = 0;
+	private playingFile: boolean = $state(false);
 
 	constructor(instrumentStore: InstrumentStore) {
 		this.instrumentStore = instrumentStore;
 	}
 
-	play(grid: Grid, onComplete?: (grid: Grid) => void) {
-		this.stop(); // Stop any existing playback
-		this.playingGrid = grid;
-		this.nextCount = 0;
+	isPlayingFile(): boolean {
+		return this.playingFile
+	}
 
+	// Plays the grid 'loops' number of times, then calls 'onComplete'
+	// 0 loops for infinite looping 
+	play(grid: Grid, loops: number, onComplete?: (grid: Grid) => void) {
+		// this.stop(); // Stop any existing playback
+		this.playingGrid = grid;
+		this.nextColumn = 0;
 		const totalSteps = grid.gridCols;
+		let completedLoops = 0;
+		const inifiniteLoop = loops == 0
 
 		this.playingIntervalId = setInterval(() => {
-			this.onBeat();
-
-			if (this.nextCount >= totalSteps) {
-				this.stop();
-				onComplete?.(grid); // Call after playing whole grid
+			if (this.nextColumn % totalSteps == 0) {
+				// Grid finished playing 
+				if (!inifiniteLoop && completedLoops++ >= loops) {
+					clearInterval(this.playingIntervalId);
+					this.playingIntervalId = undefined;
+					this.nextColumn = 0;
+					console.log(`Finished playing ${loops} loops of ${grid.config.name}`, $state.snapshot(grid))
+					onComplete?.(grid);
+				} else {
+					this.onBeat();
+				}
+			} else {
+				this.onBeat();
 			}
 		}, grid.msPerBeatDivision);
 	}
 
-	async playGridsInSequence(grids: Grid[], 
+	async playGridsInSequence(grids: Grid[],
 		onPlay?: (grid: Grid) => void,
 		onStop?: (grid: Grid) => void
 	) {
+		this.playingFile = true
 		for (const grid of grids.sort((a, b) => a.index - b.index)) {
 			await new Promise<void>((resolve) => {
 				onPlay?.(grid)
-				this.play(grid, (grid: Grid) => {
+				this.play(grid, 1, (grid: Grid) => {
 					resolve()
 					onStop?.(grid)
 				});
 			});
 		}
+		this.stop()
 	}
 
 	stop() {
+		console.log("Stopping playback")
+		this.playingFile = false
 		clearInterval(this.playingIntervalId);
 		this.playingIntervalId = undefined;
-		this.nextCount = 0;
+		this.nextColumn = 0;
 	}
 
 	restartInterval() {
@@ -63,7 +83,7 @@ export class PlaybackStore implements PlaybackControllerI {
 		if (!this.playingGrid) return;
 
 		const grid = this.playingGrid;
-		const count = this.nextCount++;
+		const count = this.nextColumn++;
 		const playingCell = count % grid.gridCols;
 
 		grid.currentlyPlayingColumn = playingCell;

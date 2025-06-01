@@ -2,7 +2,7 @@ import type { CellLocator, GridId } from '$lib';
 
 // Grid UI Events
 export type GridEvents =
-	| TogglePlaying
+	| TogglePlayingGrid
 	| TappedGridCell
 	| StartCellSelection
 	| ChangeCellSelection
@@ -18,7 +18,7 @@ export type GridEvents =
 	| SoloInstrument;
 
 export enum GridEvent {
-	TogglePlaying = 'TogglePlaying',
+	TogglePlayingGrid = 'TogglePlayingGrid',
 	TappedGridCell = 'TappedGridCell',
 	StartCellSelection = 'StartCellSelection',
 	ChangeCellSelection = 'ChangeCellSelection',
@@ -34,8 +34,8 @@ export enum GridEvent {
 	SoloInstrument = 'SoloInstrument'
 }
 
-export type TogglePlaying = {
-	event: GridEvent.TogglePlaying;
+export type TogglePlayingGrid = {
+	event: GridEvent.TogglePlayingGrid;
 	playing: boolean;
 	gridId: GridId;
 };

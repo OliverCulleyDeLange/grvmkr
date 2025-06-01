@@ -52,8 +52,23 @@ export class GridStore implements GridRepositoryI {
 		return sortedGrids.slice(startIndex);
 	}
 
+	getGrids() {
+		return Array.from(this.grids.values())
+	}
+
+	getGrid(gridId: GridId): Grid | null {
+		return this.grids.get(gridId) ?? null
+	}
+
 	getFirstGrid(): Grid | null {
 		return this.grids.values().next().value ?? null;
+	}
+
+	stopPlayingGrid() {
+		if (this.currentlyPlayingGrid != null) {
+			this.currentlyPlayingGrid.playing = false
+			this.currentlyPlayingGrid = null;
+		}
 	}
 
 	async initialise(
@@ -524,15 +539,18 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	async updatePlaying(playing: boolean, gridId: string) {
+		// Set existing currently playing grid to false all the time
 		if (this.currentlyPlayingGrid) {
 			this.currentlyPlayingGrid.playing = false;
 		}
+		// Set new currently playing grid, and most recently played grid state
 		if (playing) {
 			this.currentlyPlayingGrid = this.grids.get(gridId) ?? null;
 			this.mostRecentlyPlayedGrid = this.currentlyPlayingGrid;
 		} else {
 			this.currentlyPlayingGrid = null;
 		}
+		// Update the grid in state, but not the db
 		await this.updateGrid(
 			gridId,
 			(grid) => {

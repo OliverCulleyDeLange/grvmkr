@@ -8,7 +8,8 @@ export type ToolbarEvents =
 	| Reset
 	| FileNameChanged
 	| DismissError
-	| GrooveSelectorShown;
+	| GrooveSelectorShown
+	| TogglePlayingFile;
 
 export enum ToolbarEvent {
 	New = 'New',
@@ -19,7 +20,8 @@ export enum ToolbarEvent {
 	Reset = 'Reset',
 	FileNameChanged = 'FileNameChanged',
 	DismissError = 'DismissError',
-	GrooveSelectorShown = 'GrooveSelectorShown'
+	GrooveSelectorShown = 'GrooveSelectorShown',
+	TogglePlayingFile = 'TogglePlayingFile'
 }
 
 export type New = {
@@ -53,4 +55,8 @@ export type DismissError = {
 };
 export type GrooveSelectorShown = {
 	event: ToolbarEvent.GrooveSelectorShown;
+};
+
+export type TogglePlayingFile = {
+	event: ToolbarEvent.TogglePlayingFile;
 };

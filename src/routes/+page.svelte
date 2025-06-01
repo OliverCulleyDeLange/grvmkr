@@ -40,7 +40,12 @@
 	});
 
 	let toolbarUi = $derived(
-		mapToolbarUi(appStateStore.fileStore.file.name, appStateStore.errorStore.errors, dark)
+		mapToolbarUi(
+			appStateStore.fileStore.file.name,
+			appStateStore.errorStore.errors,
+			dark,
+			appStateStore.playbackStore.isPlayingFile()
+		)
 	);
 	let gridsUi: GridUis = $derived(
 		mapGridUi(

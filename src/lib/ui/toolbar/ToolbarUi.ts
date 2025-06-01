@@ -5,4 +5,5 @@ export type ToolbarUi = {
 	darkMode: boolean;
 	errors: AppErrorUi[];
 	fileName: string;
+	playingFile: boolean;
 };

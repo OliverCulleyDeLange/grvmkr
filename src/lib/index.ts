@@ -32,9 +32,10 @@ export * from './domain/interface/GridRepositoryI';
 export * from './domain/interface/InstrumentRepositoryI';
 export * from './domain/interface/PlaybackControllerI';
 
-export * from './domain/use_case/toggle_play_use_case';
-export * from './domain/use_case/load_file_use_case';
-export * from './domain/use_case/new_groove_use_case';
+export * from './domain/use_case/togglePlayFileFromRecentlyPlayedUseCase';
+export * from './domain/use_case/togglePlayGridUseCase';
+export * from './domain/use_case/loadFileUseCase';
+export * from './domain/use_case/newGrooveUseCase';
 
 export * from './domain/audio/audio_player';
 export * from './domain/audio/audio_manager';
@@ -47,7 +48,7 @@ export * from './domain/state/app_state.svelte';
 export * from './domain/state/file_store.svelte';
 export * from './domain/state/error_store';
 export * from './domain/state/instrument_store.svelte';
-export * from './domain/state/playback_store';
+export * from './domain/state/playback_store.svelte';
 export * from './domain/state/cell_tools_store.svelte';
 export * from './util/date';
 export * from './domain/state/theme_store';

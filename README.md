@@ -28,6 +28,7 @@
 
 
 ### Coming soon (maybe)
+- Example groove (samba)
 - Premade grooves for classic rhythms for community samba bands
 - Groove repetitions for playback
 - Configurable instruments per grid / groove

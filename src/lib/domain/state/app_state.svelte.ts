@@ -9,8 +9,8 @@ import {
 	newGrooveUseCase,
 	PlaybackStore,
 	ProblemEvent,
-	togglePlayRecentlyPlayedUseCase,
-	togglePlaySpecificGridUseCase,
+	togglePlayFileFromRecentlyPlayedUseCase,
+	togglePlayGridUseCase,
 	ToolbarEvent,
 	UiEvent,
 	type CellLocator,
@@ -23,7 +23,8 @@ import {
 import type { AppEvent } from '$lib/domain/event';
 import { defaultInstrumentConfig } from '$lib/domain/model/default_instruments';
 import { InstrumentEvent } from '$lib/ui/instrument/instrument_events';
-import { saveFileUseCase } from '../use_case/save_file_use_case';
+import { saveFileUseCase } from '../use_case/saveFileUseCase';
+import { togglePlayFileUseCase } from '../use_case/togglePlayFileUseCase copy';
 import { GridStore } from './grid_store.svelte';
 
 export class AppStateStore {
@@ -48,7 +49,7 @@ export class AppStateStore {
 				this.gridStore.pasteCells(this.instrumentStore.instruments);
 				break;
 			case UiEvent.PlayPause:
-				togglePlayRecentlyPlayedUseCase(
+				togglePlayFileFromRecentlyPlayedUseCase(
 					this.gridStore,
 					this.instrumentStore,
 					this.playbackStore
@@ -65,13 +66,8 @@ export class AppStateStore {
 			case CellToolsEvent.SelectHitOption:
 				this.gridStore.setCurrentlySelectedCellHits(event.instrumentHits);
 				break;
-			case ToolbarEvent.FileNameChanged:
-				this.updateFile((file) => {
-					file.name = event.fileName;
-				});
-				break;
-			case GridEvent.TogglePlaying:
-				togglePlaySpecificGridUseCase(event.playing, event.gridId, this.gridStore, this.instrumentStore, this.playbackStore)
+			case GridEvent.TogglePlayingGrid:
+				togglePlayGridUseCase(event.playing, event.gridId, this.gridStore, this.instrumentStore, this.playbackStore)
 				break;
 			case GridEvent.TappedGridCell:
 				this.onTapGridCell(event);
@@ -168,6 +164,14 @@ export class AppStateStore {
 				break;
 			case ToolbarEvent.GrooveSelectorShown:
 				this.fileStore.updateAllFiles();
+				break;
+			case ToolbarEvent.FileNameChanged:
+				this.updateFile((file) => {
+					file.name = event.fileName;
+				});
+				break;
+			case ToolbarEvent.TogglePlayingFile:
+				togglePlayFileUseCase(this.gridStore, this.instrumentStore, this.playbackStore)
 				break;
 			case ProblemEvent.MissingSampleAudio:
 				this.errorStore.addError(event);
