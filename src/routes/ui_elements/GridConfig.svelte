@@ -78,7 +78,7 @@
 
 <!-- Outer container (hidden for print)-->
 <div
-	class="mb-2 flex break-after-avoid flex-wrap items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23] print:hidden"
+	class="mb-2 flex flex-col items-start break-after-avoid flex-wrap items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23] print:hidden"
 >
 	<!-- Play, grid name, settings button -->
 	<div class="flex w-full flex-row items-center gap-2">
@@ -92,11 +92,12 @@
 			class="input input-sm input-bordered flex-1"
 		/>
 
-		<Button onClick={() => (gridConfigExpanded = !gridConfigExpanded)}>Settings</Button>
+		<Button onClick={() => (gridConfigExpanded = !gridConfigExpanded)}>Tools</Button>
 	</div>
 	<!-- Grid config -->
 	{#if gridConfigExpanded}
-		<div class="flex flex-col items-start gap-2 sm:flex-row">
+		<!-- BPM / Bars / Grid Size  -->
+		<div class="grid-config flex flex-col w-full items-start gap-2 sm:flex-row">
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div>BPM:</div>
 				<input
@@ -152,6 +153,15 @@
 					class="input input-xs input-bordered"
 				/>
 			</div>
+		</div>
+
+		<div class="grid-tools w-full">
+			<Button
+				onClick={() => onEvent({ event: GridEvent.DuplicateGrid, gridId: gridUi.id })}
+				classes="ml-auto print:hidden"
+			>
+				Duplicate Grid to End
+			</Button>
 		</div>
 	{/if}
 </div>

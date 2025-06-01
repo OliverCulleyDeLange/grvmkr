@@ -9,11 +9,13 @@
   - Multi select grid cells in a row. On desktop, shift click or click and drag cursor. On mobile press and drag cells.
   - Merge cells + uneven hits like triplets
   - Play the entire file like a song arrangement
-  - Or play an individual grid, looped forever to fine tune tre groove
+  - Or play an individual grid, looped forever to fine tune your groove
+- ✅ Grid Tools
+  - Choose the BPM, number of bars, and grid size for each grid individually.
+  - Duplicate any grid
 - ✅ Keyboard shortcuts:
   - Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users.
   - Space to play / pause
-- ✅ Choose the BPM for your composition (obviously)
 - ✅ Create your own instruments
   - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
 - ✅ Built in instruments
@@ -29,7 +31,7 @@
 
 
 ### Coming soon (maybe)
-- Duplicate any grid
+- FIX: Changing text inputs doesn't always save
 - Move grids up or down
 - Example groove (samba)
 - Right click / hold press to delete

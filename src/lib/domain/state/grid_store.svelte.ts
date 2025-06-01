@@ -482,10 +482,10 @@ export class GridStore implements GridRepositoryI {
 		this.addGrid(grid);
 	}
 
-	duplicateGrid() {
-		let lastGrid = [...this.grids.values()].pop();
-		if (lastGrid) {
-			let newGrid = $state.snapshot(lastGrid);
+	async duplicateGrid(id: GridId) {
+		let gridToDuplicate = this.grids.get(id)
+		if (gridToDuplicate) {
+			let newGrid = $state.snapshot(gridToDuplicate);
 			newGrid.index = this.getNextGridIndex();
 			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';

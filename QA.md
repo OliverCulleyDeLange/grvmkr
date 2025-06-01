@@ -18,8 +18,19 @@ A list of stuff the app should do. I'd love to say i'll write automated tests fo
 # Instruments
 
 - Creating a new instrument
+  - Adds new instrument ui with no audio sample
+  - Adds row to all grids
+  - Saves instrument to db
+  - Saves all grids to db
 - Removing an instrument
+  - Deletes instrument UI
+  - Deletes row from all grids
+  - Deletes instrument in db
+  - Saves all grids to db
 - Adding hit to instrument
+  - Shows new default hit UI with no audio sample
+  - Updates cell tools with new hit types (instrument cell must be selected)
+  - Allows selecting new hit by clicking grid cells (not via cell tools)
 - Removing hit from instrument
 - Change hit sample
 

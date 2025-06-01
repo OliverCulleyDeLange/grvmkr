@@ -85,12 +85,6 @@
 			<Button onClick={() => onEvent({ event: GridEvent.AddGrid })} classes="ml-auto print:hidden">
 				Add Grid
 			</Button>
-			<Button
-				onClick={() => onEvent({ event: GridEvent.DuplicateGrid })}
-				classes="ml-auto print:hidden"
-			>
-				Duplicate Grid
-			</Button>
 		</div>
 
 		<div class="print:hidden">

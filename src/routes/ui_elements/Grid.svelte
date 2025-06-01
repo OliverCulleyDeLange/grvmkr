@@ -5,6 +5,7 @@
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
 	import VolumeControls from './VolumeControls.svelte';
+	import Button from './Button.svelte';
 
 	let {
 		gridUi,
@@ -108,7 +109,7 @@
 				</div>
 
 				{#each section.sectionRows as row}
-					<div class={"select-none px-2 text-xs print:text-lg"}>
+					<div class={'select-none px-2 text-xs print:text-lg'}>
 						<div>{row.instrumentName}</div>
 						<div class="flex gap-2">
 							<VolumeControls
@@ -175,7 +176,6 @@
 	.cell-tools {
 		position: sticky;
 		bottom: 0;
-		padding: 8px;
 		z-index: 10;
 	}
 

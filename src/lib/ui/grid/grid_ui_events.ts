@@ -62,6 +62,7 @@ export type AddGrid = {
 };
 export type DuplicateGrid = {
 	event: GridEvent.DuplicateGrid;
+	gridId: GridId;
 };
 export type BpmChanged = {
 	event: GridEvent.BpmChanged;

@@ -93,8 +93,9 @@ export class AppStateStore {
 				syncGrids(this.fileStore, this.gridStore)
 				break;
 			case GridEvent.DuplicateGrid:
-				this.gridStore.duplicateGrid();
-				syncGrids(this.fileStore, this.gridStore)
+				this.gridStore.duplicateGrid(event.gridId).then(()=> {
+					syncGrids(this.fileStore, this.gridStore)
+				});
 				break;
 			case GridEvent.BpmChanged:
 				this.gridStore.updateBpm(event.gridId, event.bpm);
