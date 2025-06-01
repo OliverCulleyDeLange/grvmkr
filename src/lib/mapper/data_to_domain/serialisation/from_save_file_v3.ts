@@ -14,6 +14,7 @@ import {
 // Maps a saved grid from a save file to grid models
 export function mapSavedGridV3ToGrid(
 	savedGrid: SavedGridV3,
+	gridIndex: number,
 	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
 	let newRows: GridRow[] = savedGrid.rows
@@ -37,7 +38,7 @@ export function mapSavedGridV3ToGrid(
 
 	let grid: Grid = {
 		id: generateGridId(),
-		index: 0, // Not present in V3
+		index: gridIndex,
 		config: {
 			name: savedGrid.config.name,
 			bpm: savedGrid.config.bpm,

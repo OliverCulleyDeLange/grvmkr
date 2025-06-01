@@ -36,7 +36,7 @@ export function mapSavedGridV3ToGrid(
 	let grid: Grid = {
 		// We regenerate grid IDs to ensure uniqueness, because people can export multiple files from the same working file
 		id: generateGridId(),
-		index: 0, // Not present in V2
+		index: ,
 		config: {
 			name: savedGrid.config.name,
 			bpm: savedGrid.config.bpm,

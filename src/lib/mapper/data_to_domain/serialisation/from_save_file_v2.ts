@@ -1,23 +1,18 @@
 import {
 	calculateMsPerBeatDivision,
-	type GridCell,
+	generateGridId,
+	mapSavedInstrumentHitV1ToGridCell,
 	type Grid,
 	type GridRow,
-	type InstrumentStore,
-	type SavedGridConfigV1,
-	type SavedGridRowV1,
-	type SavedGridV1,
-	type SavedGridV2,
-	type SavedInstrumentHitV1,
-	mapSavedInstrumentHitV1ToGridCell,
-	generateGridId,
+	type InstrumentId,
 	type InstrumentWithId,
-	type InstrumentId
+	type SavedGridV2
 } from '$lib';
 
 // Maps a saved grid from a save file to grid models
 export function mapSavedGridV2ToGrid(
 	savedGrid: SavedGridV2,
+	gridIndex: number,
 	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
 	let newRows: GridRow[] = savedGrid.rows
@@ -42,7 +37,7 @@ export function mapSavedGridV2ToGrid(
 		.filter((r) => r != null);
 	let grid: Grid = {
 		id: generateGridId(),
-		index: 0, // Not present in V2
+		index: gridIndex, 
 		config: {
 			name: savedGrid.config.name,
 			bpm: savedGrid.config.bpm,

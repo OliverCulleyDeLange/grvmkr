@@ -84,14 +84,14 @@ function parseSaveFile(saveFileText: string): GrvMkrFile {
 			const f = saveFileBase as SaveFileV1;
 			instruments = mapSavedInstrumentsV1ToInstrumentWithIds(f.instruments);
 			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
-			grids = f.grids.map((g) => mapSavedGridV1ToGrid(g, keyedInstruments));
+			grids = f.grids.map((g, i) => mapSavedGridV1ToGrid(g, i, keyedInstruments));
 			break;
 		}
 		case 2: {
 			const f = saveFileBase as SaveFileV2;
 			instruments = mapSavedInstrumentsV1ToInstrumentWithIds(f.instruments);
 			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
-			grids = f.grids.map((g) => mapSavedGridV2ToGrid(g, keyedInstruments));
+			grids = f.grids.map((g, i) => mapSavedGridV2ToGrid(g, i, keyedInstruments));
 			fileName = f.name;
 			break;
 		}
@@ -99,7 +99,7 @@ function parseSaveFile(saveFileText: string): GrvMkrFile {
 			const f = saveFileBase as SaveFileV3;
 			instruments = mapSavedInstrumentsV3ToInstrumentWithIds(f.instruments);
 			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
-			grids = f.grids.map((g) => mapSavedGridV3ToGrid(g, keyedInstruments));
+			grids = f.grids.map((g, i) => mapSavedGridV3ToGrid(g, i, keyedInstruments));
 			fileName = f.name;
 			break;
 		}
@@ -107,7 +107,7 @@ function parseSaveFile(saveFileText: string): GrvMkrFile {
 			const f = saveFileBase as SaveFileV4;
 			instruments = mapSavedInstrumentsV4ToInstrumentWithIds(f.instruments);
 			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
-			grids = f.grids.map((g) => mapSavedGridV3ToGrid(g, keyedInstruments));
+			grids = f.grids.map((g, i) => mapSavedGridV3ToGrid(g, i, keyedInstruments));
 			fileName = f.name;
 			break;
 		}

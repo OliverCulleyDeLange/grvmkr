@@ -641,19 +641,26 @@ export class GridStore implements GridRepositoryI {
 	// TODO Could probably merge the logic with moveInstrument
 	async moveGrid(direction: 'up' | 'down', gridId: GridId) {
 		let movingGrid = this.grids.get(gridId);
-		if (!movingGrid) return;
+		if (!movingGrid) {
+			console.warn(`Couldn't move grid ${direction} as no grid with id found`, gridId)
+			return;
+		}
 		let movingIndex = movingGrid.index;
 
 		let swappingIndex;
-		if (direction == 'down') {
+		if (direction === 'down') {
 			swappingIndex = movingIndex + 1;
-		} else if (direction == 'up') {
+		} else if (direction === 'up') {
 			swappingIndex = movingIndex - 1;
 		} else {
+			console.error(`Unexpected code path`)
 			return;
 		}
 		let swappingGrid = [...this.grids.values()].find((i) => i.index == swappingIndex);
-		if (!swappingGrid) return;
+		if (!swappingGrid) { 
+			console.warn(`Couldn't move grid ${direction} as no grid with index ${swappingIndex} found in grids`, $state.snapshot(this.grids))
+			return;
+		 }
 		await this.updateGrid(movingGrid.id, (i) => {
 			i.index = swappingIndex;
 		});
