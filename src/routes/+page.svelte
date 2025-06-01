@@ -71,7 +71,7 @@
 	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">
 			{#each gridsUi.grids as gridUi}
-				<div>
+				<div class="break-inside-avoid">
 					<GridConfig {gridUi} {onEvent} />
 					<Legend instrumentManager={appStateStore.instrumentStore} />
 					<Grid {gridUi} {onEvent} />
