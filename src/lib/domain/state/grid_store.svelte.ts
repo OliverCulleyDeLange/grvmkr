@@ -450,15 +450,17 @@ export class GridStore implements GridRepositoryI {
 
 	// When instruments are added / removed, we need to remove the rows for the
 	// deleted ones, and add rows for the new ones
-	// TODO currently this doesn't update instrument hits. 
 	async syncInstruments(instruments: Map<InstrumentId, InstrumentWithId>) {
 		await this.updateGrids((grid) => {
 			// First remove all rows where the instrument is removed
 			let filteredRows = grid.rows.filter((row) => {
 				return instruments.has(row.instrument.id);
 			});
-			// console.log("Filtered rows -", filteredRows)
-			// Now add any new instruments
+			// Now replace existing instruments in case hits have changed 
+			filteredRows.forEach((row) => {
+				row.instrument = instruments.get(row.instrument.id) ?? row.instrument
+			})
+			// Now add missing instrument row, assuming only one can be added at a time
 			if (filteredRows.length < instruments.size) {
 				// Assuming instrument always added to end of list
 				let instrument = [...instruments.values()].pop();
@@ -473,7 +475,6 @@ export class GridStore implements GridRepositoryI {
 					);
 				}
 			}
-			// console.log("Filtered rows +", filteredRows)
 			grid.rows = filteredRows;
 		});
 	}
