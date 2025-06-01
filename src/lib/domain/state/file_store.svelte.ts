@@ -95,13 +95,11 @@ export class FileStore implements FileRepositoryI {
 		this.updateAllFiles();
 	}
 
-	// TODO Remove
 	async setGrids(grids: Map<GridId, Grid>) {
 		this.file.grids = grids;
 		this.trySaveFile();
 	}
 	
-	// TODO Remove
 	async setInstruments(instruments: Map<string, InstrumentWithId>) {
 		this.file.instruments = instruments;
 		this.trySaveFile();
@@ -125,7 +123,6 @@ export class FileStore implements FileRepositoryI {
 	) {
 		this.file = file
 		await this.trySaveFile();
-		// todo populate grids and instruments
 		keyValueRepository.saveWorkingFileId(this.file.id);
 	}
 

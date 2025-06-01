@@ -26,13 +26,12 @@ export class GridStore implements GridRepositoryI {
 		this.onEvent = onEvent;
 	}
 
-	// TODO make private
-	public grids: SvelteMap<GridId, Grid> = new SvelteMap();
-	public currentlyPlayingGrid: Grid | null = $state(null);
-	public mostRecentlyPlayedGrid: Grid | null = $state(null);
-	public currentlySelectedCells: CellLocator[] = $state([]);
-	public selectionStartCell: CellLocator | null = $state(null);
-	public copiedCells: GridCell[] = [];
+	private grids: SvelteMap<GridId, Grid> = new SvelteMap();
+	private currentlyPlayingGrid: Grid | null = $state(null);
+	private mostRecentlyPlayedGrid: Grid | null = $state(null);
+	private currentlySelectedCells: CellLocator[] = $state([]);
+	private selectionStartCell: CellLocator | null = $state(null);
+	private copiedCells: GridCell[] = [];
 
 	getCurrentlySelectedCells(): CellLocator[] {
 		return this.currentlySelectedCells

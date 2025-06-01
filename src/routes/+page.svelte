@@ -50,7 +50,7 @@
 	);
 	let gridsUi: GridUis = $derived(
 		mapGridUi(
-			appStateStore.gridStore.grids,
+			appStateStore.gridStore.getGrids(),
 			appStateStore.instrumentStore,
 			appStateStore.cellToolsStore.cellTools
 		)
