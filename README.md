@@ -29,7 +29,6 @@
 
 
 ### Coming soon (maybe)
-- FIX adding instrument hit doesn't add to cell toolbar
 - Duplicate any grid
 - Move grids up or down
 - Example groove (samba)
