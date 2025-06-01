@@ -1,5 +1,4 @@
 <script lang="ts">
-	
 	let {
 		reset,
 		close
@@ -7,7 +6,6 @@
 		reset: () => void;
 		close: () => void;
 	} = $props();
-
 </script>
 
 <dialog open class="modal">

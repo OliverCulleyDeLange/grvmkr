@@ -20,7 +20,7 @@
 - ✅ Create your own instruments
   - Upload your own audio samples and create multiple 'hits' (sounds) per instrument
 - ✅ Built in instruments
-  - There are currently some standard built ins for making  samba grooves
+  - There are currently some standard built ins for making samba grooves
 - ✅ Save and load grids in the app (saved to your browsers internal database)
 - ✅ Save your composition grids as a file, which can be re-loaded on other computers. Useful for sharing with band members!
 - ✅ Save or print your composition grids as a PDF file for sharing with others
@@ -30,8 +30,8 @@
 - ✅ Dark mode theme
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
-
 ### Coming soon (maybe)
+
 - Groove repetitions for playback
 - Example groove (samba)
 - Right click / hold press to delete
@@ -39,7 +39,6 @@
 - Configurable instruments per grid / groove
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
-
 
 ## Developing
 

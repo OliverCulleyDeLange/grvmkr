@@ -2,7 +2,6 @@ import { AUDIO_DB_NAME, AUDIO_DB_STORES, AUDIO_DB_VERSION, SAMPLE_STORE } from '
 
 // Wraps indexedDB - giving access to the audio sample files
 export class AudioDb {
-
 	async audioExists(fileName: string): Promise<boolean> {
 		return this.onDb((db, resolve) => {
 			const transaction = db.transaction(SAMPLE_STORE, 'readonly');
@@ -72,7 +71,7 @@ export class AudioDb {
 			request.onerror = () => resolve(false);
 		});
 	}
-	
+
 	private onDb(
 		doStuff: (
 			db: IDBDatabase,

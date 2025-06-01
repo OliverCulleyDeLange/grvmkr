@@ -35,7 +35,7 @@ export enum GridEvent {
 	MuteInstrument = 'MuteInstrument',
 	SoloInstrument = 'SoloInstrument',
 	MoveGridUp = 'MoveGridUp',
-	MoveGridDown = 'MoveGridDown',
+	MoveGridDown = 'MoveGridDown'
 }
 
 export type TogglePlayingGrid = {

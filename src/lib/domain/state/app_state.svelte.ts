@@ -29,7 +29,7 @@ import {
 	addInstrumentUseCase,
 	addHitUseCase,
 	moveInstrumentDownUseCase,
-	syncGrids,
+	syncGrids
 } from '$lib';
 import { moveInstrumentUpUseCase } from '../use_case/instrument/moveInstrumentUpUseCase';
 
@@ -73,7 +73,13 @@ export class AppStateStore {
 				this.gridStore.setCurrentlySelectedCellHits(event.instrumentHits);
 				break;
 			case GridEvent.TogglePlayingGrid:
-				togglePlayGridUseCase(event.playing, event.gridId, this.gridStore, this.instrumentStore, this.playbackStore)
+				togglePlayGridUseCase(
+					event.playing,
+					event.gridId,
+					this.gridStore,
+					this.instrumentStore,
+					this.playbackStore
+				);
 				break;
 			case GridEvent.TappedGridCell:
 				this.onTapGridCell(event);
@@ -86,15 +92,15 @@ export class AppStateStore {
 				break;
 			case GridEvent.RemoveGrid:
 				this.gridStore.removeGrid(event);
-				syncGrids(this.fileStore, this.gridStore)
+				syncGrids(this.fileStore, this.gridStore);
 				break;
 			case GridEvent.AddGrid:
 				this.gridStore.addDefaultGrid(this.instrumentStore.getInstruments());
-				syncGrids(this.fileStore, this.gridStore)
+				syncGrids(this.fileStore, this.gridStore);
 				break;
 			case GridEvent.DuplicateGrid:
-				this.gridStore.duplicateGrid(event.gridId).then(()=> {
-					syncGrids(this.fileStore, this.gridStore)
+				this.gridStore.duplicateGrid(event.gridId).then(() => {
+					syncGrids(this.fileStore, this.gridStore);
 				});
 				break;
 			case GridEvent.BpmChanged:
@@ -111,10 +117,10 @@ export class AppStateStore {
 				this.gridStore.updateName(event.gridId, event.name);
 				break;
 			case GridEvent.MoveGridDown:
-				this.gridStore.moveGrid("down", event.gridId)
+				this.gridStore.moveGrid('down', event.gridId);
 				break;
 			case GridEvent.MoveGridUp:
-				this.gridStore.moveGrid("up", event.gridId)
+				this.gridStore.moveGrid('up', event.gridId);
 				break;
 			case GridEvent.VolumeChanged:
 				this.instrumentStore.onChangeVolume(event.instrumentId, event.volume, event.delta);
@@ -126,58 +132,84 @@ export class AppStateStore {
 				this.instrumentStore.onToggleSolo(event.instrumentId);
 				break;
 			case InstrumentEvent.RemoveInstrument:
-				removeInstrumentUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
+				removeInstrumentUseCase(
+					event.instrumentId,
+					this.fileStore,
+					this.gridStore,
+					this.instrumentStore,
+					this.cellToolsStore
+				);
 				break;
 			case InstrumentEvent.AddInstrument:
-				addInstrumentUseCase(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
+				addInstrumentUseCase(
+					this.fileStore,
+					this.gridStore,
+					this.instrumentStore,
+					this.cellToolsStore
+				);
 				break;
 			case InstrumentEvent.RenameInstrument:
 				this.instrumentStore.onChangeName(event.newName, event.instrumentId);
 				break;
 			case InstrumentEvent.AddHit:
-				addHitUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
+				addHitUseCase(
+					event.instrumentId,
+					this.fileStore,
+					this.gridStore,
+					this.instrumentStore,
+					this.cellToolsStore
+				);
 				break;
 			case InstrumentEvent.MoveUp:
-				moveInstrumentUpUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
+				moveInstrumentUpUseCase(
+					event.instrumentId,
+					this.fileStore,
+					this.gridStore,
+					this.instrumentStore,
+					this.cellToolsStore
+				);
 				break;
 			case InstrumentEvent.MoveDown:
-				moveInstrumentDownUseCase(event.instrumentId, this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore)
+				moveInstrumentDownUseCase(
+					event.instrumentId,
+					this.fileStore,
+					this.gridStore,
+					this.instrumentStore,
+					this.cellToolsStore
+				);
 				break;
 			case InstrumentEvent.ChangeHitKey:
 				this.instrumentStore.onChangeHitKey(event.newKey, event.instrumentId, event.hitId);
 				break;
 			case InstrumentEvent.ChangeHitDescription:
-				this.instrumentStore.onChangeHitDescription(event.description, event.instrumentId, event.hitId);
+				this.instrumentStore.onChangeHitDescription(
+					event.description,
+					event.instrumentId,
+					event.hitId
+				);
 				break;
 			case InstrumentEvent.ChangeSample:
 				this.instrumentStore.onChangeSample(event.file, event.instrumentId, event.hitId);
 				break;
 			case InstrumentEvent.RemoveHit:
-				this.instrumentStore.removeHit(event.instrumentId, event.hitId)
+				this.instrumentStore.removeHit(event.instrumentId, event.hitId);
 				break;
 			case InstrumentEvent.PlayHit:
-				this.instrumentStore.playHit(event.instrumentHit)
+				this.instrumentStore.playHit(event.instrumentHit);
 				break;
 			case ToolbarEvent.New:
-				newGrooveUseCase(
-					this.fileStore,
-					this.gridStore,
-					this.instrumentStore
-				)
+				newGrooveUseCase(this.fileStore, this.gridStore, this.instrumentStore);
 				break;
 			case ToolbarEvent.Save:
-				saveFileUseCase(
-					this.fileStore,
-					this.gridStore,
-					this.instrumentStore
-				)
+				saveFileUseCase(this.fileStore, this.gridStore, this.instrumentStore);
 				break;
 			case ToolbarEvent.LoadFile:
-				loadFileUseCase(event.file,
+				loadFileUseCase(
+					event.file,
 					this.fileStore,
 					this.instrumentStore,
 					this.gridStore,
-					this.playbackStore,
+					this.playbackStore
 				);
 				break;
 			case ToolbarEvent.LoadLocalGroove:
@@ -201,7 +233,7 @@ export class AppStateStore {
 				});
 				break;
 			case ToolbarEvent.TogglePlayingFile:
-				togglePlayFileUseCase(this.gridStore, this.instrumentStore, this.playbackStore)
+				togglePlayFileUseCase(this.gridStore, this.instrumentStore, this.playbackStore);
 				break;
 			case ProblemEvent.MissingSampleAudio:
 				this.errorStore.addError(event);
@@ -256,10 +288,7 @@ export class AppStateStore {
 		this.playbackStore.stop();
 		const newWorkingFile = await this.fileStore.loadGroove(id);
 		console.log('Loaded file:', newWorkingFile);
-		await this.gridStore.replaceGrids(
-			Array.from(newWorkingFile.grids.values()),
-			false
-		);
+		await this.gridStore.replaceGrids(Array.from(newWorkingFile.grids.values()), false);
 		await this.instrumentStore.replaceInstruments(Array.from(newWorkingFile.instruments.values()));
 	}
 

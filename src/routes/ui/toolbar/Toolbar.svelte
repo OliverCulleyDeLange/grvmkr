@@ -1,9 +1,9 @@
 <script lang="ts">
-  import ResetConfirmation from './ResetConfirmation.svelte';
+	import ResetConfirmation from './ResetConfirmation.svelte';
 
-  import FileNameInput from './PlayAndFileName.svelte';
+	import FileNameInput from './PlayAndFileName.svelte';
 
-  import ToolbarErrors from './ToolbarErrors.svelte';
+	import ToolbarErrors from './ToolbarErrors.svelte';
 
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
 	import HelpOverlay from '../overlay/HelpOverlay.svelte';
@@ -84,12 +84,12 @@
 	</div>
 </div>
 
-<ToolbarErrors errorsUi={toolbarUi.errors} {onEvent}/>
+<ToolbarErrors errorsUi={toolbarUi.errors} {onEvent} />
 
 <PlayAndFileName {toolbarUi} {onEvent} />
 
 {#if showResetConfirmation}
-	<ResetConfirmation {reset} close={() => showResetConfirmation = false}/>
+	<ResetConfirmation {reset} close={() => (showResetConfirmation = false)} />
 {/if}
 
 {#if showHelp}

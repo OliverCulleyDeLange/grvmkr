@@ -23,7 +23,6 @@ export * from './data/types/grid_data';
 export * from './data/types/instrument_data';
 export * from './data/types/file_data';
 
-
 // DOMAIN
 export * from './domain/event';
 
@@ -73,7 +72,6 @@ export * from './domain/types/grid_domain';
 export * from './domain/types/instrument_domain';
 export * from './domain/types/file_domain';
 export * from './domain/types/cell_tools';
-
 
 // UI
 export * from './ui/events';

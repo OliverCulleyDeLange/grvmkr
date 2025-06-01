@@ -18,7 +18,6 @@ import type { GridRepositoryI } from '../interface/GridRepositoryI';
 
 // Responsible for storing, and modifying grids
 export class GridStore implements GridRepositoryI {
-
 	private onEvent: OnEvent;
 	private gridRepository: GridRepository = new GridRepository();
 
@@ -34,23 +33,23 @@ export class GridStore implements GridRepositoryI {
 	private copiedCells: GridCell[] = [];
 
 	getCurrentlySelectedCells(): CellLocator[] {
-		return this.currentlySelectedCells
+		return this.currentlySelectedCells;
 	}
-	
+
 	getGridsFromMostRecentlyPlayedGrid(): Grid[] {
 		if (!this.mostRecentlyPlayedGrid) return [];
-		return this.getGridsFromGridOnwards(this.mostRecentlyPlayedGrid)
+		return this.getGridsFromGridOnwards(this.mostRecentlyPlayedGrid);
 	}
 
 	getGridsFromCurrentlyPlaying(): Grid[] {
 		if (!this.currentlyPlayingGrid) return [];
-		return this.getGridsFromGridOnwards(this.currentlyPlayingGrid)
+		return this.getGridsFromGridOnwards(this.currentlyPlayingGrid);
 	}
 
 	getGridsFromGridOnwards(grid: Grid): Grid[] {
 		const gridsArray = Array.from(this.grids.values());
 		const sortedGrids = gridsArray.sort((a, b) => a.index - b.index);
-		const startIndex = sortedGrids.findIndex(g => g.id === grid.id);
+		const startIndex = sortedGrids.findIndex((g) => g.id === grid.id);
 
 		if (startIndex === -1) return [];
 
@@ -58,11 +57,11 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	getGrids(): Map<GridId, Grid> {
-		return this.grids
+		return this.grids;
 	}
 
 	getGrid(gridId: GridId): Grid | null {
-		return this.grids.get(gridId) ?? null
+		return this.grids.get(gridId) ?? null;
 	}
 
 	getFirstGrid(): Grid | null {
@@ -72,13 +71,13 @@ export class GridStore implements GridRepositoryI {
 	getGridOfCurrentlySelectedCell(): Grid | null {
 		const firstCurrentlySelectedCell = this.currentlySelectedCells[0];
 		return firstCurrentlySelectedCell
-			? this.grids.get(firstCurrentlySelectedCell.grid) ?? null
+			? (this.grids.get(firstCurrentlySelectedCell.grid) ?? null)
 			: null;
 	}
-	
+
 	stopPlayingGrid() {
 		if (this.currentlyPlayingGrid != null) {
-			this.currentlyPlayingGrid.playing = false
+			this.currentlyPlayingGrid.playing = false;
 			this.currentlyPlayingGrid = null;
 		}
 	}
@@ -453,10 +452,10 @@ export class GridStore implements GridRepositoryI {
 			let filteredRows = grid.rows.filter((row) => {
 				return instruments.has(row.instrument.id);
 			});
-			// Now replace existing instruments in case hits have changed 
+			// Now replace existing instruments in case hits have changed
 			filteredRows.forEach((row) => {
-				row.instrument = instruments.get(row.instrument.id) ?? row.instrument
-			})
+				row.instrument = instruments.get(row.instrument.id) ?? row.instrument;
+			});
 			// Now add missing instrument row, assuming only one can be added at a time
 			if (filteredRows.length < instruments.size) {
 				// Assuming instrument always added to end of list
@@ -483,7 +482,7 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	async duplicateGrid(id: GridId) {
-		let gridToDuplicate = this.grids.get(id)
+		let gridToDuplicate = this.grids.get(id);
 		if (gridToDuplicate) {
 			let newGrid = $state.snapshot(gridToDuplicate);
 			newGrid.index = this.getNextGridIndex();
@@ -639,22 +638,20 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	// TODO Could probably merge the logic with moveInstrument
-	async moveGrid(direction: "up" | "down", gridId: GridId) {
+	async moveGrid(direction: 'up' | 'down', gridId: GridId) {
 		let movingGrid = this.grids.get(gridId);
 		if (!movingGrid) return;
 		let movingIndex = movingGrid.index;
 
 		let swappingIndex;
-		if (direction == "down") {
+		if (direction == 'down') {
 			swappingIndex = movingIndex + 1;
-		} else if (direction == "up") {
+		} else if (direction == 'up') {
 			swappingIndex = movingIndex - 1;
 		} else {
 			return;
 		}
-		let swappingGrid = [...this.grids.values()].find(
-			(i) => i.index == swappingIndex
-		);
+		let swappingGrid = [...this.grids.values()].find((i) => i.index == swappingIndex);
 		if (!swappingGrid) return;
 		await this.updateGrid(movingGrid.id, (i) => {
 			i.index = swappingIndex;

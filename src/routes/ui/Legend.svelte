@@ -26,7 +26,7 @@
 	});
 </script>
 
-<article class="my-2 hidden print:flex flex-wrap gap-x-8 ">
+<article class="my-2 hidden flex-wrap gap-x-8 print:flex">
 	{#each ui.instruments as instrument}
 		<div class="flex items-baseline gap-x-1">
 			<div class="text-md font-bold">{instrument.name}</div>

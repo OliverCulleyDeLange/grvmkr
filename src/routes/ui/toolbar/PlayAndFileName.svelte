@@ -1,10 +1,9 @@
 <script lang="ts">
-  
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
-	
+
 	let {
 		toolbarUi,
-		onEvent,
+		onEvent
 	}: {
 		toolbarUi: ToolbarUi;
 		onEvent: OnUiEvent;
@@ -23,12 +22,11 @@
 	function togglePlayingFile() {
 		onEvent({ event: ToolbarEvent.TogglePlayingFile });
 	}
-
 </script>
 
-<div class="flex flex-row gap-2 mb-2 w-full print:hidden">
+<div class="mb-2 flex w-full flex-row gap-2 print:hidden">
 	<!-- Play file button -->
-	<button onclick={togglePlayingFile} class="btn btn-outline btn-xl">
+	<button onclick={togglePlayingFile} class="btn-xl btn btn-outline">
 		{toolbarUi.playingFile ? 'Stop File' : 'Play File'}
 	</button>
 	<!-- Filename input -->

@@ -2,7 +2,7 @@
 	import { type BeatIndicator } from '$lib';
 
 	let {
-		indicator,
+		indicator
 	}: {
 		indicator: BeatIndicator;
 	} = $props();

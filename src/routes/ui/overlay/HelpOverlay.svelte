@@ -10,9 +10,8 @@
 
 <dialog open class="modal">
 	<div class="modal-box border border-2 border-gray-400">
-
 		<button
-			class="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
+			class="absolute right-4 top-4 text-xl text-gray-500 hover:text-black"
 			aria-label="Close"
 			onclick={closeDialog}
 		>
@@ -45,7 +44,8 @@
 		</p>
 		<br />
 		<p>
-			If you're having unresolvable problems, you can reset the app state - but this will delete everything, and i mean EVERYTHING. 
+			If you're having unresolvable problems, you can reset the app state - but this will delete
+			everything, and i mean EVERYTHING.
 		</p>
 		<button class="btn btn-outline btn-sm my-2" onclick={reset}>Reset</button>
 		<p class="py-4">

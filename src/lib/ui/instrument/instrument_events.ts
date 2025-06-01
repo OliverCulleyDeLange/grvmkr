@@ -1,7 +1,18 @@
 import type { HitId, HitTypeWithId, InstrumentHit, InstrumentId } from '$lib';
 
 // Instrument UI Events
-export type InstrumentEvents = RemoveInstrument | AddInstrument | RenameInstrument | MoveUp | MoveDown | AddHit | ChangeSample | ChangeHitKey | ChangeHitDescription | RemoveHit | PlayHit;
+export type InstrumentEvents =
+	| RemoveInstrument
+	| AddInstrument
+	| RenameInstrument
+	| MoveUp
+	| MoveDown
+	| AddHit
+	| ChangeSample
+	| ChangeHitKey
+	| ChangeHitDescription
+	| RemoveHit
+	| PlayHit;
 
 export enum InstrumentEvent {
 	RemoveInstrument = 'RemoveInstrument',
@@ -50,8 +61,6 @@ export type ChangeSample = {
 	file: File;
 };
 
-
-
 export type ChangeHitKey = {
 	event: InstrumentEvent.ChangeHitKey;
 	instrumentId: InstrumentId;
@@ -73,5 +82,5 @@ export type RemoveHit = {
 };
 export type PlayHit = {
 	event: InstrumentEvent.PlayHit;
-	instrumentHit: InstrumentHit
+	instrumentHit: InstrumentHit;
 };

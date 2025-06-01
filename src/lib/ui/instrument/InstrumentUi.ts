@@ -1,7 +1,7 @@
-import type { HitId, InstrumentId } from "$lib/domain/types/instrument_domain";
+import type { HitId, InstrumentId } from '$lib/domain/types/instrument_domain';
 
 export type InstrumentsUi = {
-	instruments: InstrumentUi[]
+	instruments: InstrumentUi[];
 };
 
 export type InstrumentUi = {
@@ -16,5 +16,4 @@ export type HitTypeUi = {
 	key: string;
 	description: string;
 	audioFileName: string;
-	
 };

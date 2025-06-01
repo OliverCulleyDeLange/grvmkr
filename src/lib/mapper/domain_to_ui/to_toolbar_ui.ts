@@ -5,7 +5,7 @@ export function mapToolbarUi(
 	filename: string,
 	errors: Map<string, AppError>,
 	darkMode: boolean,
-	playingFile: boolean,
+	playingFile: boolean
 ): ToolbarUi {
 	let errorUi: AppErrorUi[] = [...errors.values()].map((e) => {
 		return {
@@ -17,7 +17,7 @@ export function mapToolbarUi(
 		errors: errorUi,
 		fileName: filename,
 		darkMode,
-		playingFile,
+		playingFile
 	};
 	return ui;
 }

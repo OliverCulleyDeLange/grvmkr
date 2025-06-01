@@ -55,9 +55,7 @@
 			appStateStore.cellToolsStore.cellTools
 		)
 	);
-	const instrumentsUi = $derived(
-		mapInstrumentsUi(appStateStore.instrumentStore.getInstruments())
-	)
+	const instrumentsUi = $derived(mapInstrumentsUi(appStateStore.instrumentStore.getInstruments()));
 	let grooveSelectorUi = $derived(
 		mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files, appStateStore.fileStore.file.id)
 	);

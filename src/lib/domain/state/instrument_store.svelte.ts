@@ -38,15 +38,15 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	// TODO Should i state.snapshot, or is it ok to return a mutable domain object?
 	// Feels like it should return a snapshot so others can't modify instrument state
 	getInstruments(): Map<InstrumentId, InstrumentWithId> {
-		return this.instruments
+		return this.instruments;
 	}
-	
+
 	getInstrument(id: InstrumentId): InstrumentWithId | null {
-		return this.instruments.get(id) ?? null
+		return this.instruments.get(id) ?? null;
 	}
 
 	async addDefaultInstrument(): Promise<void> {
-		await this.addInstrumentFromConfig(defaultInstrumentConfig)
+		await this.addInstrumentFromConfig(defaultInstrumentConfig);
 	}
 
 	// Populate instruments state from the working files instruments, defaulting to default config
@@ -75,7 +75,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		for (const instrument of defaultInstruments) {
 			await this.addInstrumentFromConfig(instrument);
 		}
-		this.downloadDefaultAudioFiles(); // No await so it happens in the background 
+		this.downloadDefaultAudioFiles(); // No await so it happens in the background
 	}
 
 	async playHit(hit: InstrumentHit | undefined) {
@@ -217,15 +217,15 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		await this.saveInstrumentToStateAndDb(instrument);
 	}
 
-	async moveInstrument(direction: "up" | "down", instrumentId: InstrumentId) {
+	async moveInstrument(direction: 'up' | 'down', instrumentId: InstrumentId) {
 		let movingInstrument = this.instruments.get(instrumentId);
 		if (!movingInstrument) return;
 		let movingIndex = movingInstrument.gridIndex;
 
 		let swappingIndex;
-		if (direction == "down") {
+		if (direction == 'down') {
 			swappingIndex = movingIndex + 1;
-		} else if (direction == "up") {
+		} else if (direction == 'up') {
 			swappingIndex = movingIndex - 1;
 		} else {
 			return;
@@ -257,7 +257,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		let instrument = this.instruments.get(instrumentId);
 		if (instrument) {
 			instrument.hitTypes.set(reactiveHit.id, reactiveHit);
-			console.log("Saving hit for instrument", instrument)
+			console.log('Saving hit for instrument', instrument);
 			await this.instrumentRepository.saveInstrument(instrument);
 		}
 	}
@@ -306,13 +306,13 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	async replaceInstruments(instruments: InstrumentWithId[]) {
 		this.instruments.clear();
 		for (const instrument of instruments) {
-			await this.saveInstrumentToStateAndDb(instrument, true)
+			await this.saveInstrumentToStateAndDb(instrument, true);
 		}
 	}
 
 	async reset() {
 		await this.instrumentRepository.deleteAllInstruments();
-		await this.audioDb.deleteAllAudio()
+		await this.audioDb.deleteAllAudio();
 		this.instruments.clear();
 		this.audioManager.reset();
 	}

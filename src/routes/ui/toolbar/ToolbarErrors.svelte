@@ -3,12 +3,11 @@
 
 	let {
 		errorsUi,
-		onEvent,
+		onEvent
 	}: {
 		errorsUi: AppErrorUi[];
 		onEvent: OnUiEvent;
 	} = $props();
-
 </script>
 
 {#if errorsUi.length > 0}
@@ -26,4 +25,3 @@
 		{/each}
 	</div>
 {/if}
-

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import GridRowTools from './GridRowTools.svelte';
+	import GridRowTools from './GridRowTools.svelte';
 
-  import BeatIndicator from './BeatIndicator.svelte';
+	import BeatIndicator from './BeatIndicator.svelte';
 
 	import { GridEvent, type CellLocator, type GridUi, type OnUiEvent } from '$lib';
 	import type { OnEvent } from '$lib/domain/event';

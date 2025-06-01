@@ -78,7 +78,7 @@
 
 <!-- Outer container (hidden for print)-->
 <div
-	class="mb-2 flex flex-col items-start break-after-avoid flex-wrap items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23] print:hidden"
+	class="mb-2 flex break-after-avoid flex-col flex-wrap items-start items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23] print:hidden"
 >
 	<!-- Play, grid name, settings button -->
 	<div class="flex w-full flex-row items-center gap-2">
@@ -97,7 +97,7 @@
 	<!-- Grid config -->
 	{#if gridConfigExpanded}
 		<!-- BPM / Bars / Grid Size  -->
-		<div class="grid-config flex flex-col w-full items-start gap-2 sm:flex-row">
+		<div class="grid-config flex w-full flex-col items-start gap-2 sm:flex-row">
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div>BPM:</div>
 				<input
@@ -155,21 +155,21 @@
 			</div>
 		</div>
 
-		<div class="grid-tools flex flex-row w-full items-start gap-2">
+		<div class="grid-tools flex w-full flex-row items-start gap-2">
 			<Button
 				onClick={() => onEvent({ event: GridEvent.DuplicateGrid, gridId: gridUi.id })}
 				classes="print:hidden"
 			>
 				Duplicate Grid to End
 			</Button>
-			
+
 			<Button
 				onClick={() => onEvent({ event: GridEvent.MoveGridUp, gridId: gridUi.id })}
 				classes="print:hidden"
 			>
 				⬇️ Move Up
 			</Button>
-			
+
 			<Button
 				onClick={() => onEvent({ event: GridEvent.MoveGridDown, gridId: gridUi.id })}
 				classes="print:hidden"

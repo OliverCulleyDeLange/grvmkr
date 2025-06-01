@@ -121,13 +121,14 @@
 						{#if hitUi.audioFileName != ''}
 							<button
 								class="btn btn-outline btn-xs"
-								onclick={() => onEvent({
-									event: InstrumentEvent.PlayHit,
-									instrumentHit: {
-										instrumentId: instrumentUi.id,
-										hitId: hitUi.id
-									}
-								})}
+								onclick={() =>
+									onEvent({
+										event: InstrumentEvent.PlayHit,
+										instrumentHit: {
+											instrumentId: instrumentUi.id,
+											hitId: hitUi.id
+										}
+									})}
 							>
 								▶︎ Play
 							</button>

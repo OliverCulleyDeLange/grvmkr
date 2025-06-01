@@ -32,9 +32,9 @@ export class FileStore implements FileRepositoryI {
 	}
 
 	getFile(): GrvMkrFile {
-		return this.file
+		return this.file;
 	}
-	
+
 	// Get or create the working file, and populate the full list of available files
 	async initialise(): Promise<GrvMkrFile> {
 		const workingFile = await this.initialiseWorkingFile();
@@ -66,7 +66,7 @@ export class FileStore implements FileRepositoryI {
 	}
 
 	async saveWorkingFileInStateAndDB(file: GrvMkrFile) {
-		this.file = file
+		this.file = file;
 		await this.fileRepository.saveFile(file);
 		keyValueRepository.saveWorkingFileId(file.id);
 		console.log('Saved working file in state and DB', $state.snapshot(file));
@@ -99,7 +99,7 @@ export class FileStore implements FileRepositoryI {
 		this.file.grids = grids;
 		this.trySaveFile();
 	}
-	
+
 	async setInstruments(instruments: Map<string, InstrumentWithId>) {
 		this.file.instruments = instruments;
 		this.trySaveFile();
@@ -118,10 +118,8 @@ export class FileStore implements FileRepositoryI {
 		await this.trySaveFile();
 	}
 
-	async loadFile(
-		file: GrvMkrFile,
-	) {
-		this.file = file
+	async loadFile(file: GrvMkrFile) {
+		this.file = file;
 		await this.trySaveFile();
 		keyValueRepository.saveWorkingFileId(this.file.id);
 	}

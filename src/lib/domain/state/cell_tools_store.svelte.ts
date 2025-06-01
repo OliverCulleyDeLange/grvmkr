@@ -14,12 +14,12 @@ export class CellToolsStore implements CellToolsRepositoryI {
 	}
 
 	updateCellTools(gridStore: GridRepositoryI, instrumentStore: InstrumentRepositoryI) {
-		const grid = gridStore.getGridOfCurrentlySelectedCell()
+		const grid = gridStore.getGridOfCurrentlySelectedCell();
 		if (!grid) {
 			this.cellTools = this.defaultCellTools;
-			return
+			return;
 		}
-		
+
 		const currentlySelectedCells = gridStore.getCurrentlySelectedCells();
 		// We assume that all selected cells have the same options as they're in the same row
 		const firstCurrentlySelectedCell = currentlySelectedCells[0];
@@ -27,7 +27,7 @@ export class CellToolsStore implements CellToolsRepositoryI {
 		if (firstCurrentlySelectedCell) {
 			const locator = firstCurrentlySelectedCell;
 			const rowInstrument = grid.rows[locator.row]?.instrument;
-			const instrument = instrumentStore.getInstrument(rowInstrument?.id)
+			const instrument = instrumentStore.getInstrument(rowInstrument?.id);
 			const currentCell = grid.rows[locator.row]?.cells[locator.cell];
 			const gridCols = grid.gridCols;
 			const cellsOccupied = currentCell?.cells_occupied ?? 0;
