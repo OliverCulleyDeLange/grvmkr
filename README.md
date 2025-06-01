@@ -8,7 +8,8 @@
   - Modify the grid and hear the results immediately, even when playing.
   - Multi select grid cells in a row. On desktop, shift click or click and drag cursor. On mobile press and drag cells.
   - Merge cells + uneven hits like triplets
-  - Grids play in order like a song
+  - Play the entire file like a song arrangement
+  - Or play an individual grid, looped forever to fine tune tre groove
 - ✅ Keyboard shortcuts:
   - Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users.
   - Space to play / pause
