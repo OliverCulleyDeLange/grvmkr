@@ -88,7 +88,7 @@
 
 		<input
 			bind:value={gridName}
-			onchange={onNameChange}
+			oninput={onNameChange}
 			class="input input-sm input-bordered flex-1"
 		/>
 

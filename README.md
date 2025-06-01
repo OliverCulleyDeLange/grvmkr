@@ -31,7 +31,6 @@
 
 
 ### Coming soon (maybe)
-- FIX: Changing text inputs doesn't always save
 - Move grids up or down
 - Example groove (samba)
 - Right click / hold press to delete
