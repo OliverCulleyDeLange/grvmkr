@@ -40,10 +40,11 @@ export const defaultInstruments: Array<InstrumentConfig> = [
 		name: 'Repinique',
 		hitTypes: [
 			{ ...defaultHitType, key: 'X', description: 'Hit', audioFileName: 'repinique_hit.mp3' },
+			{ ...defaultHitType, key: 'Xx', description: 'Hit', audioFileName: 'repinique_hit_roll.mp3' },
 			{ ...defaultHitType, key: 'r', description: 'Rim', audioFileName: 'repinique_rim.mp3' },
+			{ ...defaultHitType, key: 'rr', description: 'Rim Double', audioFileName: 'repinique_rim_double.mp3' },
 			{ ...defaultHitType, key: 'H', description: 'Hand', audioFileName: 'repinique_hand.mp3' },
-			{ ...defaultHitType, key: 'D', description: 'Double', audioFileName: 'repinique_double.mp3' },
-			{ ...defaultHitType, key: 'R', description: 'Roll', audioFileName: 'repinique_roll.mp3' }
+			{ ...defaultHitType, key: 'h', description: 'Hand ghost', audioFileName: 'repinique_hand_ghost.mp3' },
 		]
 	},
 	{
@@ -51,6 +52,7 @@ export const defaultInstruments: Array<InstrumentConfig> = [
 		hitTypes: [
 			{ ...defaultHitType, key: 'X', description: 'Accent', audioFileName: 'caixa.mp3' },
 			{ ...defaultHitType, key: 'x', description: 'Ghost', audioFileName: 'caixa_ghost.mp3' },
+			{ ...defaultHitType, key: 'R', description: 'Rim', audioFileName: 'caixa_rim.mp3' },
 			{ ...defaultHitType, key: 'r', description: 'Roll', audioFileName: 'caixa_roll.mp3' },
 		]
 	},

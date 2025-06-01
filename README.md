@@ -29,7 +29,11 @@
 
 
 ### Coming soon (maybe)
+- FIX adding instrument hit doesn't add to cell toolbar
+- Duplicate any grid
+- Move grids up or down
 - Example groove (samba)
+- Right click / hold press to delete
 - Premade grooves for classic rhythms for community samba bands
 - Groove repetitions for playback
 - Configurable instruments per grid / groove
