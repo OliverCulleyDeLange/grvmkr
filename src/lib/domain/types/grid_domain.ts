@@ -19,6 +19,7 @@ export type GridConfig = {
 	bars: number;
 	beatsPerBar: number;
 	beatDivisions: number;
+	repetitions: number;
 };
 
 export type GridRow = {

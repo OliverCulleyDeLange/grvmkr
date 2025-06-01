@@ -17,7 +17,8 @@ export function buildDefaultGrid(
 			bpm: 120,
 			bars: 1,
 			beatsPerBar: 4,
-			beatDivisions: 4
+			beatDivisions: 4,
+			repetitions: 1
 		},
 		rows: buildGridRows(instruments, 1, 4, 4),
 		msPerBeatDivision: 125,

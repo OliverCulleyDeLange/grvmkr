@@ -44,7 +44,8 @@ export function mapSavedGridV3ToGrid(
 			bpm: savedGrid.config.bpm,
 			bars: savedGrid.config.bars,
 			beatsPerBar: savedGrid.config.beats_per_bar,
-			beatDivisions: savedGrid.config.beat_divisions
+			beatDivisions: savedGrid.config.beat_divisions,
+			repetitions: 1
 		},
 		rows: newRows,
 		msPerBeatDivision: calculateMsPerBeatDivision(

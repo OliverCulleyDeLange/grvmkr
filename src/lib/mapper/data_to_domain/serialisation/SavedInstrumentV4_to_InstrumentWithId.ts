@@ -1,7 +1,7 @@
 import type { SavedInstrumentV4 } from '$lib/data/types/serialisation/savefile_v4';
-import { mapSavedHitV1ToHitTypeWithId } from '$lib/mapper/data_to_domain/SavedHitV1_to_HitTypeWithId';
+import { mapSavedHitV1ToHitTypeWithId } from '$lib/mapper/data_to_domain/serialisation/SavedHitV1_to_HitTypeWithId';
 import { SvelteMap } from 'svelte/reactivity';
-import type { InstrumentWithId, HitId, HitTypeWithId } from '../../domain/types/instrument_domain';
+import type { InstrumentWithId, HitId, HitTypeWithId } from '../../../domain/types/instrument_domain';
 
 export function mapSavedInstrumentsV4ToInstrumentWithIds(
 	instruments: SavedInstrumentV4[]

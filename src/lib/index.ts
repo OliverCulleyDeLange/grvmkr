@@ -18,6 +18,7 @@ export * from './data/types/serialisation/savefile_v1';
 export * from './data/types/serialisation/savefile_v2';
 export * from './data/types/serialisation/savefile_v3';
 export * from './data/types/serialisation/savefile_v4';
+export * from './data/types/serialisation/savefile_v5';
 
 export * from './data/types/grid_data';
 export * from './data/types/instrument_data';
@@ -115,15 +116,16 @@ export * from './mapper/domain_to_data/instrument_to_instrument_dto';
 export * from './mapper/data_to_domain/grid_dto_to_grid';
 export * from './mapper/data_to_domain/file_dto_to_file';
 export * from './mapper/data_to_domain/instrument_dto_to_instrument';
-export * from './mapper/data_to_domain/SavedHitV1_to_HitTypeWithId';
-export * from './mapper/data_to_domain/SavedInstrumentV1_to_InstrumentWithId';
-export * from './mapper/data_to_domain/SavedInstrumentV3_to_InstrumentWithId';
-export * from './mapper/data_to_domain/SavedInstrumentV4_to_InstrumentWithId';
+export * from './mapper/data_to_domain/serialisation/SavedHitV1_to_HitTypeWithId';
+export * from './mapper/data_to_domain/serialisation/SavedInstrumentV1_to_InstrumentWithId';
+export * from './mapper/data_to_domain/serialisation/SavedInstrumentV3_to_InstrumentWithId';
+export * from './mapper/data_to_domain/serialisation/SavedInstrumentV4_to_InstrumentWithId';
 
 export * from './mapper/misc_mapper_funcs';
 
 // Serialisation
-export * from './mapper/domain_to_data/serialisation/to_save_file_v4';
+export * from './mapper/domain_to_data/serialisation/to_save_file_v5';
 export * from './mapper/data_to_domain/serialisation/from_save_file_v1';
 export * from './mapper/data_to_domain/serialisation/from_save_file_v2';
 export * from './mapper/data_to_domain/serialisation/from_save_file_v3';
+export * from './mapper/data_to_domain/serialisation/from_save_file_v5';

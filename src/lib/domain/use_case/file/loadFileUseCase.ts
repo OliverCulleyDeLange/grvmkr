@@ -4,6 +4,7 @@ import {
 	mapSavedGridV1ToGrid,
 	mapSavedGridV2ToGrid,
 	mapSavedGridV3ToGrid,
+	mapSavedGridV5ToGrid,
 	mapSavedInstrumentsV1ToInstrumentWithIds,
 	mapSavedInstrumentsV3ToInstrumentWithIds,
 	mapSavedInstrumentsV4ToInstrumentWithIds,
@@ -19,7 +20,8 @@ import {
 	type SaveFileV1,
 	type SaveFileV2,
 	type SaveFileV3,
-	type SaveFileV4
+	type SaveFileV4,
+    type SaveFileV5
 } from '$lib';
 import JSZip from 'jszip';
 
@@ -108,6 +110,14 @@ function parseSaveFile(saveFileText: string): GrvMkrFile {
 			instruments = mapSavedInstrumentsV4ToInstrumentWithIds(f.instruments);
 			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
 			grids = f.grids.map((g, i) => mapSavedGridV3ToGrid(g, i, keyedInstruments));
+			fileName = f.name;
+			break;
+		}
+		case 5: {
+			const f = saveFileBase as SaveFileV5;
+			instruments = mapSavedInstrumentsV4ToInstrumentWithIds(f.instruments);
+			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
+			grids = f.grids.map((g) => mapSavedGridV5ToGrid(g, keyedInstruments));
 			fileName = f.name;
 			break;
 		}

@@ -6,25 +6,25 @@ import {
 	type InstrumentWithId,
 	type SavedGridCellV3,
 	type SavedGridRowV3,
-	type SavedGridV3,
+	type SavedGridV5,
 	type SavedHitV1,
 	type SavedInstrumentHitV1,
 	type SavedInstrumentV4,
-	type SaveFileV4
+	type SaveFileV5
 } from '$lib';
 
 // Serialises the grid model state into a SaveFileV4 for reloading later
-export function serialiseToSaveFileV4(
+export function serialiseToSaveFileV5(
 	name: string,
 	grids: Grid[],
 	instruments: InstrumentWithId[]
-): SaveFileV4 {
+): SaveFileV5 {
 	let savedInstruments: SavedInstrumentV4[] = mapInstrumentsToSavedInstrumentsV4(instruments);
-	let savedGrids: SavedGridV3[] = mapGridsToSavedGridV3(grids);
+	let savedGrids: SavedGridV5[] = mapGridsToSavedGridV5(grids);
 
-	let saveFile: SaveFileV4 = {
+	let saveFile: SaveFileV5 = {
 		type: 'savefile',
-		version: 4,
+		version: 5,
 		name: name,
 		instruments: savedInstruments,
 		grids: savedGrids
@@ -32,19 +32,21 @@ export function serialiseToSaveFileV4(
 	return saveFile;
 }
 
-function mapGridsToSavedGridV3(grids: Grid[]): SavedGridV3[] {
+function mapGridsToSavedGridV5(grids: Grid[]): SavedGridV5[] {
 	return grids.map((grid) => {
 		let savedGridRows: SavedGridRowV3[] = mapGridToSavedGridRowsV3(grid);
-		let savedGrid: SavedGridV3 = {
+		let savedGrid: SavedGridV5 = {
 			type: 'grid',
-			version: 3,
+			version: 5,
 			id: grid.id,
+			index: grid.index,
 			config: {
 				name: grid.config.name,
 				bpm: grid.config.bpm,
 				bars: grid.config.bars,
 				beats_per_bar: grid.config.beatsPerBar,
-				beat_divisions: grid.config.beatDivisions
+				beat_divisions: grid.config.beatDivisions,
+				repetitions: grid.config.repetitions,
 			},
 			rows: savedGridRows
 		};

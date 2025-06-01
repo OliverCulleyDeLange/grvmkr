@@ -5,18 +5,21 @@ import {
 	type Grid,
 	type GridCell,
 	type GridRow,
+	type InstrumentId,
+	type InstrumentWithId,
 	type SavedGridCellV3,
-	type SavedGridV3
+	type SavedGridV3,
+	type SavedGridV5
 } from '$lib';
 
 // Maps a saved grid from a save file to grid models
-export function mapSavedGridV3ToGrid(
-	savedGrid: SavedGridV3,
-	instrumentManager: InstrumentStore
+export function mapSavedGridV5ToGrid(
+	savedGrid: SavedGridV5,
+	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
 	let newRows: GridRow[] = savedGrid.rows
 		.map((savedRow, i) => {
-			let instrument = instrumentManager.getInstruments().get(savedRow.instrument_id);
+			let instrument = instruments.get(savedRow.instrument_id);
 			if (instrument) {
 				let gridRow: GridRow = {
 					instrument: instrument,
@@ -36,13 +39,14 @@ export function mapSavedGridV3ToGrid(
 	let grid: Grid = {
 		// We regenerate grid IDs to ensure uniqueness, because people can export multiple files from the same working file
 		id: generateGridId(),
-		index: ,
+		index: savedGrid.index,
 		config: {
 			name: savedGrid.config.name,
 			bpm: savedGrid.config.bpm,
 			bars: savedGrid.config.bars,
 			beatsPerBar: savedGrid.config.beats_per_bar,
-			beatDivisions: savedGrid.config.beat_divisions
+			beatDivisions: savedGrid.config.beat_divisions,
+			repetitions: savedGrid.config.repetitions,
 		},
 		rows: newRows,
 		msPerBeatDivision: calculateMsPerBeatDivision(

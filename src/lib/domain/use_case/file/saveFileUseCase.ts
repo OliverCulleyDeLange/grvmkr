@@ -1,10 +1,11 @@
 import {
 	AudioDb,
-	serialiseToSaveFileV4,
+	serialiseToSaveFileV5,
 	type FileRepositoryI,
 	type GridRepositoryI,
 	type InstrumentRepositoryI,
-	type SaveFileV4
+	type SaveFileV4,
+	type SaveFileV5
 } from '$lib';
 import JSZip from 'jszip';
 
@@ -14,7 +15,7 @@ export async function saveFileUseCase(
 	instrumentStore: InstrumentRepositoryI
 ) {
 	const audioDb = new AudioDb();
-	const saveFile: SaveFileV4 = serialiseToSaveFileV4(
+	const saveFile: SaveFileV5 = serialiseToSaveFileV5(
 		fileStore.getFile().name,
 		Array.from(gridStore.getGrids().values()),
 		Array.from(instrumentStore.getInstruments().values())

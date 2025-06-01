@@ -19,6 +19,7 @@ export type GridConfigDto = {
 	bars: number;
 	beatsPerBar: number;
 	beatDivisions: number;
+	repetitions: number;
 };
 
 export type GridRowDto = {

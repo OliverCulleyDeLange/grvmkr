@@ -35,7 +35,8 @@ export function configFromDto(configDto: GridConfigDto): GridConfig {
 		bpm: configDto.bpm,
 		bars: configDto.bars,
 		beatsPerBar: configDto.beatsPerBar,
-		beatDivisions: configDto.beatDivisions
+		beatDivisions: configDto.beatDivisions,
+		repetitions: configDto.repetitions,
 	};
 }
 

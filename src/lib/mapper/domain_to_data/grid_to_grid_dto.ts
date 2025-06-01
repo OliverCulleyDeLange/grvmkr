@@ -30,7 +30,8 @@ export function mapGridConfigToGridConfigDto(config: GridConfig): GridConfigDto 
 		bpm: config.bpm,
 		bars: config.bars,
 		beatsPerBar: config.beatsPerBar,
-		beatDivisions: config.beatDivisions
+		beatDivisions: config.beatDivisions,
+		repetitions: config.repetitions
 	};
 }
 

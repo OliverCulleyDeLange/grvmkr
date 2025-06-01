@@ -1,5 +1,5 @@
 import type { SavedHitV1 } from '$lib/data/types/serialisation/savefile_v1';
-import type { HitTypeWithId } from '../../domain/types/instrument_domain';
+import type { HitTypeWithId } from '../../../domain/types/instrument_domain';
 
 export function mapSavedHitV1ToHitTypeWithId(
 	savedHit: SavedHitV1,
