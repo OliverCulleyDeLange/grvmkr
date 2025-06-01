@@ -1,4 +1,4 @@
-import type { CellToolsRepositoryI } from '$lib/domain/interface/CellToolsRepository';
+import type { CellToolsRepositoryI } from '$lib/domain/interface/CellToolsRepositoryI';
 import type { FileRepositoryI } from '$lib/domain/interface/FileRepositoryI';
 import type { GridRepositoryI } from '$lib/domain/interface/GridRepositoryI';
 import type { InstrumentRepositoryI } from '$lib/domain/interface/InstrumentRepositoryI';

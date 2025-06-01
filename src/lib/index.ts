@@ -30,7 +30,7 @@ export * from './domain/interface/FileRepositoryI';
 export * from './domain/interface/GridRepositoryI';
 export * from './domain/interface/InstrumentRepositoryI';
 export * from './domain/interface/PlaybackControllerI';
-export * from './domain/interface/CellToolsRepository';
+export * from './domain/interface/CellToolsRepositoryI';
 
 export * from './domain/use_case/playback/togglePlayFileFromRecentlyPlayedUseCase';
 export * from './domain/use_case/playback/togglePlayFileUseCase';

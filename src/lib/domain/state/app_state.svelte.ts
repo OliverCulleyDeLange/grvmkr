@@ -247,6 +247,8 @@ export class AppStateStore {
 		}
 	}
 
+	// TODO Extract these below into use cases
+
 	updateCellTools() {
 		this.cellToolsStore.updateCellTools(this.gridStore, this.instrumentStore);
 	}

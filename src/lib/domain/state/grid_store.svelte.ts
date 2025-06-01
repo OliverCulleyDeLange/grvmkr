@@ -17,6 +17,7 @@ import { SvelteMap } from 'svelte/reactivity';
 import type { GridRepositoryI } from '../interface/GridRepositoryI';
 
 // Responsible for storing, and modifying grids
+// TODO Split this monstrosity out into smaller chunks
 export class GridStore implements GridRepositoryI {
 	private onEvent: OnEvent;
 	private gridRepository: GridRepository = new GridRepository();
