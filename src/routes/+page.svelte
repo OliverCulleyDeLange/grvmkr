@@ -14,13 +14,13 @@
 	import '$lib/util/polyfills';
 	import type { AppEvent } from '$lib/domain/event';
 	import { onMount } from 'svelte';
-	import Button from './ui_elements/Button.svelte';
-	import Grid from './ui_elements/Grid.svelte';
-	import GridConfig from './ui_elements/GridConfig.svelte';
-	import Instruments from './ui_elements/Instruments.svelte';
-	import Legend from './ui_elements/Legend.svelte';
-	import Toolbar from './ui_elements/Toolbar.svelte';
-	import GrooveSelector from './ui_elements/GrooveSelector.svelte';
+	import Button from './ui/ui_elements/Button.svelte';
+	import Grid from './ui/grid/Grid.svelte';
+	import GridConfig from './ui/grid/GridConfig.svelte';
+	import Instruments from './ui/Instruments.svelte';
+	import Legend from './ui/Legend.svelte';
+	import Toolbar from './ui/toolbar/Toolbar.svelte';
+	import GrooveSelector from './ui/overlay/GrooveSelector.svelte';
 	import { registerAppKeyboardShortcuts } from '$lib/util/keyboard_shortcuts';
 
 	let appStateStore: AppStateStore = new AppStateStore();

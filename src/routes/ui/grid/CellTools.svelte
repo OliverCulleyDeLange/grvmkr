@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CellToolsEvent, UiEvent, type OnUiEvent } from '$lib';
 	import type { CellToolsUi } from '$lib';
-	import Button from './Button.svelte';
+	import Button from '../ui_elements/Button.svelte';
 
 	let {
 		ui,

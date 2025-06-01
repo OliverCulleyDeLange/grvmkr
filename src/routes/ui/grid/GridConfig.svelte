@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { GridEvent, type GridUi, type OnUiEvent } from '$lib';
-	import Button from './Button.svelte';
+	import Button from '../ui_elements/Button.svelte';
 
 	let {
 		gridUi,

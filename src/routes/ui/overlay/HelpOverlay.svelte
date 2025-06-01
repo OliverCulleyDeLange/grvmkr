@@ -43,16 +43,17 @@
 		<p>
 			If you're on an iPhone and can't hear anything, make sure your silent switch isn't enabled.
 		</p>
+		<br />
 		<p>
 			If you're having unresolvable problems, you can reset the app state - but this will delete everything, and i mean EVERYTHING. 
 		</p>
-		<button class="btn btn-outline btn-sm" onclick={reset}>Reset</button>
+		<button class="btn btn-outline btn-sm my-2" onclick={reset}>Reset</button>
 		<p class="py-4">
 			This is not a commercial product, but a hobby project. If you notice any issues or think of a
 			way this could be more useful, please feel free to reach out at
 			<a class="link link-primary" href="mailto:grvmkr@oliverdelange.co.uk"
 				>grvmkr@oliverdelange.co.uk</a
-			>, and i may or may not respond 😇
+			>
 		</p>
 		<p>
 			The code is on <a

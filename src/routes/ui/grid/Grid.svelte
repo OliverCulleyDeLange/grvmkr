@@ -1,11 +1,15 @@
 <script lang="ts">
+  import GridRowTools from './GridRowTools.svelte';
+
+  import BeatIndicator from './BeatIndicator.svelte';
+
 	import { GridEvent, type CellLocator, type GridUi, type OnUiEvent } from '$lib';
 	import type { OnEvent } from '$lib/domain/event';
 	import { onMount } from 'svelte';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
 	import VolumeControls from './VolumeControls.svelte';
-	import Button from './Button.svelte';
+	import Button from '../ui_elements/Button.svelte';
 
 	let {
 		gridUi,
@@ -92,48 +96,12 @@
 				</button>
 				<div class="beat-indicator">
 					{#each section.beatIndicator as indicator}
-						<div
-							class="flex h-6 items-center justify-center print:border print:border-gray-400"
-							class:bg-green-300={indicator.playing}
-							class:bg-gray-100={!indicator.playing &&
-								!indicator.isBeat &&
-								!indicator.isFirstBeatOfBar}
-							class:bg-gray-300={!indicator.playing && indicator.isBeat}
-							class:bg-gray-400={!indicator.playing && indicator.isFirstBeatOfBar}
-							class:text-gray-800={!indicator.playing && indicator.isFirstBeatOfBar}
-							class:text-gray-600={!indicator.playing && indicator.isBeat}
-						>
-							{indicator.text}
-						</div>
+						<BeatIndicator {indicator} />
 					{/each}
 				</div>
 
 				{#each section.sectionRows as row}
-					<div class={'select-none px-2 text-xs print:text-lg'}>
-						<div>{row.instrumentName}</div>
-						<div class="flex gap-2">
-							<VolumeControls
-								model={row.volume}
-								onMute={() =>
-									onEvent({
-										event: GridEvent.MuteInstrument,
-										instrumentId: row.instrumentId
-									})}
-								onSolo={() =>
-									onEvent({
-										event: GridEvent.SoloInstrument,
-										instrumentId: row.instrumentId
-									})}
-								onChange={(volume, delta) =>
-									onEvent({
-										event: GridEvent.VolumeChanged,
-										instrumentId: row.instrumentId,
-										volume: volume,
-										delta: delta
-									})}
-							/>
-						</div>
-					</div>
+					<GridRowTools {row} {onEvent} />
 
 					{#each row.gridCells as cell}
 						<GridCell

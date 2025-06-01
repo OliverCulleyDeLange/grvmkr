@@ -1,6 +1,13 @@
 <script lang="ts">
+  import ResetConfirmation from './ResetConfirmation.svelte';
+
+  import FileNameInput from './PlayAndFileName.svelte';
+
+  import ToolbarErrors from './ToolbarErrors.svelte';
+
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
-	import HelpOverlay from './HelpOverlay.svelte';
+	import HelpOverlay from '../overlay/HelpOverlay.svelte';
+	import PlayAndFileName from './PlayAndFileName.svelte';
 
 	let {
 		toolbarUi,
@@ -15,12 +22,7 @@
 	} = $props();
 
 	let showHelp: boolean = $state(false);
-	let fileName: string = $state(toolbarUi.fileName);
 	let showResetConfirmation: boolean = $state(false);
-
-	$effect(() => {
-		fileName = toolbarUi.fileName;
-	});
 
 	function load(event: Event) {
 		const fileInput = event.target as HTMLInputElement;
@@ -29,14 +31,6 @@
 			onEvent({ event: ToolbarEvent.LoadFile, file });
 			fileInput.value = '';
 		}
-	}
-
-	function onFilenameChange() {
-		onEvent({ event: ToolbarEvent.FileNameChanged, fileName: fileName });
-	}
-
-	function togglePlayingFile() {
-		onEvent({ event: ToolbarEvent.TogglePlayingFile });
 	}
 
 	function reset() {
@@ -90,58 +84,12 @@
 	</div>
 </div>
 
-<!-- TODO Errors are floating and scrollable  -->
-{#if toolbarUi.errors.length > 0}
-	<div class="my-4 flex flex-col gap-2">
-		{#each toolbarUi.errors as error}
-			<div class="alert alert-error flex items-start justify-between gap-4">
-				<span>{error.message}</span>
-				<button
-					class="btn btn-circle btn-ghost btn-xs"
-					onclick={() => onEvent({ event: ToolbarEvent.DismissError, id: error.id })}
-				>
-					✕
-				</button>
-			</div>
-		{/each}
-	</div>
-{/if}
+<ToolbarErrors errorsUi={toolbarUi.errors} {onEvent}/>
 
-<div class="flex flex-row gap-2 mb-2 w-full print:hidden">
-	<button onclick={togglePlayingFile} class="btn btn-outline btn-xl">
-		{toolbarUi.playingFile ? 'Stop File' : 'Play File'}
-	</button>
-	<!-- Filename input -->
-	<div class="relative w-full">
-		<input
-			id="fileName"
-			bind:value={fileName}
-			oninput={onFilenameChange}
-			placeholder=" "
-			class="input-xl peer input input-bordered w-full"
-		/>
-		<label for="fileName" class="absolute left-2 top-1 text-[8px] text-gray-600"> File name </label>
-	</div>
-</div>
-
-<!-- Print only file name -->
-<div class="hidden print:block">
-	<h1 class="text-4xl">{fileName}</h1>
-</div>
+<PlayAndFileName {toolbarUi} {onEvent} />
 
 {#if showResetConfirmation}
-	<dialog open class="modal">
-		<div class="modal-box border border-2 border-gray-400">
-			<h3 class="text-lg font-bold">This will reset and delete EVERYTHING</h3>
-			<p class="py-4">R u sure?</p>
-			<button onclick={reset} class={`btn btn-outline m-2`}>
-				Yes, reset and delete everything</button
-			>
-		</div>
-		<form method="dialog" class="modal-backdrop">
-			<button onclick={() => (showResetConfirmation = false)}>close</button>
-		</form>
-	</dialog>
+	<ResetConfirmation {reset} close={() => showResetConfirmation = false}/>
 {/if}
 
 {#if showHelp}
