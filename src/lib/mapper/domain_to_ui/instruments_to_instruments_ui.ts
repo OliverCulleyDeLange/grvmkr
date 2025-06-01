@@ -11,9 +11,8 @@ export function mapInstrumentsUi(
 	instruments: Map<InstrumentId, InstrumentWithId>
 ): InstrumentsUi {
 	const ui: InstrumentsUi = {
-		instruments: instruments.values()
+		instruments: Array.from(instruments.values())
 		.map((instrument) => mapInstrumentUi(instrument))
-		.toArray()
 		.sort((a,b) => a.gridIndex - b.gridIndex)
 	}
 	return ui;

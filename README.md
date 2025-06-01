@@ -32,10 +32,10 @@
 
 
 ### Coming soon (maybe)
+- Groove repetitions for playback
 - Example groove (samba)
 - Right click / hold press to delete
 - Premade grooves for classic rhythms for community samba bands
-- Groove repetitions for playback
 - Configurable instruments per grid / groove
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
