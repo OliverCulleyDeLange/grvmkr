@@ -37,7 +37,7 @@ export function mapSavedGridV2ToGrid(
 		.filter((r) => r != null);
 	let grid: Grid = {
 		id: generateGridId(),
-		index: gridIndex, 
+		index: gridIndex,
 		config: {
 			name: savedGrid.config.name,
 			bpm: savedGrid.config.bpm,
@@ -55,7 +55,7 @@ export function mapSavedGridV2ToGrid(
 			savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions),
 		playing: false,
 		currentlyPlayingColumn: 0,
-		toolsExpanded: false,
+		toolsExpanded: false
 	};
 	return grid;
 }

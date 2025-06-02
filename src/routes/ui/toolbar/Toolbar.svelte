@@ -43,7 +43,7 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 mb-2 sm:flex-row print:hidden">
+<div class="mb-2 flex flex-col gap-4 sm:flex-row print:hidden">
 	<h1 class="text-3xl">GrvMkr</h1>
 
 	<div class="flex flex-row flex-wrap gap-2">

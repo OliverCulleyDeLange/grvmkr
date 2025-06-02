@@ -26,7 +26,7 @@ export function mapGridDtoToGrid(
 		msPerBeatDivision: gridDto.msPerBeatDivision,
 		gridCols: gridDto.gridCols,
 		playing: false, // Ignore whatever play state from the db
-		toolsExpanded: false,
+		toolsExpanded: false
 	};
 }
 
@@ -37,7 +37,7 @@ export function configFromDto(configDto: GridConfigDto): GridConfig {
 		bars: configDto.bars,
 		beatsPerBar: configDto.beatsPerBar,
 		beatDivisions: configDto.beatDivisions,
-		repetitions: configDto.repetitions,
+		repetitions: configDto.repetitions
 	};
 }
 

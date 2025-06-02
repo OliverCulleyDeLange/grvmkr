@@ -86,20 +86,20 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	toggleToolsExpansion(id: string) {
-		this.updateGrid(id, (grid) => grid.toolsExpanded = !grid.toolsExpanded)
+		this.updateGrid(id, (grid) => (grid.toolsExpanded = !grid.toolsExpanded));
 	}
 
 	// TODO Extract this.shouldScrollToGridId and these two functions as a poc for splitting large stores
 	getGridToScrollTo(): GridId | null {
-		return this.shouldScrollToGridId
+		return this.shouldScrollToGridId;
 	}
 
 	onScrolledToGrid() {
-		this.shouldScrollToGridId = null
+		this.shouldScrollToGridId = null;
 	}
 
 	scrollToGrid(id: GridId) {
-		this.shouldScrollToGridId = id
+		this.shouldScrollToGridId = id;
 	}
 
 	async initialise(
@@ -508,9 +508,9 @@ export class GridStore implements GridRepositoryI {
 			newGrid.index = this.getNextGridIndex();
 			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';
-			newGrid.playing = false
+			newGrid.playing = false;
 			await this.addGrid(newGrid);
-			this.shouldScrollToGridId = newGrid.id
+			this.shouldScrollToGridId = newGrid.id;
 		}
 	}
 
@@ -669,7 +669,7 @@ export class GridStore implements GridRepositoryI {
 	async moveGrid(direction: 'up' | 'down', gridId: GridId) {
 		let movingGrid = this.grids.get(gridId);
 		if (!movingGrid) {
-			console.warn(`Couldn't move grid ${direction} as no grid with id found`, gridId)
+			console.warn(`Couldn't move grid ${direction} as no grid with id found`, gridId);
 			return;
 		}
 		let movingIndex = movingGrid.index;
@@ -680,12 +680,15 @@ export class GridStore implements GridRepositoryI {
 		} else if (direction === 'up') {
 			swappingIndex = movingIndex - 1;
 		} else {
-			console.error(`Unexpected code path`)
+			console.error(`Unexpected code path`);
 			return;
 		}
 		let swappingGrid = [...this.grids.values()].find((i) => i.index == swappingIndex);
 		if (!swappingGrid) {
-			console.warn(`Couldn't move grid ${direction} as no grid with index ${swappingIndex} found in grids`, $state.snapshot(this.grids))
+			console.warn(
+				`Couldn't move grid ${direction} as no grid with index ${swappingIndex} found in grids`,
+				$state.snapshot(this.grids)
+			);
 			return;
 		}
 		await this.updateGrid(movingGrid.id, (i) => {
@@ -694,7 +697,7 @@ export class GridStore implements GridRepositoryI {
 		await this.updateGrid(swappingGrid.id, (i) => {
 			i.index = movingIndex;
 		});
-		this.shouldScrollToGridId = movingGrid.id
+		this.shouldScrollToGridId = movingGrid.id;
 	}
 
 	async reset() {

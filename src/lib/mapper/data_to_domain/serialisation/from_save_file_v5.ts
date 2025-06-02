@@ -46,7 +46,7 @@ export function mapSavedGridV5ToGrid(
 			bars: savedGrid.config.bars,
 			beatsPerBar: savedGrid.config.beats_per_bar,
 			beatDivisions: savedGrid.config.beat_divisions,
-			repetitions: savedGrid.config.repetitions,
+			repetitions: savedGrid.config.repetitions
 		},
 		rows: newRows,
 		msPerBeatDivision: calculateMsPerBeatDivision(
@@ -57,7 +57,7 @@ export function mapSavedGridV5ToGrid(
 			savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions),
 		playing: false,
 		currentlyPlayingColumn: 0,
-		toolsExpanded: false,
+		toolsExpanded: false
 	};
 	return grid;
 }

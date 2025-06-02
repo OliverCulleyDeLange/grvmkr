@@ -25,7 +25,7 @@ export function buildDefaultGrid(
 		gridCols: 16,
 		playing: false,
 		currentlyPlayingColumn: 0,
-		toolsExpanded: false,
+		toolsExpanded: false
 	};
 	return grid;
 }

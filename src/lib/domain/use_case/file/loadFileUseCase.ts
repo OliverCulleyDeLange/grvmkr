@@ -21,7 +21,7 @@ import {
 	type SaveFileV2,
 	type SaveFileV3,
 	type SaveFileV4,
-    type SaveFileV5
+	type SaveFileV5
 } from '$lib';
 import JSZip from 'jszip';
 

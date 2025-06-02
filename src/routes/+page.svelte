@@ -44,9 +44,9 @@
 		const id = appStateStore.gridStore.getGridToScrollTo();
 		if (id) {
 			const el = document.getElementById(id);
-			if (el){
+			if (el) {
 				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-				onEvent({ event: GridEvent.ScrolledToGrid })
+				onEvent({ event: GridEvent.ScrolledToGrid });
 			}
 		}
 	});

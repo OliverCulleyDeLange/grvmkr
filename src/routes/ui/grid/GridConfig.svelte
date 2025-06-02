@@ -23,7 +23,7 @@
 	const minRepetitions = 1;
 	const maxRepetitions = 32;
 	let repetitions = $state(1);
-	
+
 	const minBpm = 20;
 	const maxBpm = 200;
 	let bpm = $state(120);
@@ -103,7 +103,9 @@
 			class="input input-sm input-bordered w-0 min-w-0 flex-1"
 		/>
 
-		<Button onClick={() => onEvent({event: GridEvent.ToggleToolsExpansion, id: gridUi.id})}>Tools</Button>
+		<Button onClick={() => onEvent({ event: GridEvent.ToggleToolsExpansion, id: gridUi.id })}
+			>Tools</Button
+		>
 	</div>
 	<!-- Grid config -->
 	{#if gridUi.toolsExpanded}
@@ -121,7 +123,7 @@
 					class="input input-xs input-bordered w-16"
 				/>
 			</div>
-			
+
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div>BPM:</div>
 				<input

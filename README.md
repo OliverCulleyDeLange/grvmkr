@@ -32,6 +32,7 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
+
 - Example groove (samba)
 - Right click / hold press to delete
 - Premade grooves for classic rhythms for community samba bands
@@ -39,12 +40,12 @@
 - Undo / Redo? In case you delete something you didn't mean to
 - Record and trim sample into instrument
 
-
 # Analytics
-I'm using goatcounter to provide simple analytics on who's using the tool. 
+
+I'm using goatcounter to provide simple analytics on who's using the tool.
 [grvmkr.goatcounter.com](https://grvmkr.goatcounter.com/)
 
-Its fully anonymous and doesn't collect any personal information. I've also made it public so anyone can see the data i'm collecting. 
+Its fully anonymous and doesn't collect any personal information. I've also made it public so anyone can see the data i'm collecting.
 
 ## Developing
 

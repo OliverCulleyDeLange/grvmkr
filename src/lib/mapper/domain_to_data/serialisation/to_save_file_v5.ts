@@ -46,7 +46,7 @@ function mapGridsToSavedGridV5(grids: Grid[]): SavedGridV5[] {
 				bars: grid.config.bars,
 				beats_per_bar: grid.config.beatsPerBar,
 				beat_divisions: grid.config.beatDivisions,
-				repetitions: grid.config.repetitions,
+				repetitions: grid.config.repetitions
 			},
 			rows: savedGridRows
 		};

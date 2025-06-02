@@ -1,4 +1,11 @@
-import type { CellToolsEvents, GridEvents, InstrumentEvents, ProblemEvent, ProblemEvents, ToolbarEvents } from '$lib';
+import type {
+	CellToolsEvents,
+	GridEvents,
+	InstrumentEvents,
+	ProblemEvent,
+	ProblemEvents,
+	ToolbarEvents
+} from '$lib';
 
 export type OnUiEvent = (event: UiEvents) => void;
 
