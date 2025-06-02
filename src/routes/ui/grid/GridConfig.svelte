@@ -18,7 +18,6 @@
 		beatNoteFraction = gridUi.config.beatDivisions;
 	});
 
-	let gridConfigExpanded: boolean = $state(false);
 	let gridName: string = $state(gridUi.config.name);
 
 	const minBpm = 20;
@@ -92,10 +91,10 @@
 			class="input input-sm input-bordered w-0 min-w-0 flex-1"
 		/>
 
-		<Button onClick={() => (gridConfigExpanded = !gridConfigExpanded)}>Tools</Button>
+		<Button onClick={() => onEvent({event: GridEvent.ToggleToolsExpansion, id: gridUi.id})}>Tools</Button>
 	</div>
 	<!-- Grid config -->
-	{#if gridConfigExpanded}
+	{#if gridUi.toolsExpanded}
 		<!-- BPM / Bars / Grid Size  -->
 		<div class="grid-config flex w-full flex-col items-start gap-2 sm:flex-row">
 			<div class="mx-4 flex flex-nowrap items-center gap-2">

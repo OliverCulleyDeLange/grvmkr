@@ -32,6 +32,8 @@ export class GridStore implements GridRepositoryI {
 	private currentlySelectedCells: CellLocator[] = $state([]);
 	private selectionStartCell: CellLocator | null = $state(null);
 	private copiedCells: GridCell[] = [];
+	// When we move or duplicate a grid, we should scroll to the grids new position
+	public shouldScrollToGridId: GridId | null = $state(null);
 
 	getCurrentlySelectedCells(): CellLocator[] {
 		return this.currentlySelectedCells;
@@ -81,6 +83,19 @@ export class GridStore implements GridRepositoryI {
 			this.currentlyPlayingGrid.playing = false;
 			this.currentlyPlayingGrid = null;
 		}
+	}
+
+	toggleToolsExpansion(id: string) {
+		this.updateGrid(id, (grid) => grid.toolsExpanded = !grid.toolsExpanded)
+	}
+
+	// TODO Extract this.shouldScrollToGridId and these two functions as a poc for splitting large stores
+	getGridToScrollTo(): GridId | null {
+		return this.shouldScrollToGridId
+	}
+
+	onScrolledToGrid() {
+		this.shouldScrollToGridId = null
 	}
 
 	async initialise(
@@ -489,6 +504,7 @@ export class GridStore implements GridRepositoryI {
 			newGrid.index = this.getNextGridIndex();
 			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';
+			newGrid.playing = false
 			this.addGrid(newGrid);
 		}
 	}
@@ -657,16 +673,17 @@ export class GridStore implements GridRepositoryI {
 			return;
 		}
 		let swappingGrid = [...this.grids.values()].find((i) => i.index == swappingIndex);
-		if (!swappingGrid) { 
+		if (!swappingGrid) {
 			console.warn(`Couldn't move grid ${direction} as no grid with index ${swappingIndex} found in grids`, $state.snapshot(this.grids))
 			return;
-		 }
+		}
 		await this.updateGrid(movingGrid.id, (i) => {
 			i.index = swappingIndex;
 		});
 		await this.updateGrid(swappingGrid.id, (i) => {
 			i.index = movingIndex;
 		});
+		this.shouldScrollToGridId = movingGrid.id
 	}
 
 	async reset() {

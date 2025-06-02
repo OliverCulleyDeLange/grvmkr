@@ -25,7 +25,8 @@ export function mapGridDtoToGrid(
 		currentlyPlayingColumn: gridDto.currentlyPlayingColumn,
 		msPerBeatDivision: gridDto.msPerBeatDivision,
 		gridCols: gridDto.gridCols,
-		playing: false // Ignore whatever play state from the db
+		playing: false, // Ignore whatever play state from the db
+		toolsExpanded: false,
 	};
 }
 

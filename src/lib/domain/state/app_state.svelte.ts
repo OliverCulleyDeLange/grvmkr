@@ -131,6 +131,12 @@ export class AppStateStore {
 			case GridEvent.SoloInstrument:
 				this.instrumentStore.onToggleSolo(event.instrumentId);
 				break;
+			case GridEvent.ToggleToolsExpansion:
+				this.gridStore.toggleToolsExpansion(event.id)
+				break;
+			case GridEvent.ScrolledToGrid:
+				this.gridStore.onScrolledToGrid()
+				break;
 			case InstrumentEvent.RemoveInstrument:
 				removeInstrumentUseCase(
 					event.instrumentId,

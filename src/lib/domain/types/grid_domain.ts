@@ -6,6 +6,7 @@ export type Grid = {
 	id: GridId;
 	index: number;
 	config: GridConfig;
+	toolsExpanded: boolean;
 	rows: GridRow[];
 	msPerBeatDivision: number;
 	gridCols: number;

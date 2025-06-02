@@ -56,7 +56,8 @@ export function mapRowsToGridUi(
 		gridCols: grid.gridCols,
 		playing: grid.playing,
 		currentlyPlayingColumn: grid.currentlyPlayingColumn,
-		cellTools: mapCellToolsUi(cellTools, grid.id)
+		cellTools: mapCellToolsUi(cellTools, grid.id),
+		toolsExpanded: grid.toolsExpanded,
 	};
 	return ui;
 }

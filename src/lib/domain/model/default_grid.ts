@@ -24,7 +24,8 @@ export function buildDefaultGrid(
 		msPerBeatDivision: 125,
 		gridCols: 16,
 		playing: false,
-		currentlyPlayingColumn: 0
+		currentlyPlayingColumn: 0,
+		toolsExpanded: false,
 	};
 	return grid;
 }

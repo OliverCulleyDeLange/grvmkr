@@ -58,7 +58,8 @@ export function mapSavedGridV1ToGrid(
 		gridCols:
 			savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions),
 		playing: false,
-		currentlyPlayingColumn: 0
+		currentlyPlayingColumn: 0,
+		toolsExpanded: false,
 	};
 	return grid;
 }

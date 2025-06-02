@@ -16,6 +16,8 @@ export type GridEvents =
 	| VolumeChanged
 	| MuteInstrument
 	| SoloInstrument
+	| ToggleToolsExpansion
+	| ScrolledToGrid
 	| MoveGridDown
 	| MoveGridUp;
 
@@ -35,7 +37,9 @@ export enum GridEvent {
 	MuteInstrument = 'MuteInstrument',
 	SoloInstrument = 'SoloInstrument',
 	MoveGridUp = 'MoveGridUp',
-	MoveGridDown = 'MoveGridDown'
+	MoveGridDown = 'MoveGridDown',
+	ToggleToolsExpansion = 'ToggleToolsExpansion',
+	ScrolledToGrid = 'ScrolledToGrid'
 }
 
 export type TogglePlayingGrid = {
@@ -113,4 +117,13 @@ export type MuteInstrument = {
 export type SoloInstrument = {
 	event: GridEvent.SoloInstrument;
 	instrumentId: string;
+};
+
+export type ToggleToolsExpansion = {
+	event: GridEvent.ToggleToolsExpansion;
+	id: GridId;
+};
+
+export type ScrolledToGrid = {
+	event: GridEvent.ScrolledToGrid;
 };

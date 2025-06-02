@@ -40,6 +40,17 @@
 		};
 	});
 
+	$effect(() => {
+		const id = appStateStore.gridStore.getGridToScrollTo();
+		if (id) {
+			const el = document.getElementById(id);
+			if (el){
+				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				onEvent({ event: GridEvent.ScrolledToGrid })
+			}
+		}
+	});
+
 	let toolbarUi = $derived(
 		mapToolbarUi(
 			appStateStore.fileStore.file.name,
@@ -71,7 +82,7 @@
 	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">
 			{#each gridsUi.grids as gridUi}
-				<div class="break-inside-avoid">
+				<div id={gridUi.id} class="break-inside-avoid">
 					<GridConfig {gridUi} {onEvent} />
 					<Legend instrumentManager={appStateStore.instrumentStore} />
 					<Grid {gridUi} {onEvent} />

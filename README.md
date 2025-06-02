@@ -31,9 +31,6 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-- When duplicating grid
-  - The playing state should be set to false
-  - We should scroll down to the new grid
 - When moving grids up or down, scroll to the one you just moved's new position and open grid tools
 - Groove repetitions for playback
 - Example groove (samba)
