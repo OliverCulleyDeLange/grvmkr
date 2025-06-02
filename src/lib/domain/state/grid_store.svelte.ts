@@ -533,6 +533,12 @@ export class GridStore implements GridRepositoryI {
 		}
 	}
 
+	updateRepetitions(gridId: string, repetitions: number) {
+		this.updateGrid(gridId, (grid: Grid) => {
+			grid.config.repetitions = repetitions;
+		});
+	}
+
 	updateBpm(gridId: GridId, bpm: number) {
 		this.updateGrid(gridId, (grid: Grid) => {
 			grid.config.bpm = bpm;

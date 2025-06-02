@@ -58,7 +58,7 @@ export class PlaybackStore implements PlaybackControllerI {
 		for (const grid of grids.sort((a, b) => a.index - b.index)) {
 			await new Promise<void>((resolve) => {
 				onPlay?.(grid);
-				this.play(grid, 1, (grid: Grid) => {
+				this.play(grid, grid.config.repetitions, (grid: Grid) => {
 					resolve();
 					onStop?.(grid);
 				});

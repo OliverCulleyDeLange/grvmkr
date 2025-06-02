@@ -103,6 +103,9 @@ export class AppStateStore {
 					syncGrids(this.fileStore, this.gridStore);
 				});
 				break;
+			case GridEvent.RepetitionsChanged:
+				this.gridStore.updateRepetitions(event.gridId, event.repetitions);
+				break;
 			case GridEvent.BpmChanged:
 				this.gridStore.updateBpm(event.gridId, event.bpm);
 				this.playbackStore.restartInterval();

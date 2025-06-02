@@ -14,6 +14,7 @@
   - Choose the BPM, number of bars, and grid size for each grid individually.
   - Duplicate any grid
   - Move grids up or down in the file
+  - Choose how many repetitions of a grid to play when 'play file' is used (individual grids still loop infinitley when 'play grid' selected)
 - ✅ Keyboard shortcuts:
   - Copy (ctrl/cmd + C) & Paste (ctrl/cmd + V). Also available in the grid toolbar for mobile users.
   - Space to play / pause
@@ -31,8 +32,6 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-- When moving grids up or down, scroll to the one you just moved's new position and open grid tools
-- Groove repetitions for playback
 - Example groove (samba)
 - Right click / hold press to delete
 - Premade grooves for classic rhythms for community samba bands

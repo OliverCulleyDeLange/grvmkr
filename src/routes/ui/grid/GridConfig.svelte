@@ -20,6 +20,10 @@
 
 	let gridName: string = $state(gridUi.config.name);
 
+	const minRepetitions = 1;
+	const maxRepetitions = 32;
+	let repetitions = $state(1);
+	
 	const minBpm = 20;
 	const maxBpm = 200;
 	let bpm = $state(120);
@@ -38,6 +42,14 @@
 	}
 	function onNameChange() {
 		onEvent({ event: GridEvent.NameChanged, gridId: gridUi.id, name: gridName });
+	}
+	function onRepetitionsChange() {
+		repetitions = Math.round(Math.min(maxRepetitions, Math.max(minRepetitions, repetitions)));
+		onEvent({
+			event: GridEvent.RepetitionsChanged,
+			repetitions: repetitions,
+			gridId: gridUi.id
+		});
 	}
 	function onBpmChange() {
 		bpm = Math.round(Math.min(maxBpm, Math.max(minBpm, bpm)));
@@ -96,7 +108,20 @@
 	<!-- Grid config -->
 	{#if gridUi.toolsExpanded}
 		<!-- BPM / Bars / Grid Size  -->
-		<div class="grid-config flex w-full flex-col items-start gap-2 sm:flex-row">
+		<div class="grid-config flex w-full flex-col flex-wrap items-start gap-2 sm:flex-row">
+			<div class="mx-4 flex flex-nowrap items-center gap-2">
+				<div>Repetitions:</div>
+				<input
+					type="number"
+					step="1"
+					bind:value={repetitions}
+					onchange={onRepetitionsChange}
+					min={minRepetitions}
+					max={maxRepetitions}
+					class="input input-xs input-bordered w-16"
+				/>
+			</div>
+			
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div>BPM:</div>
 				<input

@@ -10,6 +10,7 @@ export type GridEvents =
 	| AddGrid
 	| DuplicateGrid
 	| BpmChanged
+	| RepetitionsChanged
 	| BarsChanged
 	| GridSizeChanged
 	| NameChanged
@@ -29,6 +30,7 @@ export enum GridEvent {
 	AddGrid = 'AddGrid',
 	DuplicateGrid = 'DuplicateGrid',
 	RemoveGrid = 'RemoveGrid',
+	RepetitionsChanged = 'RepetitionsChanged',
 	BpmChanged = 'BpmChanged',
 	BarsChanged = 'BarsChanged',
 	GridSizeChanged = 'GridSizeChanged',
@@ -71,6 +73,11 @@ export type AddGrid = {
 export type DuplicateGrid = {
 	event: GridEvent.DuplicateGrid;
 	gridId: GridId;
+};
+export type RepetitionsChanged = {
+	event: GridEvent.RepetitionsChanged;
+	gridId: GridId;
+	repetitions: number;
 };
 export type BpmChanged = {
 	event: GridEvent.BpmChanged;
