@@ -15,9 +15,10 @@ export class InstrumentRepository {
 
 	async saveInstrument(instrument: InstrumentWithId): Promise<void> {
 		// Save HitDto's first
-		const hitDtos: HitDto[] = [...instrument.hitTypes.values()].map((hitType) =>
-			mapHitTypeToHitDto(hitType)
-		);
+		const hitDtos: HitDto[] = Array.from(instrument.hitTypes.values())
+			.map((hitType) =>
+				mapHitTypeToHitDto(hitType)
+			);
 		await Promise.all(hitDtos.map((hit) => this.hitTable.saveHit(hit)));
 
 		// Then save InstrumentDto

@@ -11,7 +11,7 @@
 	let ui: LegendUi = $derived.by(() => {
 		let instruments: LegendInstrument[] = [...instrumentManager.getInstruments().values()]
 			.map((instrument) => {
-				let hits: string[] = [...instrument.hitTypes.values()]
+				let hits: string[] = Array.from(instrument.hitTypes.values())
 					.map((hit) => (hit.description ? ` ${hit.key}: ${hit.description}` : null))
 					.filter((i) => i != null);
 				let legendInstrument: LegendInstrument = {

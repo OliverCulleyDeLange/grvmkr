@@ -21,10 +21,8 @@ function mapInstrumentUi(instrument: InstrumentWithId): InstrumentUi {
 		id: instrument.id,
 		name: instrument.name,
 		gridIndex: instrument.gridIndex,
-		hitTypes: instrument.hitTypes
-			.values()
+		hitTypes: Array.from(instrument.hitTypes.values())
 			.map((h) => mapHitTypeUi(h))
-			.toArray()
 	};
 	return ui;
 }
