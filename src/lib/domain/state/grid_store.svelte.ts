@@ -505,7 +505,8 @@ export class GridStore implements GridRepositoryI {
 			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';
 			newGrid.playing = false
-			this.addGrid(newGrid);
+			await this.addGrid(newGrid);
+			this.shouldScrollToGridId = newGrid.id
 		}
 	}
 
