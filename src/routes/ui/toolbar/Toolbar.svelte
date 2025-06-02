@@ -1,28 +1,24 @@
 <script lang="ts">
-	import ResetConfirmation from './ResetConfirmation.svelte';
-
-	import FileNameInput from './PlayAndFileName.svelte';
-
+	
+	
 	import ToolbarErrors from './ToolbarErrors.svelte';
 
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
-	import HelpOverlay from '../overlay/HelpOverlay.svelte';
 	import PlayAndFileName from './PlayAndFileName.svelte';
 
 	let {
 		toolbarUi,
 		onEvent,
 		toggleGrooveSelector,
-		toggleLightDark
+		toggleLightDark,
+		toggleShowHelp,
 	}: {
 		toolbarUi: ToolbarUi;
 		onEvent: OnUiEvent;
 		toggleGrooveSelector: () => void;
 		toggleLightDark: () => void;
+		toggleShowHelp: () => void;
 	} = $props();
-
-	let showHelp: boolean = $state(false);
-	let showResetConfirmation: boolean = $state(false);
 
 	function load(event: Event) {
 		const fileInput = event.target as HTMLInputElement;
@@ -30,15 +26,6 @@
 			let file = fileInput.files[0];
 			onEvent({ event: ToolbarEvent.LoadFile, file });
 			fileInput.value = '';
-		}
-	}
-
-	function reset() {
-		if (showResetConfirmation) {
-			showResetConfirmation = false;
-			onEvent({ event: ToolbarEvent.Reset });
-		} else {
-			showResetConfirmation = true;
 		}
 	}
 </script>
@@ -76,7 +63,7 @@
 			Print / Save PDF
 		</button>
 
-		<button class="btn btn-outline btn-sm" onclick={() => (showHelp = !showHelp)}> ? </button>
+		<button class="btn btn-outline btn-sm" onclick={toggleShowHelp}> ? </button>
 
 		<button onclick={() => toggleLightDark()} class="btn btn-outline btn-sm">
 			{toolbarUi.darkMode ? '☀️ Light' : '🌙 Dark'}
@@ -87,17 +74,3 @@
 <ToolbarErrors errorsUi={toolbarUi.errors} {onEvent} />
 
 <PlayAndFileName {toolbarUi} {onEvent} />
-
-{#if showResetConfirmation}
-	<ResetConfirmation {reset} close={() => (showResetConfirmation = false)} />
-{/if}
-
-{#if showHelp}
-	<HelpOverlay
-		closeDialog={() => (showHelp = !showHelp)}
-		reset={() => {
-			showHelp = false;
-			reset();
-		}}
-	/>
-{/if}

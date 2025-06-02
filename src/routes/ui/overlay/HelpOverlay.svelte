@@ -1,10 +1,12 @@
 <script lang="ts">
 	let {
 		closeDialog,
-		reset
+		reset,
+		loadExample
 	}: {
 		closeDialog: () => void;
 		reset: () => void;
+		loadExample: () => void;
 	} = $props();
 </script>
 
@@ -18,13 +20,23 @@
 			╳
 		</button>
 
-		<h3 class="text-lg font-bold">What is this?</h3>
+		<h3 class="text-lg font-bold">Welcome to GrvMkr</h3>
 		<p class="py-4">
-			This is GrvMkr (Groove Maker), a percussion grid notation tool. It is designed to easily
-			create grid notation, listen to the patterns, and print or save them as PDFs
+			This is a tool for creating and sharing percussion grid notation. You can also listen to your
+			grooves, and print or save them as PDFs.
 		</p>
+		<p>
+			To get a feel for what you can do with this tool, try loading the example groove, and give it
+			a listen!
+		</p>
+		<button
+			onclick={loadExample}
+			class={`btn btn-outline my-8`}
+		>
+			Load the example groove!
+		</button>
 
-		<h3 class="text-lg font-bold">...but why?</h3>
+		<h3 class="text-lg font-bold">Why does this exist?</h3>
 		<p class="py-4">
 			This is meant to replace Mango Drum, a discontinued old windows only software that does pretty
 			much the same thing. I have no affiliation with Mango Drum, I built this because I was asked
@@ -32,25 +44,30 @@
 		</p>
 
 		<h3 class="text-lg font-bold">Tips & Tricks</h3>
-		<p class="py-4">
-			On desktop, you can multi-select cells by holding shift and clicking. Then you can copy and
-			paste them with ctrl+c and ctrl+v.
-		</p>
-		<p class="py-4">Play and pause by pressing space.</p>
+		<ul class="list-disc ml-8">
+			<li>
+				<p class="py-2">
+					Select multiple grid cells by dragging cells across a row. 
+					On desktop, you can multi-select cells by holding shift and clicking. 
+					Then you can copy and paste them with ctrl+c and ctrl+v.
+				</p>
+			</li>
+			<li>
+				<p class="py-2">Play and pause by pressing space.</p>
+			</li>
+		</ul>
 
 		<h3 class="text-lg font-bold">Issues & Feature Requests</h3>
-		<p>
-			If you're on an iPhone and can't hear anything, make sure your silent switch isn't enabled.
+		<p class="py-2">
+			<span class="font-bold">⚠️ iPhone users: </span> If you can't hear anything, make sure your silent switch isn't enabled. There's a technical limitation around playing sounds in silent mode 😅
 		</p>
-		<br />
-		<p>
+		<p class="py-2">
 			If you're having unresolvable problems, you can reset the app state - but this will delete
-			everything, and i mean EVERYTHING.
+			everything, and i mean EVERYTHING. Please download your groove files to your device before resetting to avoid losing work. 
 		</p>
 		<button class="btn btn-outline btn-sm my-2" onclick={reset}>Reset</button>
 		<p class="py-4">
-			This is not a commercial product, but a hobby project. If you notice any issues or think of a
-			way this could be more useful, please feel free to reach out at
+			If you do notice any issues or think of a way this could be more useful, please feel free to reach out at
 			<a class="link link-primary" href="mailto:grvmkr@oliverdelange.co.uk"
 				>grvmkr@oliverdelange.co.uk</a
 			>

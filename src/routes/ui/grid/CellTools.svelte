@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CellToolsEvent, UiEvent, type OnUiEvent } from '$lib';
 	import type { CellToolsUi } from '$lib';
-	import Button from '../ui_elements/Button.svelte';
+	import ButtonFilled from '../ui_elements/ButtonFilled.svelte';
 
 	let {
 		ui,
@@ -15,33 +15,33 @@
 <div class="">
 	{#if ui.show}
 		<div class="flex flex-wrap items-center justify-start print:hidden">
-			<Button
+			<ButtonFilled
 				disabled={!ui.showMergeLeft}
 				onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'left' })}
 			>
 				← Merge
-			</Button>
-			<Button
+			</ButtonFilled>
+			<ButtonFilled
 				disabled={!ui.showMergeRight}
 				onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'right' })}
 			>
 				→ Merge
-			</Button>
-			<Button disabled={!ui.showUnMerge} onClick={() => onEvent({ event: CellToolsEvent.UnMerge })}
-				>Un-Merge</Button
+			</ButtonFilled>
+			<ButtonFilled disabled={!ui.showUnMerge} onClick={() => onEvent({ event: CellToolsEvent.UnMerge })}
+				>Un-Merge</ButtonFilled
 			>
 
-			<Button disabled={!ui.showCopy} onClick={() => onEvent({ event: UiEvent.Copy })}>Copy</Button>
-			<Button disabled={!ui.showPaste} onClick={() => onEvent({ event: UiEvent.Paste })}
-				>Paste</Button
+			<ButtonFilled disabled={!ui.showCopy} onClick={() => onEvent({ event: UiEvent.Copy })}>Copy</ButtonFilled>
+			<ButtonFilled disabled={!ui.showPaste} onClick={() => onEvent({ event: UiEvent.Paste })}
+				>Paste</ButtonFilled
 			>
 
 			{#each ui.hitOptions as [displayString, hits]}
-				<Button
+				<ButtonFilled
 					onClick={() => onEvent({ event: CellToolsEvent.SelectHitOption, instrumentHits: hits })}
 				>
 					{displayString}
-				</Button>
+				</ButtonFilled>
 			{/each}
 		</div>
 	{/if}

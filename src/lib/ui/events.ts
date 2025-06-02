@@ -1,8 +1,8 @@
 import type {
 	CellToolsEvents,
 	GridEvents,
+	HelpEvents,
 	InstrumentEvents,
-	ProblemEvent,
 	ProblemEvents,
 	ToolbarEvents
 } from '$lib';
@@ -15,6 +15,7 @@ export type UiEvents =
 	| GridEvents
 	| InstrumentEvents
 	| ToolbarEvents
+	| HelpEvents
 	| ProblemEvents
 	// Generic UI events (below)
 	| Mounted

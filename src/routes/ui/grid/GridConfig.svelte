@@ -104,7 +104,9 @@
 		/>
 
 		<Button onClick={() => onEvent({ event: GridEvent.ToggleToolsExpansion, id: gridUi.id })}
-			>Tools</Button
+			>
+			Tools
+			</Button
 		>
 	</div>
 	<!-- Grid config -->

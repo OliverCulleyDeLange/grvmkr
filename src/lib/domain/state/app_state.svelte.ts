@@ -29,7 +29,11 @@ import {
 	addInstrumentUseCase,
 	addHitUseCase,
 	moveInstrumentDownUseCase,
-	syncGrids
+	syncGrids,
+	maybeShowInfoForFirstTimeUseCase,
+	UiStore,
+	HelpEvent,
+	loadExampleFileUseCase
 } from '$lib';
 import { moveInstrumentUpUseCase } from '../use_case/instrument/moveInstrumentUpUseCase';
 
@@ -40,11 +44,13 @@ export class AppStateStore {
 	public errorStore: ErrorStore = new ErrorStore();
 	public playbackStore: PlaybackStore = new PlaybackStore(this.instrumentStore);
 	public cellToolsStore: CellToolsStore = new CellToolsStore();
+	public uiStore: UiStore = new UiStore();
 
 	onEvent(event: AppEvent) {
 		this.logEvent(event);
 		switch (event.event) {
 			case UiEvent.Mounted:
+				maybeShowInfoForFirstTimeUseCase(this.uiStore)
 				this.initialise();
 				break;
 			case UiEvent.Copy:
@@ -227,9 +233,6 @@ export class AppStateStore {
 			case ToolbarEvent.DeleteLocalGroove:
 				this.deleteGroove(event.id);
 				break;
-			case ToolbarEvent.Reset:
-				this.reset();
-				break;
 			case ToolbarEvent.DismissError:
 				this.errorStore.dismissError(event.id);
 				break;
@@ -243,6 +246,12 @@ export class AppStateStore {
 				break;
 			case ToolbarEvent.TogglePlayingFile:
 				togglePlayFileUseCase(this.gridStore, this.instrumentStore, this.playbackStore);
+				break;
+			case HelpEvent.Reset:
+				this.reset();
+				break;
+			case HelpEvent.LoadExampleFile:
+				loadExampleFileUseCase(this.fileStore, this.instrumentStore, this.gridStore, this.playbackStore)
 				break;
 			case ProblemEvent.MissingSampleAudio:
 				this.errorStore.addError(event);
@@ -313,7 +322,7 @@ export class AppStateStore {
 		await this.gridStore.reset();
 		await this.fileStore.reset();
 		await this.instrumentStore.reset();
-
+		localStorage.clear();
 		window.location.reload();
 	}
 

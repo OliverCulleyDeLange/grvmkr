@@ -33,10 +33,13 @@ export * from './domain/interface/InstrumentRepositoryI';
 export * from './domain/interface/PlaybackControllerI';
 export * from './domain/interface/CellToolsRepositoryI';
 
+export * from './domain/use_case/maybeShowInfoForFirstTimeUseCase';
+
 export * from './domain/use_case/playback/togglePlayFileFromRecentlyPlayedUseCase';
 export * from './domain/use_case/playback/togglePlayFileUseCase';
 export * from './domain/use_case/playback/togglePlayGridUseCase';
 
+export * from './domain/use_case/file/loadExampleFileUseCase';
 export * from './domain/use_case/file/loadFileUseCase';
 export * from './domain/use_case/file/newGrooveUseCase';
 export * from './domain/use_case/file/saveFileUseCase';
@@ -64,6 +67,7 @@ export * from './domain/state/error_store';
 export * from './domain/state/instrument_store.svelte';
 export * from './domain/state/playback_store.svelte';
 export * from './domain/state/cell_tools_store.svelte';
+export * from './domain/state/ui_store.svelte';
 export * from './util/date';
 export * from './domain/state/theme_store';
 
@@ -97,6 +101,8 @@ export * from './ui/cell_tools/CellToolsUi';
 
 export * from './ui/instrument/instrument_events';
 export * from './ui/instrument/InstrumentUi';
+
+export * from './ui/help/help_events';
 
 export * from './ui/groove_selector/GrooveSelectorUi';
 

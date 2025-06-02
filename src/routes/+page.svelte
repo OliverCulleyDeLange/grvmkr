@@ -2,7 +2,7 @@
 	import {
 		AppStateStore,
 		GridEvent,
-		keyValueRepository,
+		HelpEvent,
 		mapGridUi,
 		mapGrvMkrFilesToGrooveSelectorUi,
 		mapInstrumentsUi,
@@ -11,28 +11,28 @@
 		UiEvent,
 		type GridUis
 	} from '$lib';
-	import '$lib/util/polyfills';
 	import type { AppEvent } from '$lib/domain/event';
+	import { registerAppKeyboardShortcuts } from '$lib/util/keyboard_shortcuts';
+	import '$lib/util/polyfills';
 	import { onMount } from 'svelte';
-	import Button from './ui/ui_elements/Button.svelte';
 	import Grid from './ui/grid/Grid.svelte';
 	import GridConfig from './ui/grid/GridConfig.svelte';
 	import Instruments from './ui/Instruments.svelte';
 	import Legend from './ui/Legend.svelte';
-	import Toolbar from './ui/toolbar/Toolbar.svelte';
 	import GrooveSelector from './ui/overlay/GrooveSelector.svelte';
-	import { registerAppKeyboardShortcuts } from '$lib/util/keyboard_shortcuts';
+	import HelpOverlay from './ui/overlay/HelpOverlay.svelte';
+	import ResetConfirmation from './ui/toolbar/ResetConfirmation.svelte';
+	import Toolbar from './ui/toolbar/Toolbar.svelte';
+	import Button from './ui/ui_elements/Button.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
-	let showGrooveSelector: boolean = $state(false);
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
-	let dark = $state(true);
 
 	onMount(() => {
 		onEvent({ event: UiEvent.Mounted });
 		// Initialise theme
 		themeStore.initTheme();
-		const unsubscribeThemeStore = themeStore.dark.subscribe((v) => (dark = v));
+		const unsubscribeThemeStore = themeStore.dark.subscribe((v) => appStateStore.uiStore.setDarkMode(v));
 		const unregisterShortcuts = registerAppKeyboardShortcuts(onEvent);
 		return () => {
 			unregisterShortcuts();
@@ -51,11 +51,20 @@
 		}
 	});
 
+	function reset() {
+		if (appStateStore.uiStore.showResetConfirmation) {
+			appStateStore.uiStore.showResetConfirmation = false;
+			onEvent({ event: HelpEvent.Reset });
+		} else {
+			appStateStore.uiStore.showResetConfirmation = true;
+		}
+	}
+
 	let toolbarUi = $derived(
 		mapToolbarUi(
 			appStateStore.fileStore.file.name,
 			appStateStore.errorStore.errors,
-			dark,
+			appStateStore.uiStore.darkMode,
 			appStateStore.playbackStore.isPlayingFile()
 		)
 	);
@@ -76,8 +85,9 @@
 	<Toolbar
 		{onEvent}
 		{toolbarUi}
-		toggleGrooveSelector={() => (showGrooveSelector = !showGrooveSelector)}
+		toggleGrooveSelector={() => appStateStore.uiStore.toggleShowGrooveSelector()}
 		toggleLightDark={() => themeStore.toggleTheme()}
+		toggleShowHelp={() => appStateStore.uiStore.toggleShowHelp()}
 	/>
 	{#if appStateStore.instrumentStore != undefined}
 		<div class="flex flex-col gap-8">
@@ -101,11 +111,29 @@
 		</div>
 	{/if}
 
-	{#if showGrooveSelector}
+	{#if appStateStore.uiStore.showGrooveSelector}
 		<GrooveSelector
 			ui={grooveSelectorUi}
 			{onEvent}
-			closeDialog={() => (showGrooveSelector = !showGrooveSelector)}
+			closeDialog={() => appStateStore.uiStore.toggleShowGrooveSelector()}
 		/>
+	{/if}
+
+	{#if appStateStore.uiStore.getShouldShowHelpOverlay()}
+		<HelpOverlay
+			closeDialog={() => appStateStore.uiStore.toggleShowHelp()}
+			reset={() => {
+				appStateStore.uiStore.hideHelpOverlay()
+				reset();
+			}}
+			loadExample={() => {
+				appStateStore.uiStore.hideHelpOverlay()
+				onEvent({ event: HelpEvent.LoadExampleFile })
+			}}
+		/>
+	{/if}
+
+	{#if appStateStore.uiStore.showResetConfirmation}
+		<ResetConfirmation {reset} close={() => appStateStore.uiStore.hideResetConfirmation()} />
 	{/if}
 </div>

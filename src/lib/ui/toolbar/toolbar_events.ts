@@ -5,7 +5,6 @@ export type ToolbarEvents =
 	| LoadFile
 	| LoadLocalGroove
 	| DeleteLocalGroove
-	| Reset
 	| FileNameChanged
 	| DismissError
 	| GrooveSelectorShown
@@ -26,9 +25,6 @@ export enum ToolbarEvent {
 
 export type New = {
 	event: ToolbarEvent.New;
-};
-export type Reset = {
-	event: ToolbarEvent.Reset;
 };
 export type Save = {
 	event: ToolbarEvent.Save;
