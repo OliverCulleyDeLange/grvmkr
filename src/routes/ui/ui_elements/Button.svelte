@@ -16,7 +16,7 @@
 
 <button
 	onclick={onClick}
-	class={`btn btn-outline btn-xs m-2${classes}`}
+	class={`btn btn-outline btn-xs m-2 ${classes}`}
 	{disabled}
 >
 	{@render children()}
