@@ -98,6 +98,10 @@ export class GridStore implements GridRepositoryI {
 		this.shouldScrollToGridId = null
 	}
 
+	scrollToGrid(id: GridId) {
+		this.shouldScrollToGridId = id
+	}
+
 	async initialise(
 		gridMap: Map<GridId, Grid>,
 		instruments: Map<InstrumentId, InstrumentWithId>

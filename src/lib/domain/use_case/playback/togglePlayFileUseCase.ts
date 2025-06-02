@@ -16,6 +16,7 @@ export async function togglePlayFileUseCase(
 			gridsToPlay,
 			(grid) => {
 				gridRepo.updatePlaying(true, grid.id);
+				gridRepo.scrollToGrid(grid.id)
 			},
 			(grid) => {
 				gridRepo.updatePlaying(false, grid.id);

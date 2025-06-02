@@ -15,5 +15,6 @@ export interface GridRepositoryI {
 	getGridsFromMostRecentlyPlayedGrid(): Grid[];
 	updatePlaying(newPlaying: boolean, gridId: string): Promise<void>;
 	replaceGrids(grids: Grid[], persist: boolean): Promise<void>;
+	scrollToGrid(id: string): void;
 	stopPlayingGrid(): void;
 }
