@@ -89,7 +89,7 @@
 		<input
 			bind:value={gridName}
 			oninput={onNameChange}
-			class="input input-sm input-bordered flex-1"
+			class="input input-sm input-bordered w-0 min-w-0 flex-1"
 		/>
 
 		<Button onClick={() => (gridConfigExpanded = !gridConfigExpanded)}>Tools</Button>
@@ -155,7 +155,7 @@
 			</div>
 		</div>
 
-		<div class="grid-tools flex w-full flex-row items-start gap-2">
+		<div class="grid-tools flex w-full flex-row flex-wrap items-start">
 			<Button
 				onClick={() => onEvent({ event: GridEvent.DuplicateGrid, gridId: gridUi.id })}
 				classes="print:hidden"
