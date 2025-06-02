@@ -6,7 +6,7 @@ export async function loadExampleFileUseCase(
     gridRepository: GridRepositoryI,
     player: PlaybackControllerI
 ) {
-    const url = '/example.grv';
+    const url = '/grvmkr/example.grv';
 
     try {
         // Fetch the file from the URL
