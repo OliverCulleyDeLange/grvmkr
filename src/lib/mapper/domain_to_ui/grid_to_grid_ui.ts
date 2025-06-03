@@ -14,7 +14,6 @@ import {
 	type InstrumentId,
 	type InstrumentStore,
 	type InstrumentWithId,
-	mapCellToolsUi,
 	type NotationSection,
 	type VolumeControlUi
 } from '$lib';
@@ -22,10 +21,9 @@ import {
 export function mapGridUi(
 	grids: Map<GridId, Grid>,
 	instrumentStore: InstrumentStore,
-	cellTools: CellTools | undefined
 ): GridUis {
 	let gridUis: GridUi[] = [...grids.values()].map((grid) =>
-		mapRowsToGridUi(grid, instrumentStore, cellTools)
+		mapRowsToGridUi(grid, instrumentStore)
 	);
 	let ui: GridUis = {
 		grids: gridUis.sort((a, b) => a.index - b.index)
@@ -36,11 +34,14 @@ export function mapGridUi(
 export function mapRowsToGridUi(
 	grid: Grid,
 	instrumentManager: InstrumentStore,
-	cellTools: CellTools | undefined
 ): GridUi {
 	let instruments = instrumentManager.getInstruments();
 	let rows = mapRows(grid, instruments);
-	let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols);
+	let sections = splitRowsIntoSections(
+		rows,
+		grid.config,
+		grid.gridCols
+	);
 
 	let ui: GridUi = {
 		notationSections: sections,
@@ -50,7 +51,6 @@ export function mapRowsToGridUi(
 		msPerBeatDivision: grid.msPerBeatDivision,
 		gridCols: grid.gridCols,
 		playing: grid.playing,
-		cellTools: mapCellToolsUi(cellTools, grid.id),
 		toolsExpanded: grid.toolsExpanded
 	};
 	return ui;
@@ -126,7 +126,6 @@ function mapCellToCellUi(
 		},
 		cellsOccupied: cell.cells_occupied,
 		cellDescription: `${bar + 1}.${beat + 1}.${beat_division + 1}`,
-		selected: cell.selected,
 		addColorTint: instrument.gridIndex % 2 == 1
 	};
 	return cellUi;

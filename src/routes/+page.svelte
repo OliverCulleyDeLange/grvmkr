@@ -3,6 +3,7 @@
 		AppStateStore,
 		GridEvent,
 		HelpEvent,
+		mapCellToolsUi,
 		mapGridUi,
 		mapGrvMkrFilesToGrooveSelectorUi,
 		mapInstrumentsUi,
@@ -10,6 +11,7 @@
 		themeStore,
 		UiEvent,
 		type BeatIndicatorUi,
+		type CellToolsUi,
 		type GridId,
 		type GridUis
 	} from '$lib';
@@ -73,23 +75,28 @@
 			appStateStore.playbackStore.isPlayingFile()
 		)
 	);
-	const gridsUi: GridUis = $derived(
-		mapGridUi(
+	const gridsUi: GridUis = $derived.by(() => {
+		console.log('Recomputing gridsUi');
+		return mapGridUi(
 			appStateStore.gridStore.getGrids(),
 			appStateStore.instrumentStore,
-			appStateStore.cellToolsStore.cellTools
-		)
-	);
+		);
+	});
 	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived(
-		mapBeatIndicatorUi(
-			gridsUi, 
-			(id) => appStateStore.playbackStore.getCurrentlyPlayingColumn(id),
-		)
+		mapBeatIndicatorUi(gridsUi, (id) => appStateStore.playbackStore.getCurrentlyPlayingColumn(id))
 	);
 	const instrumentsUi = $derived(mapInstrumentsUi(appStateStore.instrumentStore.getInstruments()));
 	const grooveSelectorUi = $derived(
 		mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files, appStateStore.fileStore.file.id)
 	);
+	const cellToolsUiMap = $derived.by(() => {
+		console.log('Recomputing cellToolsUiMap');
+		const result = new Map<GridId, CellToolsUi>();
+		for (const gridUi of gridsUi.grids) {
+			result.set(gridUi.id, mapCellToolsUi(appStateStore.cellToolsStore.cellTools, gridUi.id));
+		}
+		return result;
+	});
 </script>
 
 <div class="box-border w-full bg-white p-4 dark:bg-[#1D232A]">
@@ -106,7 +113,13 @@
 				<div id={gridUi.id} class="break-inside-avoid">
 					<GridConfig {gridUi} {onEvent} />
 					<Legend instrumentManager={appStateStore.instrumentStore} />
-					<Grid {gridUi} {onEvent} {beatIndicatorUi} />
+					<Grid
+						{gridUi}
+						cellTools={cellToolsUiMap.get(gridUi.id)}
+						{onEvent}
+						{beatIndicatorUi}
+						cellSelected={(locator) => appStateStore.gridStore.isCellSelected(locator)}
+					/>
 				</div>
 			{/each}
 		</div>

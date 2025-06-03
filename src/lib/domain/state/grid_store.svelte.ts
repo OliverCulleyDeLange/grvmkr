@@ -13,7 +13,7 @@ import type { OnEvent } from '$lib/domain/event';
 import { buildDefaultGrid, defaultGridRow, generateGridId } from '$lib/domain/model/default_grid';
 import { calculateMsPerBeatDivision } from '$lib/mapper/misc_mapper_funcs';
 import type { RemoveGrid } from '$lib/ui/grid/grid_ui_events';
-import { SvelteMap } from 'svelte/reactivity';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import type { GridRepositoryI } from '../interface/GridRepositoryI';
 
 // Responsible for storing, and modifying grids
@@ -30,6 +30,7 @@ export class GridStore implements GridRepositoryI {
 	private currentlyPlayingGrid: Grid | null = $state(null);
 	private mostRecentlyPlayedGrid: Grid | null = $state(null);
 	private currentlySelectedCells: CellLocator[] = $state([]);
+	private selectedCellSet: Set<string> = new SvelteSet();
 	private selectionStartCell: CellLocator | null = $state(null);
 	private copiedCells: GridCell[] = [];
 	// When we move or duplicate a grid, we should scroll to the grids new position
@@ -37,6 +38,17 @@ export class GridStore implements GridRepositoryI {
 
 	getCurrentlySelectedCells(): CellLocator[] {
 		return this.currentlySelectedCells;
+	}
+
+	isCellSelected(locator: CellLocator): boolean {
+		return this.selectedCellSet.has(`${locator.grid}:${locator.row}:${locator.cell}`);
+	}
+
+	private updateSelectedCellSet() {
+		this.selectedCellSet.clear()
+		this.currentlySelectedCells.forEach((loc) => {
+			this.selectedCellSet.add(`${loc.grid}:${loc.row}:${loc.cell}`)
+		})
 	}
 
 	getGridsFromMostRecentlyPlayedGrid(): Grid[] {
@@ -146,13 +158,11 @@ export class GridStore implements GridRepositoryI {
 		const startCell = Math.min(anchor.cell, locator.cell);
 		const endCell = Math.max(anchor.cell, locator.cell);
 
-		this.resetSelected();
-
 		for (let cell = startCell; cell <= endCell; cell++) {
 			const cellLocator = { grid: anchor.grid, row: anchor.row, cell };
-			this.updateGridCell(cellLocator, (c) => (c.selected = true), false);
 			this.currentlySelectedCells.push(cellLocator);
 		}
+		this.updateSelectedCellSet();
 	}
 
 	copyCurrentlySelectedCells() {
@@ -228,44 +238,20 @@ export class GridStore implements GridRepositoryI {
 		});
 	}
 
-	// Set 'selected' in all grid cells to false
-	resetSelected() {
-		// Only reset cells that are currently selected
-		this.currentlySelectedCells.forEach((locator) => {
-			const grid = this.grids.get(locator.grid);
-			if (!grid) return;
-			const row = grid.rows[locator.row];
-			if (!row) return;
-			const cell = row.cells[locator.cell];
-			if (cell) cell.selected = false;
-		});
-		this.currentlySelectedCells = [];
-	}
-
 	// Combined all actions to be complete when a cell is clicked:
 	// - Toggle the hit
 	// - Update the selected state
 	onTapGridCell(locator: CellLocator) {
-		this.resetSelected();
 		this.toggleGridHit(locator);
-		this.updateGridCell(locator, (cell) => {
-			cell.selected = true;
-		});
 		this.currentlySelectedCells = [locator];
+		this.updateSelectedCellSet();
 	}
 
 	// Like tapping, but only selects the cell. Doesn't update hit
 	onStartCellSelection(locator: CellLocator) {
-		this.resetSelected();
-		this.updateGridCell(
-			locator,
-			(cell) => {
-				cell.selected = true;
-			},
-			false
-		);
 		this.currentlySelectedCells = [locator];
 		this.selectionStartCell = locator;
+		this.updateSelectedCellSet();
 	}
 
 	// Toggle the hit in the cell
@@ -331,7 +317,6 @@ export class GridStore implements GridRepositoryI {
 				const emptyCell: GridCell = {
 					hits: [],
 					cells_occupied: 1,
-					selected: false
 				};
 				const newCells: GridCell[] = new Array(expectedCells - currentCellCount).fill(emptyCell);
 				row.cells.push(...newCells);
@@ -377,7 +362,6 @@ export class GridStore implements GridRepositoryI {
 				row.cells[startIndex + i] = {
 					hits: mergedCell.hits.length > 0 ? [mergedCell.hits[0]] : [],
 					cells_occupied: 1,
-					selected: false
 				};
 			}
 
@@ -436,12 +420,10 @@ export class GridStore implements GridRepositoryI {
 
 				// Extend cell
 				cellToExtend.cells_occupied += cellToEmpty.cells_occupied;
-				cellToExtend.selected = cellToEmpty.selected || cellToExtend.selected;
 				cellToExtend.hits = [];
 				// Empty cell
 				cellToEmpty.cells_occupied = 0;
 				cellToEmpty.hits = [];
-				cellToEmpty.selected = false;
 				// Update currently selected cell. if we merge left we should select the cell we merged into
 				if (side == 'left') {
 					this.currentlySelectedCells = [{ ...locator, cell: cellNextToClickedCellIndex }];
@@ -711,6 +693,7 @@ export class GridStore implements GridRepositoryI {
 		this.currentlyPlayingGrid = null;
 		this.mostRecentlyPlayedGrid = null;
 		this.currentlySelectedCells = [];
+		this.selectedCellSet = new Set();
 		this.selectionStartCell = null;
 		this.copiedCells = [];
 	}

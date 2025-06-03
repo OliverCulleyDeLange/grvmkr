@@ -70,7 +70,6 @@ function mapSavedCellToGridCell(savedCell: SavedGridCellV3): GridCell {
 				instrumentId: hit.instrument_id
 			};
 		}),
-		selected: false
 	};
 	return gridCell;
 }

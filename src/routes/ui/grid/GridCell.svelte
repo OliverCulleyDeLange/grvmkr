@@ -3,11 +3,13 @@
 
 	let {
 		ui,
+		selected,
 		onTap,
 		onpointerdown,
 		onpointermove
 	}: {
 		ui: GridCellUi;
+		selected: boolean;
 		onTap: (shiftKey: boolean) => void;
 		onpointerdown: (e: PointerEvent) => void;
 		onpointermove: () => void;
@@ -33,9 +35,9 @@
 	class:bg-gray-300={ui.isBeat && !ui.isFirstBeatOfBar}
 	class:bg-gray-400={ui.isFirstBeatOfBar}
 	class:no-print-adjust={ui.isBeat}
-	class:outline={ui.selected}
-	class:outline-green-500={ui.selected}
-	class:outline-2={ui.selected}
+	class:outline={selected}
+	class:outline-green-500={selected}
+	class:outline-2={selected}
 >
 	{#if ui.addColorTint}
 		<div class="pointer-events-none absolute inset-0 bg-yellow-300 opacity-10 print:hidden"></div>

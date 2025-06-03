@@ -5,6 +5,7 @@
 		GridEvent,
 		type BeatIndicatorUi,
 		type CellLocator,
+		type CellToolsUi,
 		type GridId,
 		type GridUi,
 		type OnUiEvent
@@ -16,12 +17,16 @@
 
 	let {
 		gridUi,
+		beatIndicatorUi,
+		cellTools,
 		onEvent,
-		beatIndicatorUi
+		cellSelected,
 	}: {
 		gridUi: GridUi;
-		onEvent: OnUiEvent;
 		beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]>;
+		cellTools: CellToolsUi | undefined;
+		onEvent: OnUiEvent;
+		cellSelected: (locator: CellLocator) => boolean;
 	} = $props();
 
 	// Selection state
@@ -111,6 +116,7 @@
 					{#each row.gridCells as cell}
 						<GridCell
 							ui={cell}
+							selected={cellSelected(cell.locator)}
 							onpointerdown={(e: PointerEvent) => onPointerDown(cell.locator, e.shiftKey)}
 							onpointermove={() => onPointerMove(cell.locator)}
 							onTap={(shift) =>
@@ -127,7 +133,9 @@
 	</div>
 
 	<div class="cell-tools" class:fixed-to-viewport={isPinned} bind:this={toolsRef}>
-		<CellTools ui={gridUi.cellTools} {onEvent} />
+		{#if cellTools}
+			<CellTools ui={cellTools} {onEvent} />
+		{/if}
 	</div>
 </div>
 

@@ -1,5 +1,4 @@
 import type { GridId, GridConfig } from '$lib/domain/types/grid_domain';
-import type { CellToolsUi } from '../cell_tools/CellToolsUi';
 import type { NotationSection } from './NotationSection';
 
 export type GridUi = {
@@ -12,5 +11,4 @@ export type GridUi = {
 	msPerBeatDivision: number;
 	gridCols: number;
 	playing: boolean;
-	cellTools: CellToolsUi;
 };

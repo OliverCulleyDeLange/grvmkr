@@ -30,7 +30,6 @@ export type GridRow = {
 export type GridCell = {
 	hits: InstrumentHit[];
 	cells_occupied: number;
-	selected: boolean;
 };
 
 export type InstrumentHit = {

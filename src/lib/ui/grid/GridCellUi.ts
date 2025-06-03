@@ -7,6 +7,5 @@ export type GridCellUi = {
 	locator: CellLocator;
 	cellsOccupied: number;
 	cellDescription: string;
-	selected: boolean;
 	addColorTint: boolean;
 };

@@ -1,5 +1,4 @@
-import type { CellTools, CellToolsRepositoryI, GridRepositoryI, InstrumentRepositoryI } from '$lib';
-import type { GridStore } from './grid_store.svelte';
+import { type CellTools, type CellToolsRepositoryI, type GridRepositoryI, type InstrumentRepositoryI } from '$lib';
 
 export class CellToolsStore implements CellToolsRepositoryI {
 	private defaultCellTools: CellTools = {
@@ -21,10 +20,10 @@ export class CellToolsStore implements CellToolsRepositoryI {
 		}
 
 		const currentlySelectedCells = gridStore.getCurrentlySelectedCells();
-		// We assume that all selected cells have the same options as they're in the same row
 		const firstCurrentlySelectedCell = currentlySelectedCells[0];
 
 		if (firstCurrentlySelectedCell) {
+			console.log("Updating cell tools")
 			const locator = firstCurrentlySelectedCell;
 			const rowInstrument = grid.rows[locator.row]?.instrument;
 			const instrument = instrumentStore.getInstrument(rowInstrument?.id);
@@ -33,31 +32,49 @@ export class CellToolsStore implements CellToolsRepositoryI {
 			const cellsOccupied = currentCell?.cells_occupied ?? 0;
 			const cellsSelected = currentlySelectedCells.length;
 			if (instrument) {
-				if (cellsSelected > 1) {
-					this.cellTools = {
-						kind: 'multi',
-						gridId: grid.id,
-						instrument: instrument,
-						hits: [...(instrument?.hitTypes.values() ?? [])],
-						cellsCopied: this.cellsCopied
-					};
-				} else {
-					this.cellTools = {
-						kind: 'single',
-						gridId: grid.id,
-						instrument: instrument,
-						hits: [...(instrument?.hitTypes.values() ?? [])],
-						cellsOccupied,
-						isFirstCell: locator.cell == 0,
-						isLastCell: gridCols ? locator.cell == gridCols - cellsOccupied : false,
-						cellsCopied: this.cellsCopied
-					};
+				const newCellTools = this.buildCellTools({
+					kind: cellsSelected > 1 ? 'multi' : 'single',
+					gridId: grid.id,
+					instrument,
+					hits: [...(instrument?.hitTypes.values() ?? [])],
+					cellsOccupied,
+					isFirstCell: locator.cell == 0,
+					isLastCell: gridCols ? locator.cell == gridCols - cellsOccupied : false,
+					cellsCopied: this.cellsCopied,
+					cellsSelected
+				});
+				if (JSON.stringify(this.cellTools) !== JSON.stringify(newCellTools)) {
+					console.log("Setting new cell tools", newCellTools);
+					this.cellTools = newCellTools;
 				}
 			} else {
 				console.error("Can't display cell tools - instrument not found");
 			}
 		} else {
 			this.cellTools = this.defaultCellTools;
+		}
+	}
+
+	private buildCellTools({ kind, gridId, instrument, hits, cellsOccupied, isFirstCell, isLastCell, cellsCopied, cellsSelected }: any): CellTools {
+		if (kind === 'multi') {
+			return {
+				kind: 'multi',
+				gridId,
+				instrument,
+				hits,
+				cellsCopied
+			};
+		} else {
+			return {
+				kind: 'single',
+				gridId,
+				instrument,
+				hits,
+				cellsOccupied,
+				isFirstCell,
+				isLastCell,
+				cellsCopied
+			};
 		}
 	}
 }
