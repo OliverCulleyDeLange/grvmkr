@@ -32,6 +32,9 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
+- Performance 
+  - don't map entire grid ui every time we play a grid column
+  - Editing grid while playing causes audio jank
 - Right click / hold press to delete
 - Premade grooves for classic rhythms for community samba bands
 - Configurable instruments per grid / groove
