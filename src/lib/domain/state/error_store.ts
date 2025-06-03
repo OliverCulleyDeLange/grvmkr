@@ -40,7 +40,7 @@ export class ErrorStore {
 
 	private handleMissingSampleAudio(event: MissingSampleAudio) {
 		const error: AppError = {
-			id: crypto.randomUUID(),
+			id: event.hit.audioFileName,
 			message: `Missing audio sample '${event.hit.audioFileName}' for hit key: ${event.hit.key}. Please re-import.`
 		};
 		this.errors.set(error.id, error);

@@ -152,7 +152,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 
 			// modify volume for each hit type
 			instrument.hitTypes.forEach((hit) => {
-				this.audioManager.setVolume(hit.id, instrument.volume);
+				this.audioManager.setVolume(hit, instrument.volume);
 			});
 		});
 	}

@@ -10,7 +10,6 @@ export class AudioManager {
 	private audioDb = new AudioDb();
 
 	private hits: Map<HitId, AudioPlayer> = new Map();
-	private initialisationFailed: HitId[] = [];
 
 	constructor(onEvent: OnEvent) {
 		this.onEvent = onEvent;
@@ -38,7 +37,6 @@ export class AudioManager {
 	// Loads the sample from the DB and initialises an Audio Player with the blob URL
 	async initialiseHit(hit: HitTypeWithId) {
 		this.ensureAudioContext();
-		if (this.initialisationFailed.includes(hit.id)) return;
 		try {
 			let audioFileName = hit.audioFileName;
 			// Loading audio can fail if the sample isn't found
@@ -54,7 +52,6 @@ export class AudioManager {
 					hit: hit
 				});
 				hit.audioFileName = '';
-				this.initialisationFailed.push(hit.id);
 			}
 		}
 	}
@@ -73,12 +70,12 @@ export class AudioManager {
 		this.hits.delete(hitId);
 	}
 
-	setVolume(hitId: HitId, volume: number) {
-		let player = this.hits.get(hitId);
+	setVolume(hit: HitTypeWithId, volume: number) {
+		let player = this.hits.get(hit.id);
 		if (player) {
 			player.setVolume(volume);
 		} else {
-			console.error(`Can't set volume for ${hitId}, as no player. ExistingPlayers: `, this.hits);
+			this.initialiseHit(hit)
 		}
 	}
 
