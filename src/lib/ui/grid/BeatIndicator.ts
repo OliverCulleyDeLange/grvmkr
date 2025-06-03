@@ -1,6 +1,6 @@
 // The top row, indicating which beat is playing
 
-export type BeatIndicator = {
+export type BeatIndicatorUi = {
 	playing: boolean;
 	isBeat: boolean;
 	isFirstBeatOfBar: boolean;

@@ -12,6 +12,5 @@ export type GridUi = {
 	msPerBeatDivision: number;
 	gridCols: number;
 	playing: boolean;
-	currentlyPlayingColumn: number;
 	cellTools: CellToolsUi;
 };

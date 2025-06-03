@@ -1,5 +1,5 @@
 import {
-	type BeatIndicator,
+	type BeatIndicatorUi,
 	type CellTools,
 	defaultVolume,
 	type Grid,
@@ -43,8 +43,7 @@ export function mapRowsToGridUi(
 	let sections = splitRowsIntoSections(
 		rows,
 		grid.config,
-		grid.gridCols,
-		grid.currentlyPlayingColumn
+		grid.gridCols
 	);
 
 	let ui: GridUi = {
@@ -55,7 +54,6 @@ export function mapRowsToGridUi(
 		msPerBeatDivision: grid.msPerBeatDivision,
 		gridCols: grid.gridCols,
 		playing: grid.playing,
-		currentlyPlayingColumn: grid.currentlyPlayingColumn,
 		cellTools: mapCellToolsUi(cellTools, grid.id),
 		toolsExpanded: grid.toolsExpanded
 	};
@@ -142,8 +140,7 @@ function mapCellToCellUi(
 function splitRowsIntoSections(
 	rows: GridRowUi[],
 	config: GridConfig,
-	gridCols: number,
-	currentlyPlayingColumn: number
+	gridCols: number
 ): NotationSection[] {
 	const sections: NotationSection[] = [];
 	let chunkSize = (gridCols / config.bars) * 2; // Start with 2 bars per section
@@ -177,11 +174,10 @@ function splitRowsIntoSections(
 			(acc, cell) => acc + cell.cellsOccupied,
 			0
 		);
-		const beatIndicator: BeatIndicator[] = Array.from({ length: sectionColumns }, (_, i) => {
+		const beatIndicator: BeatIndicatorUi[] = Array.from({ length: sectionColumns }, (_, i) => {
 			let text = '';
 			let index = min + i;
 
-			const playing = index == currentlyPlayingColumn;
 			const divisionModulo = index % config.beatDivisions;
 			const isBeat = divisionModulo == 0;
 			const isFirstBeatOfBar = isBeat && index % (config.beatsPerBar * config.beatDivisions) == 0;
@@ -197,13 +193,14 @@ function splitRowsIntoSections(
 			} else if (isABeatOfBar) {
 				text = 'a';
 			}
-			const indicator: BeatIndicator = { isFirstBeatOfBar, isBeat, playing, text };
+			// TODO set playing value
+			const indicator: BeatIndicatorUi = { isFirstBeatOfBar, isBeat, playing: false, text };
 			return indicator;
 		});
 		sections.push({
 			sectionRows,
+			minIndex: min,
 			columns: sectionColumns,
-			beatIndicator
 		});
 	}
 

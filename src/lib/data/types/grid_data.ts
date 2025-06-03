@@ -7,7 +7,6 @@ export type GridDto = {
 	index: number;
 	config: GridConfigDto;
 	rows: GridRowDto[];
-	currentlyPlayingColumn: number;
 	msPerBeatDivision: number;
 	gridCols: number;
 	playing: boolean;

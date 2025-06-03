@@ -1,4 +1,5 @@
-import type { Grid } from '$lib';
+import type { Grid, GridId } from '$lib';
+import { SvelteMap } from 'svelte/reactivity';
 import type { PlaybackControllerI } from '../interface/PlaybackControllerI';
 import type { InstrumentStore } from './instrument_store.svelte';
 
@@ -8,6 +9,9 @@ export class PlaybackStore implements PlaybackControllerI {
 	private playingIntervalId: number | undefined;
 	private nextColumn: number = 0;
 	private playingFile: boolean = $state(false);
+	// Allows recalculation of only the beat indicator state, to improve performance. 
+	// Otherwise we're mapping entire grid state every time. 
+	private currentlyPlayingColumnInGrid: SvelteMap<GridId, number> = new SvelteMap(); 
 
 	constructor(instrumentStore: InstrumentStore) {
 		this.instrumentStore = instrumentStore;
@@ -23,6 +27,7 @@ export class PlaybackStore implements PlaybackControllerI {
 		// this.stop(); // Stop any existing playback
 		this.playingGrid = grid;
 		this.nextColumn = 0;
+		this.currentlyPlayingColumnInGrid.set(grid.id, 0);
 		const totalSteps = grid.gridCols;
 		let completedLoops = 0;
 		const inifiniteLoop = loops == 0;
@@ -91,7 +96,7 @@ export class PlaybackStore implements PlaybackControllerI {
 		const count = this.nextColumn++;
 		const playingCell = count % grid.gridCols;
 
-		grid.currentlyPlayingColumn = playingCell;
+		this.currentlyPlayingColumnInGrid.set(grid.id, playingCell);
 
 		const repetition = Math.floor(count / grid.gridCols);
 		const bar =
@@ -119,5 +124,9 @@ export class PlaybackStore implements PlaybackControllerI {
 				});
 			}
 		});
+	}
+
+	getCurrentlyPlayingColumn(gridId: string): number {
+		return this.currentlyPlayingColumnInGrid.get(gridId) ?? 0;
 	}
 }

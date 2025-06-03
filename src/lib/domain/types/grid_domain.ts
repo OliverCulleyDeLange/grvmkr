@@ -11,7 +11,6 @@ export type Grid = {
 	msPerBeatDivision: number;
 	gridCols: number;
 	playing: boolean;
-	currentlyPlayingColumn: number;
 };
 
 export type GridConfig = {

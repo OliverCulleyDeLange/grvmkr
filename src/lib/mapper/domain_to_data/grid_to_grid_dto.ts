@@ -17,7 +17,6 @@ export function mapGridToGridDto(grid: Grid): GridDto {
 		index: grid.index,
 		config: mapGridConfigToGridConfigDto(grid.config),
 		rows: grid.rows.map((row) => mapGridRowToGridRowDto(row)),
-		currentlyPlayingColumn: grid.currentlyPlayingColumn,
 		msPerBeatDivision: grid.msPerBeatDivision,
 		gridCols: grid.gridCols,
 		playing: grid.playing

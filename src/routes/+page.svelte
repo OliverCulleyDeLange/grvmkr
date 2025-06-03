@@ -9,9 +9,12 @@
 		mapToolbarUi,
 		themeStore,
 		UiEvent,
+		type BeatIndicatorUi,
+		type GridId,
 		type GridUis
 	} from '$lib';
 	import type { AppEvent } from '$lib/domain/event';
+	import { mapBeatIndicatorUi } from '$lib/mapper/ui_to_ui/grid_ui_to_beat_indicator_ui';
 	import { registerAppKeyboardShortcuts } from '$lib/util/keyboard_shortcuts';
 	import '$lib/util/polyfills';
 	import { onMount } from 'svelte';
@@ -32,7 +35,9 @@
 		onEvent({ event: UiEvent.Mounted });
 		// Initialise theme
 		themeStore.initTheme();
-		const unsubscribeThemeStore = themeStore.dark.subscribe((v) => appStateStore.uiStore.setDarkMode(v));
+		const unsubscribeThemeStore = themeStore.dark.subscribe((v) =>
+			appStateStore.uiStore.setDarkMode(v)
+		);
 		const unregisterShortcuts = registerAppKeyboardShortcuts(onEvent);
 		return () => {
 			unregisterShortcuts();
@@ -60,7 +65,7 @@
 		}
 	}
 
-	let toolbarUi = $derived(
+	const toolbarUi = $derived(
 		mapToolbarUi(
 			appStateStore.fileStore.file.name,
 			appStateStore.errorStore.errors,
@@ -68,15 +73,18 @@
 			appStateStore.playbackStore.isPlayingFile()
 		)
 	);
-	let gridsUi: GridUis = $derived(
+	const gridsUi: GridUis = $derived(
 		mapGridUi(
 			appStateStore.gridStore.getGrids(),
 			appStateStore.instrumentStore,
 			appStateStore.cellToolsStore.cellTools
 		)
 	);
+	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived(
+		mapBeatIndicatorUi(gridsUi, appStateStore.playbackStore.getCurrentlyPlayingColumn)
+	);
 	const instrumentsUi = $derived(mapInstrumentsUi(appStateStore.instrumentStore.getInstruments()));
-	let grooveSelectorUi = $derived(
+	const grooveSelectorUi = $derived(
 		mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files, appStateStore.fileStore.file.id)
 	);
 </script>
@@ -95,7 +103,7 @@
 				<div id={gridUi.id} class="break-inside-avoid">
 					<GridConfig {gridUi} {onEvent} />
 					<Legend instrumentManager={appStateStore.instrumentStore} />
-					<Grid {gridUi} {onEvent} />
+					<Grid {gridUi} {onEvent} {beatIndicatorUi} />
 				</div>
 			{/each}
 		</div>
@@ -123,12 +131,12 @@
 		<HelpOverlay
 			closeDialog={() => appStateStore.uiStore.toggleShowHelp()}
 			reset={() => {
-				appStateStore.uiStore.hideHelpOverlay()
+				appStateStore.uiStore.hideHelpOverlay();
 				reset();
 			}}
 			loadExample={() => {
-				appStateStore.uiStore.hideHelpOverlay()
-				onEvent({ event: HelpEvent.LoadExampleFile })
+				appStateStore.uiStore.hideHelpOverlay();
+				onEvent({ event: HelpEvent.LoadExampleFile });
 			}}
 		/>
 	{/if}

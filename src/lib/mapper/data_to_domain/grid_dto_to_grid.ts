@@ -22,7 +22,6 @@ export function mapGridDtoToGrid(
 		index: gridDto.index,
 		config: configFromDto(gridDto.config),
 		rows: gridDto.rows.map((row) => rowFromDto(row, instruments.get(row.instrumentId)!)),
-		currentlyPlayingColumn: gridDto.currentlyPlayingColumn,
 		msPerBeatDivision: gridDto.msPerBeatDivision,
 		gridCols: gridDto.gridCols,
 		playing: false, // Ignore whatever play state from the db

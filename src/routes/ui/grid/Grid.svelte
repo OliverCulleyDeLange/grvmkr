@@ -1,22 +1,21 @@
 <script lang="ts">
 	import GridRowTools from './GridRowTools.svelte';
 
-	import BeatIndicator from './BeatIndicator.svelte';
 
-	import { GridEvent, type CellLocator, type GridUi, type OnUiEvent } from '$lib';
-	import type { OnEvent } from '$lib/domain/event';
+	import { GridEvent, type BeatIndicatorUi, type CellLocator, type GridId, type GridUi, type OnUiEvent } from '$lib';
 	import { onMount } from 'svelte';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
-	import VolumeControls from './VolumeControls.svelte';
-	import Button from '../ui_elements/Button.svelte';
+	import BeatIndicator from './BeatIndicator.svelte';
 
 	let {
 		gridUi,
-		onEvent
+		onEvent,
+		beatIndicatorUi
 	}: {
 		gridUi: GridUi;
 		onEvent: OnUiEvent;
+		beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]>;
 	} = $props();
 
 	// Selection state
@@ -86,7 +85,7 @@
 		onpointerup={onPointerUp}
 		onpointercancel={onPointerUp}
 	>
-		{#each gridUi.notationSections as section}
+		{#each gridUi.notationSections as section, sectionIdx}
 			<div class="grid" style="--cells: {section.columns};">
 				<button
 					class="btn btn-outline btn-xs print:invisible"
@@ -95,7 +94,7 @@
 					Delete Grid
 				</button>
 				<div class="beat-indicator">
-					{#each section.beatIndicator as indicator}
+					{#each (beatIndicatorUi.get(gridUi.id)?.[sectionIdx] ?? []) as indicator}
 						<BeatIndicator {indicator} />
 					{/each}
 				</div>

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { type BeatIndicator } from '$lib';
+	import { type BeatIndicatorUi } from '$lib';
 
 	let {
 		indicator
 	}: {
-		indicator: BeatIndicator;
+		indicator: BeatIndicatorUi;
 	} = $props();
 </script>
 
