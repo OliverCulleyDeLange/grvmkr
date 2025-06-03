@@ -1,4 +1,4 @@
-import type { ErrorId, AppError } from '$lib';
+import type { ErrorId, AppError, LoadedNonGrooveFile } from '$lib';
 import {
 	ProblemEvent,
 	type DatabaseError,
@@ -12,10 +12,16 @@ export class ErrorStore {
 	errors: SvelteMap<ErrorId, AppError> = new SvelteMap();
 
 	addError(event: ProblemEvents) {
-		if (event.event === ProblemEvent.DatabaseError) {
-			this.handleDatabaseErrors(event);
-		} else if (event.event === ProblemEvent.MissingSampleAudio) {
-			this.handleMissingSampleAudio(event);
+		switch (event.event) {
+			case ProblemEvent.DatabaseError:
+				this.handleDatabaseErrors(event);
+				break;
+			case ProblemEvent.MissingSampleAudio:
+				this.handleMissingSampleAudio(event);
+				break;
+			case ProblemEvent.LoadedNonGrooveFile:
+				this.handleLoadedNonGrooveFile(event);
+				break;
 		}
 	}
 
@@ -44,14 +50,23 @@ export class ErrorStore {
 		const error: AppError =
 			event.error === 'UnknownError: The user denied permission to access the database.'
 				? {
-						id: crypto.randomUUID(),
-						message:
-							"You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page"
-					}
+					id: crypto.randomUUID(),
+					message:
+						"You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page"
+				}
 				: {
-						id: crypto.randomUUID(),
-						message: `Error ${event.doingWhat}: [${event.error}]`
-					};
+					id: crypto.randomUUID(),
+					message: `Error ${event.doingWhat}: [${event.error}]`
+				};
+
+		this.errors.set(error.id, error);
+	}
+
+	private handleLoadedNonGrooveFile(event: LoadedNonGrooveFile) {
+		const error: AppError = {
+			id: crypto.randomUUID(),
+			message: `The file you tried to load was not a groove file. Please select only .grv files. `
+		};
 
 		this.errors.set(error.id, error);
 	}

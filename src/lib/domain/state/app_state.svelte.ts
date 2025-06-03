@@ -220,6 +220,7 @@ export class AppStateStore {
 				break;
 			case ToolbarEvent.LoadFile:
 				loadFileUseCase(
+					this.onEvent.bind(this),
 					event.file,
 					this.fileStore,
 					this.instrumentStore,
@@ -251,12 +252,11 @@ export class AppStateStore {
 				this.reset();
 				break;
 			case HelpEvent.LoadExampleFile:
-				loadExampleFileUseCase(this.fileStore, this.instrumentStore, this.gridStore, this.playbackStore)
+				loadExampleFileUseCase(this.onEvent.bind(this), this.fileStore, this.instrumentStore, this.gridStore, this.playbackStore)
 				break;
 			case ProblemEvent.MissingSampleAudio:
-				this.errorStore.addError(event);
-				break;
 			case ProblemEvent.DatabaseError:
+			case ProblemEvent.LoadedNonGrooveFile:
 				this.errorStore.addError(event);
 				break;
 			case ProblemEvent.DebugLog:
@@ -273,7 +273,7 @@ export class AppStateStore {
 
 	// Filters chatty events, and logs
 	private logEvent(event: AppEvent) {
-		console.log('Event:', event.event, event);
+		console.log('Event:', event?.event, event);
 	}
 
 	// Combined all actions to be complete when a cell is clicked:

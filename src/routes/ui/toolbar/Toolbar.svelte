@@ -56,9 +56,10 @@
 			id="hidden-file-input-for-load"
 			type="file"
 			onchange={load}
-			accept=".json,.zip,.grv"
+			accept="*/*"
 			hidden
 		/>
+
 		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>
 			Print / Save PDF
 		</button>

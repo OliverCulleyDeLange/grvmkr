@@ -1,6 +1,7 @@
-import { loadFileUseCase, type FileRepositoryI, type GridRepositoryI, type InstrumentRepositoryI, type PlaybackControllerI } from "$lib";
+import { loadFileUseCase, type FileRepositoryI, type GridRepositoryI, type InstrumentRepositoryI, type OnEvent, type PlaybackControllerI } from "$lib";
 
 export async function loadExampleFileUseCase(
+    onEvent: OnEvent, 
     fileRepository: FileRepositoryI,
     instrumentRepository: InstrumentRepositoryI,
     gridRepository: GridRepositoryI,
@@ -17,7 +18,7 @@ export async function loadExampleFileUseCase(
         const blob = await response.blob()
         const file = new File([blob], 'example.grv', { type: blob.type });
         
-        loadFileUseCase(file, fileRepository, instrumentRepository, gridRepository, player)
+        loadFileUseCase(onEvent, file, fileRepository, instrumentRepository, gridRepository, player)
     } catch (error) {
         console.error('Error loading example file:', error);
     }
