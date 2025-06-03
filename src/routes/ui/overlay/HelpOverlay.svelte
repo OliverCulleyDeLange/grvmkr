@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { base } from "$app/paths";
+
 	let {
 		closeDialog,
 		reset,
@@ -76,7 +78,7 @@
 				href="https://github.com/OliverCulleyDeLange/grvmkr">GitHub</a
 			>
 		</p>
-		<a href="/privacy" class="link link-primary">Privacy policy</a>
+		<a href="{base}/privacy" class="link link-primary">Privacy policy</a>
 	</div>
 	<form method="dialog" class="modal-backdrop">
 		<button onclick={closeDialog}>close</button>
