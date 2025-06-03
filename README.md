@@ -47,6 +47,10 @@ I'm using goatcounter to provide simple analytics on who's using the tool.
 
 Its fully anonymous and doesn't collect any personal information. I've also made it public so anyone can see the data i'm collecting.
 
+# Error reporting 
+
+I'm using sentry to collect errors [https://ocd-4h.sentry.io/](ocd-4h.sentry.io)
+
 ## Developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:

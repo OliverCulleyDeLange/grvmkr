@@ -29,12 +29,7 @@
 			To get a feel for what you can do with this tool, try loading the example groove, and give it
 			a listen!
 		</p>
-		<button
-			onclick={loadExample}
-			class={`btn btn-outline my-8`}
-		>
-			Load the example groove!
-		</button>
+		<button onclick={loadExample} class={`btn btn-outline my-8`}> Load the example groove! </button>
 
 		<h3 class="text-lg font-bold">Why does this exist?</h3>
 		<p class="py-4">
@@ -44,12 +39,12 @@
 		</p>
 
 		<h3 class="text-lg font-bold">Tips & Tricks</h3>
-		<ul class="list-disc ml-8">
+		<ul class="ml-8 list-disc">
 			<li>
 				<p class="py-2">
-					Select multiple grid cells by dragging cells across a row. 
-					On desktop, you can multi-select cells by holding shift and clicking. 
-					Then you can copy and paste them with ctrl+c and ctrl+v.
+					Select multiple grid cells by dragging cells across a row. On desktop, you can
+					multi-select cells by holding shift and clicking. Then you can copy and paste them with
+					ctrl+c and ctrl+v.
 				</p>
 			</li>
 			<li>
@@ -59,15 +54,18 @@
 
 		<h3 class="text-lg font-bold">Issues & Feature Requests</h3>
 		<p class="py-2">
-			<span class="font-bold">⚠️ iPhone users: </span> If you can't hear anything, make sure your silent switch isn't enabled. There's a technical limitation around playing sounds in silent mode 😅
+			<span class="font-bold">⚠️ iPhone users: </span> If you can't hear anything, make sure your silent
+			switch isn't enabled. There's a technical limitation around playing sounds in silent mode 😅
 		</p>
 		<p class="py-2">
 			If you're having unresolvable problems, you can reset the app state - but this will delete
-			everything, and i mean EVERYTHING. Please download your groove files to your device before resetting to avoid losing work. 
+			everything, and i mean EVERYTHING. Please download your groove files to your device before
+			resetting to avoid losing work.
 		</p>
 		<button class="btn btn-outline btn-sm my-2" onclick={reset}>Reset</button>
 		<p class="py-4">
-			If you do notice any issues or think of a way this could be more useful, please feel free to reach out at
+			If you do notice any issues or think of a way this could be more useful, please feel free to
+			reach out at
 			<a class="link link-primary" href="mailto:grvmkr@oliverdelange.co.uk"
 				>grvmkr@oliverdelange.co.uk</a
 			>
@@ -78,6 +76,7 @@
 				href="https://github.com/OliverCulleyDeLange/grvmkr">GitHub</a
 			>
 		</p>
+		<a href="./privacy" class="link link-primary">Privacy policy</a>
 	</div>
 	<form method="dialog" class="modal-backdrop">
 		<button onclick={closeDialog}>close</button>
