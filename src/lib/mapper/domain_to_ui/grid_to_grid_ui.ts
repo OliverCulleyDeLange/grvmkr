@@ -40,11 +40,7 @@ export function mapRowsToGridUi(
 ): GridUi {
 	let instruments = instrumentManager.getInstruments();
 	let rows = mapRows(grid, instruments);
-	let sections = splitRowsIntoSections(
-		rows,
-		grid.config,
-		grid.gridCols
-	);
+	let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols);
 
 	let ui: GridUi = {
 		notationSections: sections,
@@ -200,7 +196,7 @@ function splitRowsIntoSections(
 		sections.push({
 			sectionRows,
 			minIndex: min,
-			columns: sectionColumns,
+			columns: sectionColumns
 		});
 	}
 

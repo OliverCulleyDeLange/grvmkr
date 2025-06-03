@@ -81,7 +81,10 @@
 		)
 	);
 	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived(
-		mapBeatIndicatorUi(gridsUi, appStateStore.playbackStore.getCurrentlyPlayingColumn)
+		mapBeatIndicatorUi(
+			gridsUi, 
+			(id) => appStateStore.playbackStore.getCurrentlyPlayingColumn(id),
+		)
 	);
 	const instrumentsUi = $derived(mapInstrumentsUi(appStateStore.instrumentStore.getInstruments()));
 	const grooveSelectorUi = $derived(

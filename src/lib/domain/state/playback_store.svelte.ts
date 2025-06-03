@@ -9,9 +9,9 @@ export class PlaybackStore implements PlaybackControllerI {
 	private playingIntervalId: number | undefined;
 	private nextColumn: number = 0;
 	private playingFile: boolean = $state(false);
-	// Allows recalculation of only the beat indicator state, to improve performance. 
-	// Otherwise we're mapping entire grid state every time. 
-	private currentlyPlayingColumnInGrid: SvelteMap<GridId, number> = new SvelteMap(); 
+	// Allows recalculation of only the beat indicator state, to improve performance.
+	// Otherwise we're mapping entire grid state every time.
+	private currentlyPlayingColumnInGrid: SvelteMap<GridId, number> = new SvelteMap();
 
 	constructor(instrumentStore: InstrumentStore) {
 		this.instrumentStore = instrumentStore;

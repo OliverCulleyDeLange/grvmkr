@@ -103,11 +103,9 @@
 			class="input input-sm input-bordered w-0 min-w-0 flex-1"
 		/>
 
-		<Button onClick={() => onEvent({ event: GridEvent.ToggleToolsExpansion, id: gridUi.id })}
-			>
+		<Button onClick={() => onEvent({ event: GridEvent.ToggleToolsExpansion, id: gridUi.id })}>
 			Tools
-			</Button
-		>
+		</Button>
 	</div>
 	<!-- Grid config -->
 	{#if gridUi.toolsExpanded}

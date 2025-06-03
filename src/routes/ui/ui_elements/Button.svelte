@@ -14,10 +14,6 @@
 	} = $props();
 </script>
 
-<button
-	onclick={onClick}
-	class={`btn btn-outline btn-xs m-2 ${classes}`}
-	{disabled}
->
+<button onclick={onClick} class={`btn btn-outline btn-xs m-2 ${classes}`} {disabled}>
 	{@render children()}
 </button>

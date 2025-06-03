@@ -21,7 +21,7 @@ class KeyValueRepository {
 	getTheme(): string | null {
 		return localStorage.getItem(this.THEME_KEY);
 	}
-	
+
 	// We store the date which they saw the welcome on
 	saveWelcomeSeenOn(seenOn: string) {
 		localStorage.setItem(this.SEEN_WELCOME_KEY, seenOn);

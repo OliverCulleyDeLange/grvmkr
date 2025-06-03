@@ -1,8 +1,14 @@
 <script lang="ts">
 	import GridRowTools from './GridRowTools.svelte';
 
-
-	import { GridEvent, type BeatIndicatorUi, type CellLocator, type GridId, type GridUi, type OnUiEvent } from '$lib';
+	import {
+		GridEvent,
+		type BeatIndicatorUi,
+		type CellLocator,
+		type GridId,
+		type GridUi,
+		type OnUiEvent
+	} from '$lib';
 	import { onMount } from 'svelte';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
@@ -94,7 +100,7 @@
 					Delete Grid
 				</button>
 				<div class="beat-indicator">
-					{#each (beatIndicatorUi.get(gridUi.id)?.[sectionIdx] ?? []) as indicator}
+					{#each beatIndicatorUi.get(gridUi.id)?.[sectionIdx] ?? [] as indicator}
 						<BeatIndicator {indicator} />
 					{/each}
 				</div>

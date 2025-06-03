@@ -50,7 +50,7 @@ export class AppStateStore {
 		this.logEvent(event);
 		switch (event.event) {
 			case UiEvent.Mounted:
-				maybeShowInfoForFirstTimeUseCase(this.uiStore)
+				maybeShowInfoForFirstTimeUseCase(this.uiStore);
 				this.initialise();
 				break;
 			case UiEvent.Copy:
@@ -252,7 +252,13 @@ export class AppStateStore {
 				this.reset();
 				break;
 			case HelpEvent.LoadExampleFile:
-				loadExampleFileUseCase(this.onEvent.bind(this), this.fileStore, this.instrumentStore, this.gridStore, this.playbackStore)
+				loadExampleFileUseCase(
+					this.onEvent.bind(this),
+					this.fileStore,
+					this.instrumentStore,
+					this.gridStore,
+					this.playbackStore
+				);
 				break;
 			case ProblemEvent.MissingSampleAudio:
 			case ProblemEvent.DatabaseError:

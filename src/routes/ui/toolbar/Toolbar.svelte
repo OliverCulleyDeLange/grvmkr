@@ -1,6 +1,4 @@
 <script lang="ts">
-	
-	
 	import ToolbarErrors from './ToolbarErrors.svelte';
 
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
@@ -11,7 +9,7 @@
 		onEvent,
 		toggleGrooveSelector,
 		toggleLightDark,
-		toggleShowHelp,
+		toggleShowHelp
 	}: {
 		toolbarUi: ToolbarUi;
 		onEvent: OnUiEvent;
@@ -52,13 +50,7 @@
 			Load File
 		</button>
 
-		<input
-			id="hidden-file-input-for-load"
-			type="file"
-			onchange={load}
-			accept="*/*"
-			hidden
-		/>
+		<input id="hidden-file-input-for-load" type="file" onchange={load} accept="*/*" hidden />
 
 		<button class="btn btn-outline btn-sm" onclick={() => window.print()}>
 			Print / Save PDF

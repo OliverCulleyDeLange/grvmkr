@@ -75,7 +75,7 @@ export class AudioManager {
 		if (player) {
 			player.setVolume(volume);
 		} else {
-			this.initialiseHit(hit)
+			this.initialiseHit(hit);
 		}
 	}
 

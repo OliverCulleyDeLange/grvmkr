@@ -1,11 +1,9 @@
 // Help Events
-export type HelpEvents =
-	Reset
-	| LoadExampleFile;
+export type HelpEvents = Reset | LoadExampleFile;
 
 export enum HelpEvent {
 	Reset = 'Reset',
-	LoadExampleFile = 'LoadExampleFile',
+	LoadExampleFile = 'LoadExampleFile'
 }
 
 export type Reset = {

@@ -1,36 +1,34 @@
-
 export class UiStore {
 	public darkMode = $state(true);
-	private shouldShowHelpOverlay: boolean = $state(false)
+	private shouldShowHelpOverlay: boolean = $state(false);
 	public showGrooveSelector: boolean = $state(false);
 	public showResetConfirmation: boolean = $state(false);
 
 	getShouldShowHelpOverlay(): boolean {
-		return this.shouldShowHelpOverlay
+		return this.shouldShowHelpOverlay;
 	}
 
 	showHelpOverlay() {
-		this.shouldShowHelpOverlay = true
+		this.shouldShowHelpOverlay = true;
 	}
 
 	hideHelpOverlay() {
-		this.shouldShowHelpOverlay = false
+		this.shouldShowHelpOverlay = false;
 	}
 
-
 	toggleShowHelp() {
-		this.shouldShowHelpOverlay = !this.shouldShowHelpOverlay
+		this.shouldShowHelpOverlay = !this.shouldShowHelpOverlay;
 	}
 
 	toggleShowGrooveSelector() {
-		this.showGrooveSelector = !this.showGrooveSelector
+		this.showGrooveSelector = !this.showGrooveSelector;
 	}
 
 	hideResetConfirmation() {
-		this.showResetConfirmation = false
+		this.showResetConfirmation = false;
 	}
-	
+
 	setDarkMode(v: boolean): void {
-		this.darkMode = v
+		this.darkMode = v;
 	}
 }

@@ -50,14 +50,14 @@ export class ErrorStore {
 		const error: AppError =
 			event.error === 'UnknownError: The user denied permission to access the database.'
 				? {
-					id: crypto.randomUUID(),
-					message:
-						"You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page"
-				}
+						id: crypto.randomUUID(),
+						message:
+							"You have denied local storage. Please go to settings/content/cookies and enable 'allow sites to save and read cookie data', then refresh the page"
+					}
 				: {
-					id: crypto.randomUUID(),
-					message: `Error ${event.doingWhat}: [${event.error}]`
-				};
+						id: crypto.randomUUID(),
+						message: `Error ${event.doingWhat}: [${event.error}]`
+					};
 
 		this.errors.set(error.id, error);
 	}
