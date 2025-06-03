@@ -230,12 +230,14 @@ export class GridStore implements GridRepositoryI {
 
 	// Set 'selected' in all grid cells to false
 	resetSelected() {
-		this.grids.forEach((grid) => {
-			grid.rows.forEach((row) => {
-				row.cells.forEach((cell) => {
-					cell.selected = false;
-				});
-			});
+		// Only reset cells that are currently selected
+		this.currentlySelectedCells.forEach((locator) => {
+			const grid = this.grids.get(locator.grid);
+			if (!grid) return;
+			const row = grid.rows[locator.row];
+			if (!row) return;
+			const cell = row.cells[locator.cell];
+			if (cell) cell.selected = false;
 		});
 		this.currentlySelectedCells = [];
 	}
