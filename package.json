@@ -46,6 +46,7 @@
 		"vitest": "^3.0.0"
 	},
 	"dependencies": {
+		"@sentry/sveltekit": "^9.25.0",
 		"jszip": "^3.10.1"
 	}
 }

@@ -32,8 +32,8 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-- Error logging, bug reporting 
-- FIX can't upload .grv files on mobile ios
+
+- Error logging, bug reporting
 - Right click / hold press to delete
 - Premade grooves for classic rhythms for community samba bands
 - Configurable instruments per grid / groove

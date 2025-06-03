@@ -1,9 +1,18 @@
+import { sentrySvelteKit } from '@sentry/sveltekit';
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [
+		sentrySvelteKit({
+			sourceMapsUploadOptions: {
+				org: 'ocd-4h',
+				project: 'javascript-sveltekit'
+			}
+		}),
+		sveltekit()
+	],
 	test: {
 		environment: 'jsdom', // Needed for `indexedDB` polyfill to behave correctly
 		setupFiles: ['/src/test/setup.ts'],
