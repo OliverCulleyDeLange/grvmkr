@@ -12,7 +12,7 @@
 	} = $props();
 </script>
 
-<div class="">
+<div class="pointer-events-none">
 	{#if ui.show}
 		<div class="flex flex-wrap items-center justify-start print:hidden">
 			<ButtonFilled

@@ -32,7 +32,7 @@
 - ✅ Installable (as a pwa) on desktop (windows and mac) and mobile (ios and android)
 
 ### Coming soon (maybe)
-
+- Multiselect merge cells
 - Performance
   - Editing grid while playing causes audio jank
 - Right click / hold press to delete
