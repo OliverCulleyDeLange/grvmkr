@@ -68,7 +68,7 @@ export class AppStateStore {
 				);
 				break;
 			case CellToolsEvent.Merge:
-				this.gridStore.mergeCurrentlySelectedCell(event.side);
+				this.gridStore.mergeCurrentlySelectedCells();
 				this.updateCellTools();
 				break;
 			case CellToolsEvent.UnMerge:

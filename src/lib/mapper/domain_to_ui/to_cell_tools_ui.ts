@@ -6,8 +6,7 @@ export function mapCellToolsUi(cellTools: CellTools | undefined, gridId: GridId)
 	const ui: CellToolsUi = {
 		show: false,
 		hitOptions: options,
-		showMergeRight: false,
-		showMergeLeft: false,
+		showMerge: false,
 		showUnMerge: false,
 		showCopy: false,
 		showPaste: false
@@ -26,6 +25,7 @@ export function mapCellToolsUi(cellTools: CellTools | undefined, gridId: GridId)
 		});
 		ui.showCopy = true;
 		ui.showPaste = cellTools.cellsCopied;
+		ui.showMerge = true;
 	} else if (cellTools.kind == 'single') {
 		cellTools?.hits.forEach((hit) => {
 			const hitCount = getHitCountsForCellOccupation(cellTools.cellsOccupied);
@@ -39,8 +39,6 @@ export function mapCellToolsUi(cellTools: CellTools | undefined, gridId: GridId)
 		});
 		ui.showCopy = true;
 		ui.showPaste = cellTools.cellsCopied;
-		ui.showMergeRight = !cellTools.isLastCell && cellTools.cellsOccupied < 8;
-		ui.showMergeLeft = !cellTools.isFirstCell && cellTools.cellsOccupied < 8;
 		ui.showUnMerge = cellTools.cellsOccupied > 1;
 	}
 

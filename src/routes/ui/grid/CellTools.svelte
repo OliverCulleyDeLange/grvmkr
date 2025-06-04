@@ -16,16 +16,10 @@
 	{#if ui.show}
 		<div class="flex flex-wrap items-center justify-start print:hidden">
 			<ButtonFilled
-				disabled={!ui.showMergeLeft}
-				onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'left' })}
-			>
-				← Merge
-			</ButtonFilled>
-			<ButtonFilled
-				disabled={!ui.showMergeRight}
+				disabled={!ui.showMerge}
 				onClick={() => onEvent({ event: CellToolsEvent.Merge, side: 'right' })}
 			>
-				→ Merge
+				Merge
 			</ButtonFilled>
 			<ButtonFilled
 				disabled={!ui.showUnMerge}

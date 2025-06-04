@@ -10,7 +10,6 @@ export enum CellToolsEvent {
 
 export type Merge = {
 	event: CellToolsEvent.Merge;
-	side: 'left' | 'right';
 };
 
 export type UnMerge = {

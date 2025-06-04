@@ -76,7 +76,6 @@
 		)
 	);
 	const gridsUi: GridUis = $derived.by(() => {
-		console.log('Recomputing gridsUi');
 		return mapGridUi(
 			appStateStore.gridStore.getGrids(),
 			appStateStore.instrumentStore,
@@ -90,7 +89,6 @@
 		mapGrvMkrFilesToGrooveSelectorUi(appStateStore.fileStore.files, appStateStore.fileStore.file.id)
 	);
 	const cellToolsUiMap = $derived.by(() => {
-		console.log('Recomputing cellToolsUiMap');
 		const result = new Map<GridId, CellToolsUi>();
 		for (const gridUi of gridsUi.grids) {
 			result.set(gridUi.id, mapCellToolsUi(appStateStore.cellToolsStore.cellTools, gridUi.id));

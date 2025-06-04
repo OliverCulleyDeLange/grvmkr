@@ -370,82 +370,59 @@ export class GridStore implements GridRepositoryI {
 		this.currentlySelectedCells = [];
 	}
 
-	mergeCurrentlySelectedCell(side: 'left' | 'right') {
-		if (this.currentlySelectedCells.length == 1) {
-			this.mergeCells(this.currentlySelectedCells[0], side);
+	mergeCurrentlySelectedCells() {
+		if (this.currentlySelectedCells.length > 1) {
+			console.log(`Merging cells`, $state.snapshot(this.currentlySelectedCells));
+
+			// Sort selected cells by their position (assume same grid/row)
+			const sorted = [...this.currentlySelectedCells].sort((a, b) => a.cell - b.cell);
+			const first = sorted[0];
+			const last = sorted[sorted.length - 1];
+
+			// Get the grid and row
+			this.updateGrid(first.grid, (grid) => {
+				const row = grid.rows[first.row];
+				if (!row) return;
+
+				// Compute the full span to merge, accounting for merged cells in the selection
+				let mergeStart = first.cell;
+				let mergeEnd = last.cell;
+				for (const locator of sorted) {
+					const cell = row.cells[locator.cell];
+					if (cell && cell.cells_occupied > 1) {
+						// Expand mergeStart/mergeEnd if merged cell extends beyond selection
+						const mergedStart = locator.cell;
+						const mergedEnd = locator.cell + cell.cells_occupied - 1;
+						if (mergedStart < mergeStart) mergeStart = mergedStart;
+						if (mergedEnd > mergeEnd) mergeEnd = mergedEnd;
+					}
+				}
+				const numCells = mergeEnd - mergeStart + 1;
+
+				// Set the first cell in the merged span to occupy the merged span
+				row.cells[mergeStart] = {
+					hits: [],
+					cells_occupied: numCells
+				};
+
+				// Set the rest of the merged cells to cells_occupied: 0
+				for (let i = mergeStart + 1; i <= mergeEnd; i++) {
+					row.cells[i] = {
+						hits: [],
+						cells_occupied: 0
+					};
+				}
+
+				// Keep only the merged-into cell selected
+				this.currentlySelectedCells = [first];
+				this.updateSelectedCellSet();
+			});
 		} else {
 			console.error(
-				"Can't merge multiple cells. Currently selected cells",
+				"Can't merge < 1 cell. Currently selected cells",
 				this.currentlySelectedCells
 			);
 		}
-	}
-
-	mergeCells(locator: CellLocator, side: 'left' | 'right') {
-		this.updateGrid(locator.grid, (grid) => {
-			console.log(`Merging grid cell ${side} of cell`, $state.snapshot(locator.cell));
-			let clickedCell = grid.rows[locator.row].cells[locator.cell];
-			let cellIndexAddition: number;
-			if (side == 'left') {
-				cellIndexAddition = -1;
-			} else {
-				cellIndexAddition = 1;
-			}
-			// We have to find the next cell which hasn't already been merged to the left or right
-			let cellNextToClickedCell: GridCell | undefined;
-			let cellNextToClickedCellIndex: number = locator.cell;
-			for (
-				let i = locator.cell + cellIndexAddition;
-				i >= 0 || i < grid.rows[locator.row].cells.length;
-				i += cellIndexAddition
-			) {
-				let cell = grid.rows[locator.row].cells[i];
-				if (cell.cells_occupied > 0) {
-					cellNextToClickedCell = cell;
-					cellNextToClickedCellIndex = i;
-					break;
-				}
-			}
-
-			if (clickedCell && cellNextToClickedCell && clickedCell != cellNextToClickedCell) {
-				console.log(
-					'Cells to merge',
-					$state.snapshot(clickedCell),
-					' & ',
-					$state.snapshot(cellNextToClickedCell)
-				);
-				// Update the left most cell with the cell occupation
-				const cellToExtend = side === 'left' ? cellNextToClickedCell : clickedCell;
-				const cellToEmpty = side === 'left' ? clickedCell : cellNextToClickedCell;
-
-				// Extend cell
-				cellToExtend.cells_occupied += cellToEmpty.cells_occupied;
-				cellToExtend.hits = [];
-				// Empty cell
-				cellToEmpty.cells_occupied = 0;
-				cellToEmpty.hits = [];
-				// Update currently selected cell. if we merge left we should select the cell we merged into
-				if (side == 'left') {
-					this.currentlySelectedCells = [{ ...locator, cell: cellNextToClickedCellIndex }];
-				}
-				console.log(
-					'Cells after merge',
-					$state.snapshot(clickedCell),
-					' & ',
-					$state.snapshot(cellNextToClickedCell)
-				);
-				console.log('Grid after merge', $state.snapshot(grid));
-			} else {
-				console.error(
-					`Couldn't find grid cells to merge. Index ${$state.snapshot(locator.cell)} gave cell`,
-					$state.snapshot(clickedCell),
-					`, with cel to the ${side} `,
-					$state.snapshot(cellNextToClickedCell),
-					', grid:',
-					$state.snapshot(grid)
-				);
-			}
-		});
 	}
 
 	// When instruments are added / removed, we need to remove the rows for the
