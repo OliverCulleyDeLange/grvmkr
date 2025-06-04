@@ -103,7 +103,7 @@
 		{/each}
 	</div>
 
-	<div class="cell-tools">
+	<div class="cell-tools pointer-events-none">
 		{#if cellTools}
 			<CellTools ui={cellTools} {onEvent} />
 		{/if}
