@@ -193,7 +193,7 @@
 				onClick={() => onEvent({ event: GridEvent.MoveGridUp, gridId: gridUi.id })}
 				classes="print:hidden"
 			>
-				⬇️ Move Up
+				⬆️ Move Up
 			</Button>
 
 			<Button
