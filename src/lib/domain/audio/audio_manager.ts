@@ -85,7 +85,8 @@ export class AudioManager {
 
 	private ensureAudioContext() {
 		if (!this.audioContext) {
-			this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+			const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+			this.audioContext = new AudioCtx();
 		}
 	}
 }

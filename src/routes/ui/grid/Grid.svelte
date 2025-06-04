@@ -10,10 +10,9 @@
 		type GridUi,
 		type OnUiEvent
 	} from '$lib';
-	import { onMount } from 'svelte';
+	import BeatIndicator from './BeatIndicator.svelte';
 	import CellTools from './CellTools.svelte';
 	import GridCell from './GridCell.svelte';
-	import BeatIndicator from './BeatIndicator.svelte';
 
 	let {
 		gridUi,
@@ -33,11 +32,6 @@
 	let selecting: boolean = false;
 	let selectionStart: CellLocator | null = null;
 	let selectionEnd: CellLocator | null = null;
-
-	// Toolbar pin state
-	let gridRef: HTMLElement;
-	let toolsRef: HTMLElement;
-	let isPinned = false;
 
 	function onPointerDown(locator: CellLocator, shiftKey: boolean) {
 		selecting = true;
@@ -64,32 +58,9 @@
 	function onPointerUp() {
 		selecting = false;
 	}
-
-	onMount(() => {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (!gridRef) return;
-
-					const gridBottom = gridRef.getBoundingClientRect().bottom;
-					const viewportHeight = window.innerHeight;
-
-					isPinned = gridBottom > viewportHeight && entry.isIntersecting;
-				}
-			},
-			{
-				root: null,
-				threshold: 0
-			}
-		);
-
-		if (toolsRef) observer.observe(toolsRef);
-
-		return () => observer.disconnect();
-	});
 </script>
 
-<div bind:this={gridRef} class="grid-wrapper">
+<div class="grid-wrapper">
 	<div
 		class="flex select-none flex-col gap-2"
 		style="touch-action: pan-y; position:relative;"
@@ -132,7 +103,7 @@
 		{/each}
 	</div>
 
-	<div class="cell-tools" class:fixed-to-viewport={isPinned} bind:this={toolsRef}>
+	<div class="cell-tools">
 		{#if cellTools}
 			<CellTools ui={cellTools} {onEvent} />
 		{/if}
@@ -158,12 +129,5 @@
 		position: sticky;
 		bottom: 0;
 		z-index: 10;
-	}
-
-	.fixed-to-viewport {
-		position: fixed !important;
-		bottom: 0;
-		left: 0;
-		right: 0;
 	}
 </style>

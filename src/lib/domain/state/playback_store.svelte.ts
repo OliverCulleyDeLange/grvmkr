@@ -6,7 +6,7 @@ import type { InstrumentStore } from './instrument_store.svelte';
 export class PlaybackStore implements PlaybackControllerI {
 	private instrumentStore: InstrumentStore;
 	private playingGrid: Grid | undefined;
-	private playingIntervalId: number | undefined;
+	private playingIntervalId: ReturnType<typeof setInterval> | undefined;
 	private nextColumn: number = 0;
 	private playingFile: boolean = $state(false);
 	// Allows recalculation of only the beat indicator state, to improve performance.

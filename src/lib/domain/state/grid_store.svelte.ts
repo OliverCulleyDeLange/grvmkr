@@ -379,7 +379,7 @@ export class GridStore implements GridRepositoryI {
 			const first = sorted[0];
 			const last = sorted[sorted.length - 1];
 
-			// Get the grid and row
+			// Get the grid 
 			this.updateGrid(first.grid, (grid) => {
 				const row = grid.rows[first.row];
 				if (!row) return;
