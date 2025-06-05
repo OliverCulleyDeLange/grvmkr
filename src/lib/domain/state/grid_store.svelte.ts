@@ -44,12 +44,13 @@ export class GridStore implements GridRepositoryI {
 		return this.selectedCellSet.has(`${locator.grid}:${locator.row}:${locator.cell}`);
 	}
 
-	private updateSelectedCellSet() {
-		this.selectedCellSet.clear()
-		this.currentlySelectedCells.forEach((loc) => {
-			this.selectedCellSet.add(`${loc.grid}:${loc.row}:${loc.cell}`)
-		})
-	}
+	// private updateSelectedCellSet() {
+	// 	this.selectedCellSet.clear()
+	// 	this.currentlySelectedCells.forEach((loc) => {
+	// 		this.selectedCellSet.add(`${loc.grid}:${loc.row}:${loc.cell}`)
+	// 	})
+	// 	console.log("currentlySelectedCells updated", $state.snapshot(this.currentlySelectedCells), this.selectedCellSet);
+	// }
 
 	getGridsFromMostRecentlyPlayedGrid(): Grid[] {
 		if (!this.mostRecentlyPlayedGrid) return [];
@@ -150,19 +151,37 @@ export class GridStore implements GridRepositoryI {
 		});
 	}
 
+	// Adds a cell to the selection only if not already present
+	addCellToSelection(locator: CellLocator) {
+		const key = `${locator.grid}:${locator.row}:${locator.cell}`;
+		if (!this.selectedCellSet.has(key)) {
+			this.currentlySelectedCells.push(locator);
+			this.selectedCellSet.add(key);
+		}
+	}
+
+	// Sets the selection to a unique list of cells
+	setCurrentlySelectedCells(locators: CellLocator[]) {
+		this.currentlySelectedCells = [];
+		this.selectedCellSet.clear();
+		for (const locator of locators) {
+			this.addCellToSelection(locator);
+		}
+	}
+
 	selectUpTo(locator: CellLocator) {
 		if (!this.selectionStartCell) return;
 
 		const anchor = this.selectionStartCell;
-
 		const startCell = Math.min(anchor.cell, locator.cell);
 		const endCell = Math.max(anchor.cell, locator.cell);
 
+		const newSelection: CellLocator[] = [];
 		for (let cell = startCell; cell <= endCell; cell++) {
 			const cellLocator = { grid: anchor.grid, row: anchor.row, cell };
-			this.currentlySelectedCells.push(cellLocator);
+			newSelection.push(cellLocator);
 		}
-		this.updateSelectedCellSet();
+		this.setCurrentlySelectedCells(newSelection);
 	}
 
 	copyCurrentlySelectedCells() {
@@ -243,15 +262,13 @@ export class GridStore implements GridRepositoryI {
 	// - Update the selected state
 	onTapGridCell(locator: CellLocator) {
 		this.toggleGridHit(locator);
-		this.currentlySelectedCells = [locator];
-		this.updateSelectedCellSet();
+		this.setCurrentlySelectedCells([locator]);
 	}
 
 	// Like tapping, but only selects the cell. Doesn't update hit
 	onStartCellSelection(locator: CellLocator) {
-		this.currentlySelectedCells = [locator];
 		this.selectionStartCell = locator;
-		this.updateSelectedCellSet();
+		this.setCurrentlySelectedCells([locator]);
 	}
 
 	// Toggle the hit in the cell
@@ -414,8 +431,7 @@ export class GridStore implements GridRepositoryI {
 				}
 
 				// Keep only the merged-into cell selected
-				this.currentlySelectedCells = [first];
-				this.updateSelectedCellSet();
+				this.setCurrentlySelectedCells([first]);
 			});
 		} else {
 			console.error(
