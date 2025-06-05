@@ -75,6 +75,7 @@ export class PlaybackStore implements PlaybackControllerI {
 	stop() {
 		console.log('Stopping playback');
 		this.playingFile = false;
+		this.playingGrid = undefined;
 		clearInterval(this.playingIntervalId);
 		this.playingIntervalId = undefined;
 		this.nextColumn = 0;
