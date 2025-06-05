@@ -670,7 +670,7 @@ export class GridStore implements GridRepositoryI {
 		this.currentlyPlayingGrid = null;
 		this.mostRecentlyPlayedGrid = null;
 		this.currentlySelectedCells = [];
-		this.selectedCellSet = new Set();
+		this.selectedCellSet.clear();
 		this.selectionStartCell = null;
 		this.copiedCells = [];
 	}

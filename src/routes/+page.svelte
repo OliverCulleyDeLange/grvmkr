@@ -76,10 +76,7 @@
 		)
 	);
 	const gridsUi: GridUis = $derived.by(() => {
-		return mapGridUi(
-			appStateStore.gridStore.getGrids(),
-			appStateStore.instrumentStore,
-		);
+		return mapGridUi(appStateStore.gridStore.getGrids(), appStateStore.instrumentStore);
 	});
 	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived(
 		mapBeatIndicatorUi(gridsUi, (id) => appStateStore.playbackStore.getCurrentlyPlayingColumn(id))

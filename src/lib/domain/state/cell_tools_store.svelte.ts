@@ -23,7 +23,6 @@ export class CellToolsStore implements CellToolsRepositoryI {
 		const firstCurrentlySelectedCell = currentlySelectedCells[0];
 
 		if (firstCurrentlySelectedCell) {
-			console.log("Updating cell tools")
 			const locator = firstCurrentlySelectedCell;
 			const rowInstrument = grid.rows[locator.row]?.instrument;
 			const instrument = instrumentStore.getInstrument(rowInstrument?.id);
@@ -44,7 +43,6 @@ export class CellToolsStore implements CellToolsRepositoryI {
 					cellsSelected
 				});
 				if (JSON.stringify(this.cellTools) !== JSON.stringify(newCellTools)) {
-					console.log("Setting new cell tools", newCellTools);
 					this.cellTools = newCellTools;
 				}
 			} else {
