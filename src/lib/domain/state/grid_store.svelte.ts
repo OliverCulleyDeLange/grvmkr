@@ -167,6 +167,7 @@ export class GridStore implements GridRepositoryI {
 		for (const locator of locators) {
 			this.addCellToSelection(locator);
 		}
+		console.log('Currently selected cells updated:', $state.snapshot(this.currentlySelectedCells));
 	}
 
 	selectUpTo(locator: CellLocator) {
@@ -261,6 +262,7 @@ export class GridStore implements GridRepositoryI {
 	// - Toggle the hit
 	// - Update the selected state
 	onTapGridCell(locator: CellLocator) {
+		this.selectionStartCell = locator;
 		this.toggleGridHit(locator);
 		this.setCurrentlySelectedCells([locator]);
 	}
@@ -333,7 +335,7 @@ export class GridStore implements GridRepositoryI {
 			} else {
 				const emptyCell: GridCell = {
 					hits: [],
-					cells_occupied: 1,
+					cells_occupied: 1
 				};
 				const newCells: GridCell[] = new Array(expectedCells - currentCellCount).fill(emptyCell);
 				row.cells.push(...newCells);
@@ -378,7 +380,7 @@ export class GridStore implements GridRepositoryI {
 			for (let i = 0; i < originalSize; i++) {
 				row.cells[startIndex + i] = {
 					hits: mergedCell.hits.length > 0 ? [mergedCell.hits[0]] : [],
-					cells_occupied: 1,
+					cells_occupied: 1
 				};
 			}
 
@@ -396,7 +398,7 @@ export class GridStore implements GridRepositoryI {
 			const first = sorted[0];
 			const last = sorted[sorted.length - 1];
 
-			// Get the grid 
+			// Get the grid
 			this.updateGrid(first.grid, (grid) => {
 				const row = grid.rows[first.row];
 				if (!row) return;
@@ -434,10 +436,7 @@ export class GridStore implements GridRepositoryI {
 				this.setCurrentlySelectedCells([first]);
 			});
 		} else {
-			console.error(
-				"Can't merge < 1 cell. Currently selected cells",
-				this.currentlySelectedCells
-			);
+			console.error("Can't merge < 1 cell. Currently selected cells", this.currentlySelectedCells);
 		}
 	}
 

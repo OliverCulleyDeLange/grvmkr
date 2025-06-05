@@ -22,7 +22,11 @@
 <div class="w-full overflow-x-auto">
 	<h1 class="text-xl">Instruments</h1>
 	{#each ui.instruments as instrumentUi}
-		<div id="instrument-config-container" class="mb-2">
+		<div
+			id="instrument-config-container"
+			class="mb-2"
+			data-testid={`instrument-container-${instrumentUi.id}`}
+		>
 			<div class="flex w-full gap-2 p-1">
 				<div class="">{instrumentUi.gridIndex}</div>
 				<input
@@ -69,7 +73,7 @@
 			</div>
 
 			{#each [...instrumentUi.hitTypes] as hitUi}
-				<ul class="ml-8 text-sm text-gray-600">
+				<ul class="ml-8 text-sm text-gray-600" data-testid={`instrument-hit-${hitUi.id}`}>
 					<li class="flex-right flex gap-2 p-1">
 						<input
 							value={hitUi.key}

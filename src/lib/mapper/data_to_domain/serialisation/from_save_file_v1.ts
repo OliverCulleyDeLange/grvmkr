@@ -77,7 +77,7 @@ export function mapSavedInstrumentHitV1ToGridCell(
 			: undefined;
 	let beatDivision: GridCell = {
 		cells_occupied: 1, // V1 doesn't support merging
-		hits: hit ? [hit] : [],
+		hits: hit ? [hit] : []
 	};
 	return beatDivision;
 }

@@ -272,7 +272,6 @@ export class AppStateStore {
 	}
 
 	// TODO Extract these below into use cases
-
 	updateCellTools() {
 		this.cellToolsStore.updateCellTools(this.gridStore, this.instrumentStore);
 	}
@@ -287,15 +286,15 @@ export class AppStateStore {
 	// - Play the new hit
 	// - Update the selected state
 	// - Update cell tools
-	onTapGridCell(event: TappedGridCell) {
+	async onTapGridCell(event: TappedGridCell) {
 		if (event.shiftHeld) {
 			this.gridStore.selectUpTo(event.locator);
 		} else {
 			this.gridStore.onTapGridCell(event.locator);
 			const hit = this.gridStore.getHitAt(event.locator);
 			this.instrumentStore?.playHit(hit);
-			this.updateCellTools();
 		}
+		this.updateCellTools();
 	}
 
 	onStartCellSelection(event: StartCellSelection) {

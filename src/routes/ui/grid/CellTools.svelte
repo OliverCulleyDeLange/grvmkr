@@ -24,7 +24,7 @@
 
 			<ButtonFilled
 				disabled={!ui.showMerge}
-				onClick={() => onEvent({ event: CellToolsEvent.Merge})}
+				onClick={() => onEvent({ event: CellToolsEvent.Merge })}
 			>
 				Merge</ButtonFilled
 			>

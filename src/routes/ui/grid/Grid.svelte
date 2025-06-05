@@ -19,7 +19,7 @@
 		beatIndicatorUi,
 		cellTools,
 		onEvent,
-		cellSelected,
+		cellSelected
 	}: {
 		gridUi: GridUi;
 		beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]>;
@@ -68,7 +68,11 @@
 		onpointercancel={onPointerUp}
 	>
 		{#each gridUi.notationSections as section, sectionIdx}
-			<div class="grid" style="--cells: {section.columns};">
+			<div
+				class="grid"
+				style="--cells: {section.columns};"
+				data-testid={`gridsection-${gridUi.id}-${gridUi.index}-${sectionIdx}`}
+			>
 				<button
 					class="btn btn-outline btn-xs print:invisible"
 					onclick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}

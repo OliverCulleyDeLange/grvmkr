@@ -21,10 +21,15 @@
 </script>
 
 <button
+	id={`gridcell-${ui.locator.grid}-${ui.locator.row}-${ui.locator.cell}`}
+	data-testid={`gridcell-${ui.locator.grid}-${ui.locator.row}-${ui.locator.cell}`}
 	onclick={handleClick}
 	onpointerdown={(event: PointerEvent) => {
 		event.preventDefault();
-		(event.currentTarget as HTMLElement)?.releasePointerCapture(event.pointerId);
+		// Only call releasePointerCapture if it exists (not in jsdom)
+		if (typeof (event.currentTarget as HTMLElement).releasePointerCapture === 'function') {
+			(event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+		}
 		onpointerdown(event);
 	}}
 	{onpointermove}

@@ -1,4 +1,9 @@
-import { type CellTools, type CellToolsRepositoryI, type GridRepositoryI, type InstrumentRepositoryI } from '$lib';
+import {
+	type CellTools,
+	type CellToolsRepositoryI,
+	type GridRepositoryI,
+	type InstrumentRepositoryI
+} from '$lib';
 
 export class CellToolsStore implements CellToolsRepositoryI {
 	private defaultCellTools: CellTools = {
@@ -53,7 +58,17 @@ export class CellToolsStore implements CellToolsRepositoryI {
 		}
 	}
 
-	private buildCellTools({ kind, gridId, instrument, hits, cellsOccupied, isFirstCell, isLastCell, cellsCopied, cellsSelected }: any): CellTools {
+	private buildCellTools({
+		kind,
+		gridId,
+		instrument,
+		hits,
+		cellsOccupied,
+		isFirstCell,
+		isLastCell,
+		cellsCopied,
+		cellsSelected
+	}: any): CellTools {
 		if (kind === 'multi') {
 			return {
 				kind: 'multi',

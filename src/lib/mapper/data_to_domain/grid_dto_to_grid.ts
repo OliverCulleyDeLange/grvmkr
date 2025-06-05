@@ -50,7 +50,7 @@ export function rowFromDto(gridRowDto: GridRowDto, instrument: InstrumentWithId)
 export function mapGridCellDtoToGridCell(divisionDto: GridCellDto): GridCell {
 	let cell: GridCell = {
 		hits: divisionDto.hits.map((hit) => mapInstrumentHitDtoToInstrumentHit(hit)),
-		cells_occupied: divisionDto.cells_occupied,
+		cells_occupied: divisionDto.cells_occupied
 	};
 	return cell;
 }

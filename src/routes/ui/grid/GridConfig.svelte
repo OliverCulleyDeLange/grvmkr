@@ -90,6 +90,7 @@
 <!-- Outer container (hidden for print)-->
 <div
 	class="mb-2 flex flex-col flex-wrap items-start items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23] print:hidden"
+	data-testid={`gridtools-${gridUi.id}`}
 >
 	<!-- Play, grid name, settings button -->
 	<div class="flex w-full flex-row items-center gap-2">

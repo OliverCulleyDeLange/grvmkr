@@ -18,30 +18,18 @@ import {
 	type VolumeControlUi
 } from '$lib';
 
-export function mapGridUi(
-	grids: Map<GridId, Grid>,
-	instrumentStore: InstrumentStore,
-): GridUis {
-	let gridUis: GridUi[] = [...grids.values()].map((grid) =>
-		mapRowsToGridUi(grid, instrumentStore)
-	);
+export function mapGridUi(grids: Map<GridId, Grid>, instrumentStore: InstrumentStore): GridUis {
+	let gridUis: GridUi[] = [...grids.values()].map((grid) => mapRowsToGridUi(grid, instrumentStore));
 	let ui: GridUis = {
 		grids: gridUis.sort((a, b) => a.index - b.index)
 	};
 	return ui;
 }
 
-export function mapRowsToGridUi(
-	grid: Grid,
-	instrumentManager: InstrumentStore,
-): GridUi {
+export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentStore): GridUi {
 	let instruments = instrumentManager.getInstruments();
 	let rows = mapRows(grid, instruments);
-	let sections = splitRowsIntoSections(
-		rows,
-		grid.config,
-		grid.gridCols
-	);
+	let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols);
 
 	let ui: GridUi = {
 		notationSections: sections,
