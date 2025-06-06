@@ -52,7 +52,7 @@
 		if (id) {
 			const el = document.getElementById(id);
 			if (el) {
-				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				el.scrollIntoView({ behavior: 'auto', block: 'start' });
 				onEvent({ event: GridEvent.ScrolledToGrid });
 			}
 		}
