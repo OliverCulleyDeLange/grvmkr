@@ -18,18 +18,28 @@ import {
 	type VolumeControlUi
 } from '$lib';
 
-export function mapGridUi(grids: Map<GridId, Grid>, instrumentStore: InstrumentStore): GridUis {
-	let gridUis: GridUi[] = [...grids.values()].map((grid) => mapRowsToGridUi(grid, instrumentStore));
+export function mapGridUi(
+	grids: Map<GridId, Grid>,
+	instrumentStore: InstrumentStore,
+	screenWidth?: number,
+): GridUis {
+	let gridUis: GridUi[] = [...grids.values()].map((grid) =>
+		mapRowsToGridUi(grid, instrumentStore, screenWidth)
+	);
 	let ui: GridUis = {
 		grids: gridUis.sort((a, b) => a.index - b.index)
 	};
 	return ui;
 }
 
-export function mapRowsToGridUi(grid: Grid, instrumentManager: InstrumentStore): GridUi {
+export function mapRowsToGridUi(
+	grid: Grid,
+	instrumentManager: InstrumentStore,
+	screenWidth?: number,
+): GridUi {
 	let instruments = instrumentManager.getInstruments();
 	let rows = mapRows(grid, instruments);
-	let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols);
+	let sections = splitRowsIntoSections(rows, grid.config, grid.gridCols, screenWidth);
 
 	let ui: GridUi = {
 		notationSections: sections,
@@ -119,22 +129,37 @@ function mapCellToCellUi(
 	return cellUi;
 }
 
-// Splits the grid UI into manageable 2 bar cell sections which stack vertically
+// Splits the grid UI into manageable sections based on screen width and min cell width
 function splitRowsIntoSections(
 	rows: GridRowUi[],
 	config: GridConfig,
-	gridCols: number
+	gridCols: number,
+	screenWidth?: number,
 ): NotationSection[] {
 	const sections: NotationSection[] = [];
-	let chunkSize = (gridCols / config.bars) * 2; // Start with 2 bars per section
-	if (chunkSize > 32) {
-		chunkSize = gridCols / config.bars; // But downsize to 1 bar per section if > 32 cells
+	let chunkSize: number;
+	const barSize = gridCols / config.bars;
+	if (screenWidth) {
+		const minCellWidth = 20; // Minimum width of a cell in pixels
+		const maxCellsPerSection = Math.max(1, Math.floor(screenWidth / minCellWidth));
+		// Find the largest multiple of barSize that fits in maxCellsPerSection
+		const barsPerSection = Math.max(1, Math.floor(maxCellsPerSection / barSize));
+		chunkSize = barsPerSection * barSize;
+		// Ensure at least one bar per section
+		if (chunkSize < barSize) chunkSize = barSize;
+		// Don't exceed total columns
+		if (chunkSize > gridCols) chunkSize = gridCols;
+	} else {
+		chunkSize = barSize * 2; // Fallback: 2 bars per section
+		if (chunkSize > 32) {
+			chunkSize = barSize; // Fallback: 1 bar per section if > 32 cells
+		}
 	}
 	const numSections = Math.ceil(gridCols / chunkSize);
 
 	for (let i = 0; i < numSections; i++) {
-		let min = i * chunkSize; // 0
-		let max = (i + 1) * chunkSize; //16
+		let min = i * chunkSize;
+		let max = (i + 1) * chunkSize;
 		const sectionRows: GridRowUi[] = rows.map((row) => {
 			let gridRowUi = {
 				...row,
@@ -157,29 +182,6 @@ function splitRowsIntoSections(
 			(acc, cell) => acc + cell.cellsOccupied,
 			0
 		);
-		const beatIndicator: BeatIndicatorUi[] = Array.from({ length: sectionColumns }, (_, i) => {
-			let text = '';
-			let index = min + i;
-
-			const divisionModulo = index % config.beatDivisions;
-			const isBeat = divisionModulo == 0;
-			const isFirstBeatOfBar = isBeat && index % (config.beatsPerBar * config.beatDivisions) == 0;
-			const isAndBeatOfBar = divisionModulo == config.beatDivisions * 0.5;
-			const isEBeatOfBar = divisionModulo == config.beatDivisions * 0.25;
-			const isABeatOfBar = divisionModulo == config.beatDivisions * 0.75;
-			if (isBeat) {
-				text = `${((index / config.beatDivisions) % config.beatsPerBar) + 1}`;
-			} else if (isAndBeatOfBar) {
-				text = '&';
-			} else if (isEBeatOfBar) {
-				text = 'e';
-			} else if (isABeatOfBar) {
-				text = 'a';
-			}
-			// TODO set playing value
-			const indicator: BeatIndicatorUi = { isFirstBeatOfBar, isBeat, playing: false, text };
-			return indicator;
-		});
 		sections.push({
 			sectionRows,
 			minIndex: min,

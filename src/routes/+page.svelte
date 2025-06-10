@@ -33,7 +33,10 @@
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
 
+	let screenWidth = $state(1024); // Safe default for SSR
+
 	onMount(() => {
+		screenWidth = window.innerWidth;
 		onEvent({ event: UiEvent.Mounted });
 		// Initialise theme
 		themeStore.initTheme();
@@ -41,9 +44,14 @@
 			appStateStore.uiStore.setDarkMode(v)
 		);
 		const unregisterShortcuts = registerAppKeyboardShortcuts(onEvent);
+		const handleResize = () => {
+			screenWidth = window.innerWidth;
+		};
+		window.addEventListener('resize', handleResize);
 		return () => {
 			unregisterShortcuts();
 			unsubscribeThemeStore();
+			window.removeEventListener('resize', handleResize);
 		};
 	});
 
@@ -76,7 +84,11 @@
 		)
 	);
 	const gridsUi: GridUis = $derived.by(() => {
-		return mapGridUi(appStateStore.gridStore.getGrids(), appStateStore.instrumentStore);
+		return mapGridUi(
+			appStateStore.gridStore.getGrids(),
+			appStateStore.instrumentStore,
+			screenWidth,
+		);
 	});
 	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived(
 		mapBeatIndicatorUi(gridsUi, (id) => appStateStore.playbackStore.getCurrentlyPlayingColumn(id))
