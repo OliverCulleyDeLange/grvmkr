@@ -80,7 +80,6 @@ export class AppStateStore {
 				break;
 			case GridEvent.TogglePlayingGrid:
 				togglePlayGridUseCase(
-					event.playing,
 					event.gridId,
 					this.gridStore,
 					this.instrumentStore,

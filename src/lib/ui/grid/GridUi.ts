@@ -10,5 +10,4 @@ export type GridUi = {
 	notationSections: NotationSection[];
 	msPerBeatDivision: number;
 	gridCols: number;
-	playing: boolean;
 };

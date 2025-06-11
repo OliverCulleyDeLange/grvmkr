@@ -46,7 +46,6 @@ export enum GridEvent {
 
 export type TogglePlayingGrid = {
 	event: GridEvent.TogglePlayingGrid;
-	playing: boolean;
 	gridId: GridId;
 };
 export type TappedGridCell = {

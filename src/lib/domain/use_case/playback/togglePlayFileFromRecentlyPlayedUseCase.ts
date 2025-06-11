@@ -6,13 +6,10 @@ export async function togglePlayFileFromRecentlyPlayedUseCase(
 	instrumentRepo: InstrumentRepositoryI,
 	player: PlaybackControllerI
 ) {
-	const gridsToPlay = gridRepo.getGridsFromMostRecentlyPlayedGrid();
-	const mostRecentlyPlayedGrid = gridsToPlay[0];
-	if (gridsToPlay && mostRecentlyPlayedGrid) {
-		let playing = mostRecentlyPlayedGrid.playing;
+	const recentlyPlayed = player.mostRecentlyPlayedGrid();
+	if (recentlyPlayed) {
 		return await togglePlayFileFromSpecificGridUseCase(
-			!playing,
-			mostRecentlyPlayedGrid.id,
+			recentlyPlayed.id,
 			gridRepo,
 			instrumentRepo,
 			player
@@ -22,7 +19,6 @@ export async function togglePlayFileFromRecentlyPlayedUseCase(
 		const firstGrid = gridRepo.getFirstGrid();
 		if (firstGrid) {
 			return await togglePlayFileFromSpecificGridUseCase(
-				!firstGrid.playing,
 				firstGrid.id,
 				gridRepo,
 				instrumentRepo,
@@ -33,29 +29,21 @@ export async function togglePlayFileFromRecentlyPlayedUseCase(
 }
 
 async function togglePlayFileFromSpecificGridUseCase(
-	newPlaying: boolean,
 	gridId: GridId,
 	gridRepo: GridRepositoryI,
 	instrumentRepo: InstrumentRepositoryI,
 	player: PlaybackControllerI
 ) {
-	await gridRepo.updatePlaying(newPlaying, gridId);
-
-	if (newPlaying) {
-		await instrumentRepo.ensureInstrumentsInitialised();
-		player.stop();
-		const gridsToPlay = gridRepo.getGridsFromCurrentlyPlaying();
-		player.playGridsInSequence(
-			gridsToPlay,
-			(grid) => {
-				gridRepo.updatePlaying(true, grid.id);
-				gridRepo.scrollToGrid(grid.id);
-			},
-			(grid) => {
-				gridRepo.updatePlaying(false, grid.id);
-			}
-		);
-	} else {
-		player.stop();
-	}
+	await instrumentRepo.ensureInstrumentsInitialised();
+	const gridsToPlay = gridRepo.getGridsFrom(gridId);
+	player.togglePlayGridsInSequence(
+		gridsToPlay,
+		(grid) => {
+			gridRepo.scrollToGrid(grid.id);
+			// todo scroll to grid sections
+		},
+		(grid) => {
+			//noop
+		}
+	);
 }

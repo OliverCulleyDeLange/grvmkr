@@ -5,7 +5,9 @@ import type { InstrumentStore } from './instrument_store.svelte';
 
 export class PlaybackStore implements PlaybackControllerI {
 	private instrumentStore: InstrumentStore;
-	private playingGrid: Grid | undefined;
+
+	private playingGrid: Grid | undefined = $state(undefined);
+	private recentlyPlayedGrid: Grid | undefined;
 	private playingIntervalId: ReturnType<typeof setInterval> | undefined;
 	private nextColumn: number = 0;
 	private playingFile: boolean = $state(false);
@@ -17,63 +19,78 @@ export class PlaybackStore implements PlaybackControllerI {
 		this.instrumentStore = instrumentStore;
 	}
 
+	mostRecentlyPlayedGrid(): Grid | undefined {
+		return this.recentlyPlayedGrid
+	}
+
 	isPlayingFile(): boolean {
 		return this.playingFile;
 	}
 
-	// Plays the grid 'loops' number of times, then calls 'onComplete'
-	// 0 loops for infinite looping
-	play(grid: Grid, loops: number, onComplete?: (grid: Grid) => void) {
-		// this.stop(); // Stop any existing playback
-		this.playingGrid = grid;
-		this.nextColumn = 0;
-		this.currentlyPlayingColumnInGrid.set(grid.id, 0);
-		const totalSteps = grid.gridCols;
-		let completedLoops = 0;
-		const inifiniteLoop = loops == 0;
+	isPlayingGrid(id: GridId): boolean {
+		return this.playingGrid?.id === id
+	}
 
-		this.onBeat();
-		this.playingIntervalId = setInterval(() => {
-			if (this.nextColumn % totalSteps == 0) {
-				// Grid finished playing
-				if (!inifiniteLoop && ++completedLoops >= loops) {
-					clearInterval(this.playingIntervalId);
-					this.playingIntervalId = undefined;
-					this.nextColumn = 0;
-					console.log(
-						`Finished playing ${loops} loops of ${grid.config.name}`,
-						$state.snapshot(grid)
-					);
-					onComplete?.(grid);
+	togglePlayback(grid: Grid, loops: number, onComplete?: (grid: Grid) => void) {
+		const playing = this.playingGrid?.id === grid.id
+		if (playing) {
+			this.stop();
+			this.playingGrid = undefined
+		} else {
+			this.playingGrid = grid;
+			this.recentlyPlayedGrid = grid;
+			this.nextColumn = 0;
+			this.currentlyPlayingColumnInGrid.set(grid.id, 0);
+			const totalSteps = grid.gridCols;
+			let completedLoops = 0;
+			const inifiniteLoop = loops == 0;
+
+			this.onBeat();
+			this.playingIntervalId = setInterval(() => {
+				if (this.nextColumn % totalSteps == 0) {
+					// Grid finished playing
+					if (!inifiniteLoop && ++completedLoops >= loops) {
+						clearInterval(this.playingIntervalId);
+						this.playingIntervalId = undefined;
+						this.nextColumn = 0;
+						console.log(
+							`Finished playing ${loops} loops of ${grid.config.name}`,
+							$state.snapshot(grid)
+						);
+						onComplete?.(grid);
+					} else {
+						this.onBeat();
+					}
 				} else {
 					this.onBeat();
 				}
-			} else {
-				this.onBeat();
-			}
-		}, grid.msPerBeatDivision);
+			}, grid.msPerBeatDivision);
+		}
 	}
 
-	async playGridsInSequence(
+	async togglePlayGridsInSequence(
 		grids: Grid[],
 		onPlay?: (grid: Grid) => void,
 		onStop?: (grid: Grid) => void
 	) {
-		this.playingFile = true;
-		for (const grid of grids.sort((a, b) => a.index - b.index)) {
-			await new Promise<void>((resolve) => {
-				onPlay?.(grid);
-				this.play(grid, grid.config.repetitions, (grid: Grid) => {
-					resolve();
-					onStop?.(grid);
+		if (this.playingGrid) {
+			this.stop()
+		} else {
+			this.playingFile = true;
+			for (const grid of grids.sort((a, b) => a.index - b.index)) {
+				await new Promise<void>((resolve) => {
+					onPlay?.(grid);
+					this.togglePlayback(grid, grid.config.repetitions, (grid: Grid) => {
+						resolve();
+						onStop?.(grid);
+					});
 				});
-			});
+			}
+			this.stop()
 		}
-		this.stop();
 	}
 
 	stop() {
-		console.log('Stopping playback');
 		this.playingFile = false;
 		this.playingGrid = undefined;
 		clearInterval(this.playingIntervalId);

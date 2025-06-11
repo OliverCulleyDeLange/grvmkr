@@ -11,10 +11,7 @@ export interface GridRepositoryI {
 	getGrid(gridId: GridId): Grid | null;
 	getGrids(): Map<GridId, Grid>;
 	getFirstGrid(): Grid | null;
-	getGridsFromCurrentlyPlaying(): Grid[];
-	getGridsFromMostRecentlyPlayedGrid(): Grid[];
-	updatePlaying(newPlaying: boolean, gridId: string): Promise<void>;
+	getGridsFrom(gridId: GridId): Grid[];
 	replaceGrids(grids: Grid[], persist: boolean): Promise<void>;
 	scrollToGrid(id: string): void;
-	stopPlayingGrid(): void;
 }

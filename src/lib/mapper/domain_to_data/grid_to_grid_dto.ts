@@ -19,7 +19,6 @@ export function mapGridToGridDto(grid: Grid): GridDto {
 		rows: grid.rows.map((row) => mapGridRowToGridRowDto(row)),
 		msPerBeatDivision: grid.msPerBeatDivision,
 		gridCols: grid.gridCols,
-		playing: grid.playing
 	};
 }
 

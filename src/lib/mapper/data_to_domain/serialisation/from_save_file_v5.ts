@@ -55,7 +55,6 @@ export function mapSavedGridV5ToGrid(
 		),
 		gridCols:
 			savedGrid.config.bars * (savedGrid.config.beats_per_bar * savedGrid.config.beat_divisions),
-		playing: false,
 		toolsExpanded: false
 	};
 	return grid;

@@ -23,7 +23,6 @@ export function buildDefaultGrid(
 		rows: buildGridRows(instruments, 1, 4, 4),
 		msPerBeatDivision: 125,
 		gridCols: 16,
-		playing: false,
 		toolsExpanded: false
 	};
 	return grid;

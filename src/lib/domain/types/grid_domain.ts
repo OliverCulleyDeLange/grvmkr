@@ -10,7 +10,6 @@ export type Grid = {
 	rows: GridRow[];
 	msPerBeatDivision: number;
 	gridCols: number;
-	playing: boolean;
 };
 
 export type GridConfig = {

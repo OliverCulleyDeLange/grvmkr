@@ -84,11 +84,15 @@
 		)
 	);
 	const gridsUi: GridUis = $derived.by(() => {
-		return mapGridUi(
+		console.time("mapGridUi")
+		const ui =  mapGridUi(
 			appStateStore.gridStore.getGrids(),
 			appStateStore.instrumentStore,
 			screenWidth,
 		);
+		console.timeEnd("mapGridUi")
+		console.timeLog("mapGridUi")
+		return ui;
 	});
 	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived(
 		mapBeatIndicatorUi(gridsUi, (id) => appStateStore.playbackStore.getCurrentlyPlayingColumn(id))
@@ -118,7 +122,7 @@
 		<div class="flex flex-col gap-8">
 			{#each gridsUi.grids as gridUi}
 				<div id={gridUi.id} class="break-inside-avoid">
-					<GridConfig {gridUi} {onEvent} />
+					<GridConfig {gridUi} playing={appStateStore.playbackStore.isPlayingGrid(gridUi.id)} {onEvent} />
 					<Legend instrumentManager={appStateStore.instrumentStore} />
 					<Grid
 						{gridUi}

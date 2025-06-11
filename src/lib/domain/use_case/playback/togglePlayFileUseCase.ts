@@ -6,24 +6,16 @@ export async function togglePlayFileUseCase(
 	instrumentRepo: InstrumentRepositoryI,
 	player: PlaybackControllerI
 ) {
-	const newPlaying = !player.isPlayingFile();
-	if (newPlaying) {
-		await instrumentRepo.ensureInstrumentsInitialised();
-		player.stop();
+	await instrumentRepo.ensureInstrumentsInitialised();
 
-		const gridsToPlay = Array.from(gridRepo.getGrids().values());
-		await player.playGridsInSequence(
-			gridsToPlay,
-			(grid) => {
-				gridRepo.updatePlaying(true, grid.id);
-				gridRepo.scrollToGrid(grid.id);
-			},
-			(grid) => {
-				gridRepo.updatePlaying(false, grid.id);
-			}
-		);
-	} else {
-		player.stop();
-		gridRepo.stopPlayingGrid();
-	}
+	const gridsToPlay = Array.from(gridRepo.getGrids().values());
+	await player.togglePlayGridsInSequence(
+		gridsToPlay,
+		(grid) => {
+			gridRepo.scrollToGrid(grid.id);
+		},
+		(grid) => {
+			//noop
+		}
+	);
 }

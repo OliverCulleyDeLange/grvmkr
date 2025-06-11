@@ -48,7 +48,6 @@ export function mapRowsToGridUi(
 		config: grid.config, // Using a domain object for now- TODO replace with UI
 		msPerBeatDivision: grid.msPerBeatDivision,
 		gridCols: grid.gridCols,
-		playing: grid.playing,
 		toolsExpanded: grid.toolsExpanded
 	};
 	return ui;

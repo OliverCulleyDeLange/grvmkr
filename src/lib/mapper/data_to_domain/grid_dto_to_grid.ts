@@ -24,7 +24,6 @@ export function mapGridDtoToGrid(
 		rows: gridDto.rows.map((row) => rowFromDto(row, instruments.get(row.instrumentId)!)),
 		msPerBeatDivision: gridDto.msPerBeatDivision,
 		gridCols: gridDto.gridCols,
-		playing: false, // Ignore whatever play state from the db
 		toolsExpanded: false
 	};
 }

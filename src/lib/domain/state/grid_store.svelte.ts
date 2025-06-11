@@ -27,8 +27,6 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	private grids: SvelteMap<GridId, Grid> = new SvelteMap();
-	private currentlyPlayingGrid: Grid | null = $state(null);
-	private mostRecentlyPlayedGrid: Grid | null = $state(null);
 	private currentlySelectedCells: CellLocator[] = $state([]);
 	private selectedCellSet: Set<string> = new SvelteSet();
 	private selectionStartCell: CellLocator | null = $state(null);
@@ -44,22 +42,10 @@ export class GridStore implements GridRepositoryI {
 		return this.selectedCellSet.has(`${locator.grid}:${locator.row}:${locator.cell}`);
 	}
 
-	// private updateSelectedCellSet() {
-	// 	this.selectedCellSet.clear()
-	// 	this.currentlySelectedCells.forEach((loc) => {
-	// 		this.selectedCellSet.add(`${loc.grid}:${loc.row}:${loc.cell}`)
-	// 	})
-	// 	console.log("currentlySelectedCells updated", $state.snapshot(this.currentlySelectedCells), this.selectedCellSet);
-	// }
-
-	getGridsFromMostRecentlyPlayedGrid(): Grid[] {
-		if (!this.mostRecentlyPlayedGrid) return [];
-		return this.getGridsFromGridOnwards(this.mostRecentlyPlayedGrid);
-	}
-
-	getGridsFromCurrentlyPlaying(): Grid[] {
-		if (!this.currentlyPlayingGrid) return [];
-		return this.getGridsFromGridOnwards(this.currentlyPlayingGrid);
+	getGridsFrom(gridId: GridId): Grid[] {
+		const grid = this.getGrid(gridId)
+		if (!grid) return [];
+		return this.getGridsFromGridOnwards(grid);
 	}
 
 	getGridsFromGridOnwards(grid: Grid): Grid[] {
@@ -89,13 +75,6 @@ export class GridStore implements GridRepositoryI {
 		return firstCurrentlySelectedCell
 			? (this.grids.get(firstCurrentlySelectedCell.grid) ?? null)
 			: null;
-	}
-
-	stopPlayingGrid() {
-		if (this.currentlyPlayingGrid != null) {
-			this.currentlyPlayingGrid.playing = false;
-			this.currentlyPlayingGrid = null;
-		}
 	}
 
 	toggleToolsExpansion(id: string) {
@@ -484,7 +463,6 @@ export class GridStore implements GridRepositoryI {
 			newGrid.index = this.getNextGridIndex();
 			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';
-			newGrid.playing = false;
 			await this.addGrid(newGrid);
 			this.shouldScrollToGridId = newGrid.id;
 		}
@@ -551,28 +529,6 @@ export class GridStore implements GridRepositoryI {
 			this.resizeGrid(grid);
 			grid.gridCols = this.notationColumns(grid);
 		});
-	}
-
-	async updatePlaying(playing: boolean, gridId: string) {
-		// Set existing currently playing grid to false all the time
-		if (this.currentlyPlayingGrid) {
-			this.currentlyPlayingGrid.playing = false;
-		}
-		// Set new currently playing grid, and most recently played grid state
-		if (playing) {
-			this.currentlyPlayingGrid = this.grids.get(gridId) ?? null;
-			this.mostRecentlyPlayedGrid = this.currentlyPlayingGrid;
-		} else {
-			this.currentlyPlayingGrid = null;
-		}
-		// Update the grid in state, but not the db
-		await this.updateGrid(
-			gridId,
-			(grid) => {
-				grid.playing = playing;
-			},
-			false
-		);
 	}
 
 	// Updates grids in state and DB
@@ -682,8 +638,6 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	resetState() {
-		this.currentlyPlayingGrid = null;
-		this.mostRecentlyPlayedGrid = null;
 		this.currentlySelectedCells = [];
 		this.selectedCellSet.clear();
 		this.selectionStartCell = null;

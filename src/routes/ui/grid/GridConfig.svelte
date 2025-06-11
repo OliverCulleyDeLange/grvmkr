@@ -4,9 +4,11 @@
 
 	let {
 		gridUi,
+		playing,
 		onEvent
 	}: {
 		gridUi: GridUi;
+		playing: boolean;
 		onEvent: OnUiEvent;
 	} = $props();
 
@@ -38,7 +40,7 @@
 	let beatNoteFraction = $state(4);
 
 	function togglePlayingGrid() {
-		onEvent({ event: GridEvent.TogglePlayingGrid, playing: !gridUi.playing, gridId: gridUi.id });
+		onEvent({ event: GridEvent.TogglePlayingGrid, gridId: gridUi.id });
 	}
 	function onNameChange() {
 		onEvent({ event: GridEvent.NameChanged, gridId: gridUi.id, name: gridName });
@@ -95,7 +97,7 @@
 	<!-- Play, grid name, settings button -->
 	<div class="flex w-full flex-row items-center gap-2">
 		<button onclick={togglePlayingGrid} class="btn btn-outline btn-sm">
-			{gridUi.playing ? 'Stop Grid' : 'Play Grid'}
+			{playing ? 'Stop Grid' : 'Play Grid'}
 		</button>
 
 		<input
