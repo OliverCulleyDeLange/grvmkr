@@ -90,8 +90,8 @@
 			appStateStore.instrumentStore,
 			screenWidth,
 		);
-		console.timeEnd("mapGridUi")
 		console.timeLog("mapGridUi")
+		console.timeEnd("mapGridUi")
 		return ui;
 	});
 	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived(
