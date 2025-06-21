@@ -4,7 +4,8 @@ import type { GridId, GridRepositoryI, InstrumentRepositoryI, PlaybackController
 export async function togglePlayFileFromRecentlyPlayedUseCase(
 	gridRepo: GridRepositoryI,
 	instrumentRepo: InstrumentRepositoryI,
-	player: PlaybackControllerI
+	player: PlaybackControllerI,
+	screenWidth?: number
 ) {
 	const recentlyPlayed = player.mostRecentlyPlayedGrid();
 	if (recentlyPlayed) {
@@ -12,7 +13,8 @@ export async function togglePlayFileFromRecentlyPlayedUseCase(
 			recentlyPlayed.id,
 			gridRepo,
 			instrumentRepo,
-			player
+			player,
+			screenWidth
 		);
 	} else {
 		// Find first grid and play it
@@ -22,7 +24,8 @@ export async function togglePlayFileFromRecentlyPlayedUseCase(
 				firstGrid.id,
 				gridRepo,
 				instrumentRepo,
-				player
+				player,
+				screenWidth
 			);
 		}
 	}
@@ -32,18 +35,16 @@ async function togglePlayFileFromSpecificGridUseCase(
 	gridId: GridId,
 	gridRepo: GridRepositoryI,
 	instrumentRepo: InstrumentRepositoryI,
-	player: PlaybackControllerI
+	player: PlaybackControllerI,
+	screenWidth?: number
 ) {
 	await instrumentRepo.ensureInstrumentsInitialised();
 	const gridsToPlay = gridRepo.getGridsFrom(gridId);
-	player.togglePlayGridsInSequence(
+	await player.togglePlayGridsInSequence(
 		gridsToPlay,
-		(grid) => {
-			gridRepo.scrollToGrid(grid.id);
-			// todo scroll to grid sections
+		(gridId, sectionIndex) => {
+			gridRepo.scrollToGridSection(gridId, sectionIndex);
 		},
-		(grid) => {
-			//noop
-		}
+		screenWidth
 	);
 }

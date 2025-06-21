@@ -18,6 +18,7 @@
 		bars = gridUi.config.bars;
 		beatsPerBar = gridUi.config.beatsPerBar;
 		beatNoteFraction = gridUi.config.beatDivisions;
+		repetitions = gridUi.config.repetitions;
 	});
 
 	let gridName: string = $state(gridUi.config.name);
@@ -89,9 +90,9 @@
 	}
 </script>
 
-<!-- Outer container (hidden for print)-->
+<!-- Grid config (non print) -->
 <div
-	class="mb-2 flex flex-col flex-wrap items-start items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23] print:hidden"
+	class="print:hidden mb-2 flex flex-col flex-wrap items-start items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23]"
 	data-testid={`gridtools-${gridUi.id}`}
 >
 	<!-- Play, grid name, settings button -->
@@ -187,23 +188,26 @@
 		<div class="grid-tools flex w-full flex-row flex-wrap items-start">
 			<Button
 				onClick={() => onEvent({ event: GridEvent.DuplicateGrid, gridId: gridUi.id })}
-				classes="print:hidden"
 			>
 				Duplicate Grid to End
 			</Button>
 
 			<Button
 				onClick={() => onEvent({ event: GridEvent.MoveGridUp, gridId: gridUi.id })}
-				classes="print:hidden"
 			>
 				⬆️ Move Up
 			</Button>
 
 			<Button
 				onClick={() => onEvent({ event: GridEvent.MoveGridDown, gridId: gridUi.id })}
-				classes="print:hidden"
 			>
 				⬇️ Move Down
+			</Button>
+
+			<Button
+				onClick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}
+				>
+					Delete Grid
 			</Button>
 		</div>
 	{/if}

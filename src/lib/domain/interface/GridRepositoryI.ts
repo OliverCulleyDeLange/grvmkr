@@ -14,4 +14,5 @@ export interface GridRepositoryI {
 	getGridsFrom(gridId: GridId): Grid[];
 	replaceGrids(grids: Grid[], persist: boolean): Promise<void>;
 	scrollToGrid(id: string): void;
+	scrollToGridSection(gridId: GridId, sectionIndex: number): void;
 }

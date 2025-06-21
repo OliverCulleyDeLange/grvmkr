@@ -1,4 +1,4 @@
-import type { HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from '$lib';
+import type { GridSectionId, HitId, HitTypeWithId, InstrumentId, InstrumentWithId } from '$lib';
 import {
 	ProblemEvent,
 	type CellLocator,
@@ -32,7 +32,7 @@ export class GridStore implements GridRepositoryI {
 	private selectionStartCell: CellLocator | null = $state(null);
 	private copiedCells: GridCell[] = [];
 	// When we move or duplicate a grid, we should scroll to the grids new position
-	public shouldScrollToGridId: GridId | null = $state(null);
+	public shouldScrollToGridSectionId: GridSectionId | null = $state(null);
 
 	getCurrentlySelectedCells(): CellLocator[] {
 		return this.currentlySelectedCells;
@@ -82,16 +82,20 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	// TODO Extract this.shouldScrollToGridId and these two functions as a poc for splitting large stores
-	getGridToScrollTo(): GridId | null {
-		return this.shouldScrollToGridId;
+	getGridToScrollTo(): GridSectionId | null {
+		return this.shouldScrollToGridSectionId;
 	}
 
 	onScrolledToGrid() {
-		this.shouldScrollToGridId = null;
+		this.shouldScrollToGridSectionId = null;
 	}
 
 	scrollToGrid(id: GridId) {
-		this.shouldScrollToGridId = id;
+		this.shouldScrollToGridSectionId = { grid: id, index: 0 };
+	}
+
+	scrollToGridSection(grid: GridId, index: number) {
+		this.shouldScrollToGridSectionId = { grid, index };
 	}
 
 	async initialise(
@@ -464,7 +468,7 @@ export class GridStore implements GridRepositoryI {
 			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';
 			await this.addGrid(newGrid);
-			this.shouldScrollToGridId = newGrid.id;
+			this.scrollToGrid(newGrid.id);
 		}
 	}
 
@@ -629,7 +633,7 @@ export class GridStore implements GridRepositoryI {
 		await this.updateGrid(swappingGrid.id, (i) => {
 			i.index = movingIndex;
 		});
-		this.shouldScrollToGridId = movingGrid.id;
+			this.scrollToGrid(movingGrid.id);
 	}
 
 	async reset() {

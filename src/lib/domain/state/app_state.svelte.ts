@@ -11,6 +11,7 @@ import {
 	loadFileUseCase,
 	newGrooveUseCase,
 	PlaybackStore,
+	WorkerPlaybackStore,
 	ProblemEvent,
 	removeInstrumentUseCase,
 	saveFileUseCase,
@@ -36,13 +37,15 @@ import {
 	loadExampleFileUseCase
 } from '$lib';
 import { moveInstrumentUpUseCase } from '../use_case/instrument/moveInstrumentUpUseCase';
+import type { PlaybackControllerI } from '../interface/PlaybackControllerI';
 
 export class AppStateStore {
 	public instrumentStore: InstrumentStore = new InstrumentStore(this.onEvent.bind(this));
 	public fileStore: FileStore = new FileStore(this.onEvent.bind(this));
 	public gridStore: GridStore = new GridStore(this.onEvent.bind(this));
 	public errorStore: ErrorStore = new ErrorStore();
-	public playbackStore: PlaybackStore = new PlaybackStore(this.instrumentStore);
+	// Use WorkerPlaybackStore for better timing isolation
+	public playbackStore: PlaybackControllerI = new WorkerPlaybackStore(this.instrumentStore);
 	public cellToolsStore: CellToolsStore = new CellToolsStore();
 	public uiStore: UiStore = new UiStore();
 
@@ -64,7 +67,8 @@ export class AppStateStore {
 				togglePlayFileFromRecentlyPlayedUseCase(
 					this.gridStore,
 					this.instrumentStore,
-					this.playbackStore
+					this.playbackStore,
+					this.uiStore.getScreenWidth()
 				);
 				break;
 			case CellToolsEvent.Merge:
@@ -245,10 +249,13 @@ export class AppStateStore {
 				});
 				break;
 			case ToolbarEvent.TogglePlayingFile:
-				togglePlayFileUseCase(this.gridStore, this.instrumentStore, this.playbackStore);
+				togglePlayFileUseCase(this.gridStore, this.instrumentStore, this.playbackStore, this.uiStore.getScreenWidth());
 				break;
 			case HelpEvent.Reset:
 				this.reset();
+				break;
+			case HelpEvent.Debug:
+				this.uiStore.toggleShowDebug()
 				break;
 			case HelpEvent.LoadExampleFile:
 				loadExampleFileUseCase(

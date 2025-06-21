@@ -1,11 +1,25 @@
 export class UiStore {
 	public darkMode = $state(true);
 	private shouldShowHelpOverlay: boolean = $state(false);
+	private shouldShowDebugOverlay: boolean = $state(false);
 	public showGrooveSelector: boolean = $state(false);
 	public showResetConfirmation: boolean = $state(false);
+	public screenWidth: number = $state(1024); // Safe default for SSR
+
+	setScreenWidth(width: number): void {
+		this.screenWidth = width;
+	}
+
+	getScreenWidth(): number {
+		return this.screenWidth;
+	}
 
 	getShouldShowHelpOverlay(): boolean {
 		return this.shouldShowHelpOverlay;
+	}
+
+	getShouldShowDebugOverlay(): boolean {
+		return this.shouldShowDebugOverlay;
 	}
 
 	showHelpOverlay() {
@@ -18,6 +32,10 @@ export class UiStore {
 
 	toggleShowHelp() {
 		this.shouldShowHelpOverlay = !this.shouldShowHelpOverlay;
+	}
+
+	toggleShowDebug() {
+		this.shouldShowDebugOverlay = !this.shouldShowDebugOverlay;
 	}
 
 	toggleShowGrooveSelector() {

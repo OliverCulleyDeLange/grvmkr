@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div class="mb-2 flex w-full flex-row gap-2 print:hidden">
+<div class="mb-2 flex w-full flex-row gap-2">
 	<!-- Play file button -->
 	<button onclick={togglePlayingFile} class="btn-xl btn btn-outline">
 		{toolbarUi.playingFile ? 'Stop File' : 'Play File'}
@@ -42,7 +42,3 @@
 	</div>
 </div>
 
-<!-- Print only file name -->
-<div class="hidden print:block">
-	<h1 class="text-4xl">{fileName}</h1>
-</div>

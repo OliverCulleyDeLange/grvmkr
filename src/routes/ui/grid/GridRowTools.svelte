@@ -14,7 +14,7 @@
 <!-- The first cell in the grid row - containing instrument name and volume controls -->
 <div class={'select-none px-2 text-xs print:text-lg'}>
 	<div>{row.instrumentName}</div>
-	<div class="flex gap-2">
+	<div class="print:hidden flex gap-2">
 		<VolumeControls
 			model={row.volume}
 			onMute={() =>

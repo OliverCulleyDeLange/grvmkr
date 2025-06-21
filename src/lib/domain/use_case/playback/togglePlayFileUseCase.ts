@@ -4,18 +4,17 @@ import type { GridRepositoryI, InstrumentRepositoryI, PlaybackControllerI } from
 export async function togglePlayFileUseCase(
 	gridRepo: GridRepositoryI,
 	instrumentRepo: InstrumentRepositoryI,
-	player: PlaybackControllerI
+	player: PlaybackControllerI,
+	screenWidth?: number
 ) {
 	await instrumentRepo.ensureInstrumentsInitialised();
 
 	const gridsToPlay = Array.from(gridRepo.getGrids().values());
 	await player.togglePlayGridsInSequence(
 		gridsToPlay,
-		(grid) => {
-			gridRepo.scrollToGrid(grid.id);
+		(gridId, sectionIndex) => {
+			gridRepo.scrollToGridSection(gridId, sectionIndex);
 		},
-		(grid) => {
-			//noop
-		}
+		screenWidth
 	);
 }

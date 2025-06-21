@@ -1,16 +1,14 @@
 import type { GridUis } from '$lib/ui/grid/GridUis';
-import type { BeatIndicatorUi, GridConfig, GridId, NotationSection } from '$lib';
+import type { BeatIndicatorUi, GridConfig, GridId, GridSection } from '$lib';
 
 export function mapBeatIndicatorUi(
 	gridsUi: GridUis,
-	getCurrentlyPlayingColumn: (id: GridId) => number
 ): Map<GridId, BeatIndicatorUi[][]> {
 	const result = new Map<GridId, BeatIndicatorUi[][]>();
 	for (const gridUi of gridsUi.grids) {
-		const playingCol = getCurrentlyPlayingColumn(gridUi.id);
 
 		const sectionIndicators: BeatIndicatorUi[][] = gridUi.notationSections.map((section) => {
-			return beatIndicatorsForSection(section, gridUi.config, playingCol);
+			return beatIndicatorsForSection(section, gridUi.config);
 		});
 
 		result.set(gridUi.id, sectionIndicators);
@@ -20,9 +18,8 @@ export function mapBeatIndicatorUi(
 
 // Split rows into sections for BeatIndicator UI, same as in grid_to_grid_ui but only for beat indicators
 function beatIndicatorsForSection(
-	section: NotationSection,
+	section: GridSection,
 	config: GridConfig,
-	playingCol: number
 ) {
 	return Array.from({ length: section.columns }, (_, i) => {
 		let text = '';
@@ -43,8 +40,7 @@ function beatIndicatorsForSection(
 		} else if (isABeatOfBar) {
 			text = 'a';
 		}
-		const playing = playingCol === index;
-		const indicator: BeatIndicatorUi = { isFirstBeatOfBar, isBeat, playing, text };
+		const indicator: BeatIndicatorUi = { isFirstBeatOfBar, isBeat, text };
 		return indicator;
 	});
 }

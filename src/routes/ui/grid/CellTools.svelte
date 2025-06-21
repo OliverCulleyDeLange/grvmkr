@@ -14,7 +14,7 @@
 
 <div class="pointer-events-none">
 	{#if ui.show}
-		<div class="flex flex-wrap items-center justify-start print:hidden">
+		<div class="flex flex-wrap items-center justify-start">
 			<ButtonFilled disabled={!ui.showCopy} onClick={() => onEvent({ event: UiEvent.Copy })}
 				>Copy</ButtonFilled
 			>

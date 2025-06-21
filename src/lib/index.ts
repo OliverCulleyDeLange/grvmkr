@@ -66,9 +66,11 @@ export * from './domain/state/file_store.svelte';
 export * from './domain/state/error_store';
 export * from './domain/state/instrument_store.svelte';
 export * from './domain/state/playback_store.svelte';
+export * from './domain/state/worker_playback_store.svelte';
 export * from './domain/state/cell_tools_store.svelte';
 export * from './domain/state/ui_store.svelte';
 export * from './util/date';
+export * from './util/gridSectionUtils';
 export * from './domain/state/theme_store';
 
 export * from './domain/types/problem_events';

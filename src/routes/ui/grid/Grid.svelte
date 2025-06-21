@@ -1,31 +1,29 @@
 <script lang="ts">
-	import GridRowTools from './GridRowTools.svelte';
-
 	import {
 		GridEvent,
 		type BeatIndicatorUi,
 		type CellLocator,
 		type CellToolsUi,
-		type GridId,
 		type GridUi,
 		type OnUiEvent
 	} from '$lib';
-	import BeatIndicator from './BeatIndicator.svelte';
 	import CellTools from './CellTools.svelte';
-	import GridCell from './GridCell.svelte';
+	import GridSection from './GridSection.svelte';
 
 	let {
 		gridUi,
 		beatIndicatorUi,
 		cellTools,
 		onEvent,
-		cellSelected
+		cellSelected,
+		playingColumn
 	}: {
 		gridUi: GridUi;
-		beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]>;
+		beatIndicatorUi: BeatIndicatorUi[][];
 		cellTools: CellToolsUi | undefined;
 		onEvent: OnUiEvent;
 		cellSelected: (locator: CellLocator) => boolean;
+		playingColumn: number;
 	} = $props();
 
 	// Selection state
@@ -60,50 +58,26 @@
 	}
 </script>
 
-<div class="grid-wrapper">
+<div class="grid-sections-and-celltools-wrapper">
 	<div
-		class="flex select-none flex-col gap-2"
+		class="grid-sections-container flex select-none flex-col gap-2"
 		style="touch-action: pan-y; position:relative;"
 		onpointerup={onPointerUp}
 		onpointercancel={onPointerUp}
 	>
-		{#each gridUi.notationSections as section, sectionIdx}
-			<div
-				class="grid"
-				style="--cells: {section.columns};"
-				data-testid={`gridsection-${gridUi.id}-${gridUi.index}-${sectionIdx}`}
-			>
-				<button
-					class="btn btn-outline btn-xs print:invisible"
-					onclick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}
-				>
-					Delete Grid
-				</button>
-				<div class="beat-indicator">
-					{#each beatIndicatorUi.get(gridUi.id)?.[sectionIdx] ?? [] as indicator}
-						<BeatIndicator {indicator} />
-					{/each}
-				</div>
-
-				{#each section.sectionRows as row}
-					<GridRowTools {row} {onEvent} />
-
-					{#each row.gridCells as cell}
-						<GridCell
-							ui={cell}
-							selected={cellSelected(cell.locator)}
-							onpointerdown={(e: PointerEvent) => onPointerDown(cell.locator, e.shiftKey)}
-							onpointermove={() => onPointerMove(cell.locator)}
-							onTap={(shift) =>
-								onEvent({
-									event: GridEvent.TappedGridCell,
-									locator: cell.locator,
-									shiftHeld: shift
-								})}
-						/>
-					{/each}
-				{/each}
-			</div>
+		{#each gridUi.notationSections as section}
+			<GridSection
+				{section}
+				totalSections={gridUi.notationSections.length}
+				gridId={gridUi.id}
+				gridIndex={gridUi.index}
+				beatIndicators={beatIndicatorUi[section.index]}
+				{cellSelected}
+				{playingColumn}
+				{onEvent}
+				{onPointerDown}
+				{onPointerMove}
+			/>
 		{/each}
 	</div>
 
@@ -115,20 +89,6 @@
 </div>
 
 <style>
-	.grid {
-		display: grid;
-		grid-template-columns: auto repeat(var(--cells), 1fr);
-		gap: 2px;
-		break-inside: avoid;
-		page-break-inside: avoid;
-	}
-
-	.beat-indicator {
-		display: grid;
-		grid-column: span var(--cells) / span var(--cells);
-		grid-template-columns: subgrid;
-	}
-
 	.cell-tools {
 		position: sticky;
 		bottom: 0;

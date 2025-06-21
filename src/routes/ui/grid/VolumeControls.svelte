@@ -54,7 +54,7 @@
 	$: fillHeight = volumeSliderHeight * model.volume;
 </script>
 
-<div class="flex gap-2 print:hidden">
+<div class="flex gap-2">
 	<button class="text-xs" class:text-blue-500={model.muted} onclick={() => onMute()}>M</button>
 	<button class="text-xs" class:text-orange-400={model.soloed} onclick={() => onSolo()}>S</button>
 

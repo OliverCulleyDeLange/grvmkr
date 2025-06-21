@@ -1,4 +1,4 @@
-import type { CellLocator, GridId } from '$lib';
+import type { CellLocator, GridId, GridSectionId } from '$lib';
 
 // Grid UI Events
 export type GridEvents =
@@ -132,4 +132,5 @@ export type ToggleToolsExpansion = {
 
 export type ScrolledToGrid = {
 	event: GridEvent.ScrolledToGrid;
+	grid: GridSectionId;
 };

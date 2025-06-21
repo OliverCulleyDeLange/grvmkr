@@ -73,6 +73,7 @@ export class FileRepository {
 		}
 
 		const instruments = new Map<InstrumentId, InstrumentWithId>();
+		// FIXME fileDto.instruments is not iterable 
 		for (const instrumentId of fileDto.instruments) {
 			const instrument = await this.instrumentRepository.getInstrument(instrumentId);
 			if (instrument) instruments.set(instrument.id, instrument);

@@ -2,7 +2,6 @@
 	import ToolbarErrors from './ToolbarErrors.svelte';
 
 	import { ToolbarEvent, type OnUiEvent, type ToolbarUi } from '$lib';
-	import PlayAndFileName from './PlayAndFileName.svelte';
 
 	let {
 		toolbarUi,
@@ -28,7 +27,7 @@
 	}
 </script>
 
-<div class="mb-2 flex flex-col gap-4 sm:flex-row print:hidden">
+<div class="mb-2 flex flex-col gap-4 sm:flex-row">
 	<h1 class="text-3xl">GrvMkr</h1>
 
 	<div class="flex flex-row flex-wrap gap-2">
@@ -65,5 +64,3 @@
 </div>
 
 <ToolbarErrors errorsUi={toolbarUi.errors} {onEvent} />
-
-<PlayAndFileName {toolbarUi} {onEvent} />

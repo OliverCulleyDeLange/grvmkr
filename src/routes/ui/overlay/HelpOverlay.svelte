@@ -4,10 +4,12 @@
 	let {
 		closeDialog,
 		reset,
+		debug,
 		loadExample
 	}: {
 		closeDialog: () => void;
 		reset: () => void;
+		debug: () => void;
 		loadExample: () => void;
 	} = $props();
 </script>
@@ -65,6 +67,8 @@
 			resetting to avoid losing work.
 		</p>
 		<button class="btn btn-outline btn-sm my-2" onclick={reset}>Reset</button>
+		<p>There's a fun little debug window available, mainly for me, but you might find it interesting</p>
+		<button class="btn btn-outline btn-sm my-2" onclick={debug}>Debug</button>
 		<p class="py-4">
 			If you do notice any issues or think of a way this could be more useful, please feel free to
 			reach out at
