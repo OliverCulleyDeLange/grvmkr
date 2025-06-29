@@ -3,36 +3,25 @@
 		AppStateStore,
 		GridEvent,
 		HelpEvent,
-		mapCellToolsUi,
-		mapGridUi,
-		mapGrvMkrFilesToGrooveSelectorUi,
-		mapInstrumentsUi,
-		mapToolbarUi,
 		themeStore,
-		UiEvent,
-		type BeatIndicatorUi,
-		type CellToolsUi,
-		type GridId,
-		type GridUis
+		UiEvent
 	} from '$lib';
 	import type { AppEvent } from '$lib/domain/event';
-	import { mapBeatIndicatorUi } from '$lib/mapper/ui_to_ui/grid_ui_to_beat_indicator_ui';
 	import { registerAppKeyboardShortcuts } from '$lib/util/keyboard_shortcuts';
 	import '$lib/util/polyfills';
 	import { onMount } from 'svelte';
 	import Grid from './ui/grid/Grid.svelte';
 	import GridConfig from './ui/grid/GridConfig.svelte';
+	import VirtualSection from './ui/grid/VirtualSection.svelte';
 	import Instruments from './ui/Instruments.svelte';
 	import Legend from './ui/Legend.svelte';
 	import GrooveSelector from './ui/overlay/GrooveSelector.svelte';
 	import HelpOverlay from './ui/overlay/HelpOverlay.svelte';
+	import PlaybackDebug from './ui/PlaybackDebug.svelte';
+	import PlayAndFileName from './ui/toolbar/PlayAndFileName.svelte';
 	import ResetConfirmation from './ui/toolbar/ResetConfirmation.svelte';
 	import Toolbar from './ui/toolbar/Toolbar.svelte';
-	import PlayAndFileName from './ui/toolbar/PlayAndFileName.svelte';
 	import Button from './ui/ui_elements/Button.svelte';
-	import PlaybackDebug from './ui/PlaybackDebug.svelte';
-	import { measurePaint, measurePerf } from '$lib/util/measurePerf';
-	import VirtualSection from './ui/grid/VirtualSection.svelte';
 
 	let appStateStore: AppStateStore = new AppStateStore();
 	let onEvent = (e: AppEvent) => appStateStore.onEvent(e);
@@ -88,7 +77,7 @@
 					behavior: 'instant',
 					block: 'start'
 				});
-				// Scroll an extra 120px, which is the two stick bars
+				// Scroll an extra 120px, which is the two sticky bars
 				window.scrollBy({
 					top: -120,
 					behavior: 'instant'
@@ -109,47 +98,13 @@
 		}
 	}
 
-	const toolbarUi = $derived.by(() =>
-		measurePerf('mapToolbarUi', () =>
-			mapToolbarUi(
-				appStateStore.fileStore.file.name,
-				appStateStore.errorStore.errors,
-				appStateStore.uiStore.darkMode,
-				appStateStore.playbackStore.isPlayingFile()
-			)
-		)
-	);
-
-	const gridsUi: GridUis = $derived.by(() =>
-		measurePerf('mapGridUi', () =>
-			mapGridUi(appStateStore.gridStore.getGrids(), appStateStore.instrumentStore, screenWidth)
-		)
-	);
-	const beatIndicatorUi: Map<GridId, BeatIndicatorUi[][]> = $derived.by(() =>
-		measurePerf('mapBeatIndicatorUi', () => mapBeatIndicatorUi(gridsUi))
-	);
-	const instrumentsUi = $derived.by(() =>
-		measurePerf('mapInstrumentsUi', () =>
-			mapInstrumentsUi(appStateStore.instrumentStore.getInstruments())
-		)
-	);
-	const grooveSelectorUi = $derived.by(() =>
-		measurePerf('mapGrooveSelectorUi', () =>
-			mapGrvMkrFilesToGrooveSelectorUi(
-				appStateStore.fileStore.files,
-				appStateStore.fileStore.file.id
-			)
-		)
-	);
-	const cellToolsUiMap = $derived.by(() =>
-		measurePerf('mapCellToolsUi', () => {
-			const result = new Map<GridId, CellToolsUi>();
-			for (const gridUi of gridsUi.grids) {
-				result.set(gridUi.id, mapCellToolsUi(appStateStore.cellToolsStore.cellTools, gridUi.id));
-			}
-			return result;
-		})
-	);
+	// Get UI state from uiStore
+	const toolbarUi = $derived(appStateStore.uiStore.toolbarUi);
+	const gridsUi = $derived(appStateStore.uiStore.gridsUi);
+	const beatIndicatorUi = $derived(appStateStore.uiStore.beatIndicatorUi);
+	const instrumentsUi = $derived(appStateStore.uiStore.instrumentsUi);
+	const grooveSelectorUi = $derived(appStateStore.uiStore.grooveSelectorUi);
+	const cellToolsUiMap = $derived(appStateStore.uiStore.cellToolsUiMap);
 </script>
 
 {#if !isPrintMode}
@@ -190,7 +145,7 @@
 								{gridUi}
 								cellTools={cellToolsUiMap.get(gridUi.id)}
 								{onEvent}
-								beatIndicatorUi={beatIndicatorUi.get(gridUi.id)!!}
+								beatIndicatorUi={beatIndicatorUi.get(gridUi.id) || []}
 								cellSelected={(locator) => appStateStore.gridStore.isCellSelected(locator)}
 								playingColumn={appStateStore.playbackStore.getCurrentlyPlayingColumn(gridUi.id)}
 							/>
@@ -216,7 +171,7 @@
 			/>
 		{/if}
 
-		{#if appStateStore.uiStore.getShouldShowHelpOverlay()}
+		{#if appStateStore.uiStore.shouldShowHelpOverlay}
 			<HelpOverlay
 				closeDialog={() => appStateStore.uiStore.toggleShowHelp()}
 				reset={() => {
@@ -238,7 +193,7 @@
 			<ResetConfirmation {reset} close={() => appStateStore.uiStore.hideResetConfirmation()} />
 		{/if}
 
-		{#if appStateStore.uiStore.getShouldShowDebugOverlay()}
+		{#if appStateStore.uiStore.shouldShowDebugOverlay}
 			<PlaybackDebug playbackStore={appStateStore.playbackStore} />
 		{/if}
 	</div>
@@ -263,7 +218,7 @@
 							{gridUi}
 							cellTools={cellToolsUiMap.get(gridUi.id)}
 							{onEvent}
-							beatIndicatorUi={beatIndicatorUi.get(gridUi.id)!!}
+							beatIndicatorUi={beatIndicatorUi.get(gridUi.id)!}
 							cellSelected={(locator) => appStateStore.gridStore.isCellSelected(locator)}
 							playingColumn={appStateStore.playbackStore.getCurrentlyPlayingColumn(gridUi.id)}
 						/>

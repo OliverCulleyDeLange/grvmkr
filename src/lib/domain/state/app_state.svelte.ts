@@ -47,7 +47,15 @@ export class AppStateStore {
 	// Use WorkerPlaybackStore for better timing isolation
 	public playbackStore: PlaybackControllerI = new WorkerPlaybackStore(this.instrumentStore);
 	public cellToolsStore: CellToolsStore = new CellToolsStore();
-	public uiStore: UiStore = new UiStore();
+	public uiStore: UiStore = new UiStore(
+		this.gridStore,
+		this.instrumentStore,
+		this.fileStore,
+		this.errorStore,
+		this.playbackStore,
+		this.cellToolsStore
+	);
+
 
 	onEvent(event: AppEvent) {
 		this.logEvent(event);
@@ -155,7 +163,7 @@ export class AppStateStore {
 					this.fileStore,
 					this.gridStore,
 					this.instrumentStore,
-					this.cellToolsStore
+					this.cellToolsStore,
 				);
 				break;
 			case InstrumentEvent.AddInstrument:
@@ -163,7 +171,7 @@ export class AppStateStore {
 					this.fileStore,
 					this.gridStore,
 					this.instrumentStore,
-					this.cellToolsStore
+					this.cellToolsStore,
 				);
 				break;
 			case InstrumentEvent.RenameInstrument:

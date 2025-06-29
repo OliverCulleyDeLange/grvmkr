@@ -21,11 +21,11 @@ import { calculateGridSectionConfig } from '$lib/util/gridSectionUtils';
 
 export function mapGridUi(
 	grids: Map<GridId, Grid>,
-	instrumentStore: InstrumentStore,
+	instruments: Map<InstrumentId, InstrumentWithId>,
 	screenWidth?: number,
 ): GridUis {
 	let gridUis: GridUi[] = [...grids.values()].map((grid) =>
-		mapRowsToGridUi(grid, instrumentStore, screenWidth)
+		mapRowsToGridUi(grid, instruments, screenWidth)
 	);
 	let ui: GridUis = {
 		grids: gridUis.sort((a, b) => a.index - b.index)
@@ -35,10 +35,9 @@ export function mapGridUi(
 
 export function mapRowsToGridUi(
 	grid: Grid,
-	instrumentManager: InstrumentStore,
+	instruments: Map<InstrumentId, InstrumentWithId>,
 	screenWidth?: number,
 ): GridUi {
-	let instruments = instrumentManager.getInstruments();
 	let rows = mapRows(grid, instruments);
 	let sections = splitRowsIntoSections(grid.id, rows, grid.config, grid.gridCols, screenWidth);
 
