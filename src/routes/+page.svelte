@@ -133,7 +133,7 @@
 						<VirtualSection id={gridUi.id} index={i} estimatedHeight={428}>
 							<!-- Sticky grid config bar that sticks directly below the file controls -->
 							<!-- 64px = file controls height -->
-							<div class="sticky z-40" style="top: 64px;">
+							<div class="sticky z-40 bg-white dark:bg-[#1D232A]" style="top: 64px;">
 								<GridConfig
 									{gridUi}
 									playing={appStateStore.playbackStore.isPlayingGrid(gridUi.id)}
