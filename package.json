@@ -25,6 +25,7 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/svelte": "^5.2.4",
+		"@types/lodash.debounce": "^4.0.9",
 		"autoprefixer": "^10.4.20",
 		"daisyui": "^4.12.23",
 		"eslint": "^9.18.0",
