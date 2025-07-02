@@ -1,6 +1,5 @@
 import type { CellToolsUi, GridId, GridUis } from '$lib';
 import { measurePerf } from '../../../lib/util/measurePerf';
-import debounce from 'lodash.debounce';
 import { mapGridUi } from '../../mapper/domain_to_ui/grid_to_grid_ui';
 import { mapInstrumentsUi } from '../../mapper/domain_to_ui/instruments_to_instruments_ui';
 import { mapCellToolsUi } from '../../mapper/domain_to_ui/to_cell_tools_ui';
@@ -21,9 +20,6 @@ export class UiStore {
 	public showGrooveSelector: boolean = $state(false);
 	public showResetConfirmation: boolean = $state(false);
 	public screenWidth: number = $state(1024); // Safe default for SSR
-
-	public gridsUi = $state<GridUis>({ grids: [] });
-	private updateGridsUi: () => void;
 
 	// Store references
 	private gridStore: GridStore;
@@ -49,36 +45,6 @@ export class UiStore {
 		this.errorStore = errorStore;
 		this.playbackStore = playbackStore;
 		this.cellToolsStore = cellToolsStore;
-
-		// Create debounced update function to avoid updating grid ui many times
-		// when loading files
-		this.updateGridsUi = debounce(() => {
-			const grids = this.gridStore.getGrids();
-			const instruments = this.instrumentStore.getInstruments();
-			if (grids.size === 0 || instruments.size === 0) {
-				this.gridsUi = { grids: [] };
-			} else {
-				this.gridsUi = measurePerf('mapGridUi', () =>
-					mapGridUi(grids, instruments, this.screenWidth)
-				);
-			}
-		}, 20);
-
-		// Set up reactive updates to trigger debounced update
-		$effect(() => {
-			const grids = this.gridStore.getGrids();
-			const instruments = this.instrumentStore.getInstruments();
-			const screenWidth = this.screenWidth;
-			
-			// Only call update if we have valid data 
-			// This is a dumb hack to force svelte dependency tracking urgh
-			if (grids.size >= 0 && instruments.size >= 0 && screenWidth > 0) {
-				this.updateGridsUi();
-			}
-		});
-
-		// Initial update
-		this.updateGridsUi();
 	}
 
 	// Derived UI state
@@ -95,6 +61,20 @@ export class UiStore {
 
 	public readonly beatIndicatorUi = $derived.by(() => {
 		return measurePerf('mapBeatIndicatorUi', () => mapBeatIndicatorUi(this.gridsUi));
+	});
+
+	public readonly gridsUi = $derived.by(() => {
+		if (this.gridStore.getGrids().size === 0 ||
+			this.instrumentStore.getInstruments().size === 0) {
+			return { grids: [] };
+		}
+		return measurePerf('mapGridUi', () =>
+			mapGridUi(
+				this.gridStore.getGrids(),
+				this.instrumentStore.getInstruments(),
+				this.screenWidth
+			)
+		);
 	});
 
 	public readonly instrumentsUi = $derived.by(() => {
@@ -124,7 +104,7 @@ export class UiStore {
 
 	setScreenWidth(width: number): void {
 		this.screenWidth = width;
-		// gridsUi will automatically update via debounced $effect when screenWidth changes
+		// gridsUi will automatically update via $derived.by when screenWidth changes
 	}
 
 	getScreenWidth(): number {
