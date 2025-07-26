@@ -61,7 +61,7 @@ export class GridRepository {
 				"Couldn't get all instruments. needed:",
 				instrumentIds,
 				' got:',
-				instrumentsArray
+				instrumentsArray.map((i) => i.id)
 			);
 		}
 		return mapGridDtoToGrid(gridDto, instruments);

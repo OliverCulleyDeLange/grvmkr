@@ -224,7 +224,6 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		// Get all instruments sorted by gridIndex
 		let sortedInstruments = [...this.instruments.values()].sort((a, b) => a.gridIndex - b.gridIndex);
 		let currentIndex = sortedInstruments.findIndex(i => i.id === instrumentId);
-		
 		if (currentIndex === -1) return;
 		
 		let swapIndex;
