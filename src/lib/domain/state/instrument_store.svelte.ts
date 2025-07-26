@@ -220,25 +220,31 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	async moveInstrument(direction: 'up' | 'down', instrumentId: InstrumentId) {
 		let movingInstrument = this.instruments.get(instrumentId);
 		if (!movingInstrument) return;
-		let movingIndex = movingInstrument.gridIndex;
 
-		let swappingIndex;
-		if (direction == 'down') {
-			swappingIndex = movingIndex + 1;
-		} else if (direction == 'up') {
-			swappingIndex = movingIndex - 1;
+		// Get all instruments sorted by gridIndex
+		let sortedInstruments = [...this.instruments.values()].sort((a, b) => a.gridIndex - b.gridIndex);
+		let currentIndex = sortedInstruments.findIndex(i => i.id === instrumentId);
+		
+		if (currentIndex === -1) return;
+		
+		let swapIndex;
+		if (direction === 'down' && currentIndex < sortedInstruments.length - 1) {
+			swapIndex = currentIndex + 1;
+		} else if (direction === 'up' && currentIndex > 0) {
+			swapIndex = currentIndex - 1;
 		} else {
-			return;
+			return; // Can't move further in that direction
 		}
-		let swappingInstrument = [...this.instruments.values()].find(
-			(i) => i.gridIndex == swappingIndex
-		);
-		if (!swappingInstrument) return;
+		
+		let swappingInstrument = sortedInstruments[swapIndex];
+		let movingGridIndex = movingInstrument.gridIndex;
+		let swappingGridIndex = swappingInstrument.gridIndex;
+		
 		await this.updateInstrument(movingInstrument.id, (i) => {
-			i.gridIndex = swappingIndex;
+			i.gridIndex = swappingGridIndex;
 		});
 		await this.updateInstrument(swappingInstrument.id, (i) => {
-			i.gridIndex = movingIndex;
+			i.gridIndex = movingGridIndex;
 		});
 	}
 
