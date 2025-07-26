@@ -124,7 +124,7 @@ function mapCellToCellUi(
 		},
 		cellsOccupied: cell.cells_occupied,
 		cellDescription: `${bar + 1}.${beat + 1}.${beat_division + 1}`,
-		addColorTint: instrument.gridIndex % 2 == 1
+		addColorTint: instrument ? instrument.gridIndex % 2 == 1 : false
 	};
 	return cellUi;
 }
