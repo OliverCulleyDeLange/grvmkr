@@ -236,16 +236,19 @@ export class InstrumentStore implements InstrumentRepositoryI {
 			return; // Can't move further in that direction
 		}
 		
-		let swappingInstrument = sortedInstruments[swapIndex];
-		let movingGridIndex = movingInstrument.gridIndex;
-		let swappingGridIndex = swappingInstrument.gridIndex;
+		// Swap the gridIndex values of the two instruments
+		let movingGridIndex = sortedInstruments[currentIndex].gridIndex;
+		let swappingGridIndex = sortedInstruments[swapIndex].gridIndex;
 		
-		await this.updateInstrument(movingInstrument.id, (i) => {
+		await this.updateInstrument(sortedInstruments[currentIndex].id, (i) => {
 			i.gridIndex = swappingGridIndex;
 		});
-		await this.updateInstrument(swappingInstrument.id, (i) => {
+		await this.updateInstrument(sortedInstruments[swapIndex].id, (i) => {
 			i.gridIndex = movingGridIndex;
 		});
+
+		// Reindex remaining instruments to ensure continuous indexes
+		await this.reindexInstruments();
 	}
 
 	private async saveInstrumentToStateAndDb(instrument: InstrumentWithId, persist: boolean = true) {
@@ -271,6 +274,20 @@ export class InstrumentStore implements InstrumentRepositoryI {
 	async removeInstrument(id: InstrumentId) {
 		this.instruments.delete(id);
 		await this.instrumentRepository.deleteInstrument(id);
+		
+		// Reindex remaining instruments to ensure continuous indexes
+		await this.reindexInstruments();
+	}
+
+	private async reindexInstruments() {
+		let sortedInstruments = [...this.instruments.values()].sort((a, b) => a.gridIndex - b.gridIndex);
+		for (let i = 0; i < sortedInstruments.length; i++) {
+			if (sortedInstruments[i].gridIndex !== i) {
+				await this.updateInstrument(sortedInstruments[i].id, (instrument) => {
+					instrument.gridIndex = i;
+				});
+			}
+		}
 	}
 
 	async removeHit(instrumentId: InstrumentId, hitId: HitId) {
