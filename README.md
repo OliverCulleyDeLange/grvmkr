@@ -42,7 +42,7 @@
 # Analytics
 
 I'm using goatcounter to provide simple analytics on who's using the tool.
-[grvmkr.goatcounter.com](https://grvmkr.goatcounter.com/)
+[ocd.goatcounter.com](https://ocd.goatcounter.com/)
 
 Its fully anonymous and doesn't collect any personal information. I've also made it public so anyone can see the data i'm collecting.
 
