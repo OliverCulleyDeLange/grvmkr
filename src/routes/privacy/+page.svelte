@@ -46,8 +46,8 @@
 	</ul>
 	<p>
 		You can view all the data we collect in the public analytics dashboard here: <a
-			href="https://grvmkr.goatcounter.com"
-			target="_blank">grvmkr.goatcounter.com</a
+			href="https://ocd.goatcounter.com"
+			target="_blank">ocd.goatcounter.com</a
 		>.
 	</p>
 
