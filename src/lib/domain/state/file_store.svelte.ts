@@ -1,6 +1,7 @@
 import {
 	defaultFile,
 	defaultFileName,
+	defaultVolume,
 	FileRepository,
 	GridRepository,
 	keyValueRepository,
@@ -103,6 +104,18 @@ export class FileStore implements FileRepositoryI {
 	async setInstruments(instruments: Map<string, InstrumentWithId>) {
 		this.file.instruments = instruments;
 		this.trySaveFile();
+	}
+
+	setInstrumentVolume(instrumentId: string, volume: number) {
+		if (!this.file.instrumentVolumes) {
+			this.file.instrumentVolumes = {};
+		}
+		this.file.instrumentVolumes[instrumentId] = volume;
+		this.trySaveFile();
+	}
+
+	getInstrumentVolume(instrumentId: string): number {
+		return this.file.instrumentVolumes?.[instrumentId] ?? defaultVolume;
 	}
 
 	async saveWorkingFile() {

@@ -14,7 +14,6 @@ export type InstrumentWithId = {
 	hitTypes: Map<HitId, HitTypeWithId>;
 	gridIndex: number;
 	name: string;
-	volume: number;
 	muted: boolean;
 	soloed: boolean;
 };
@@ -24,5 +23,4 @@ export type HitType = {
 	key: HitTypeKey;
 	description: string;
 	audioFileName: string;
-	volume: number;
 };

@@ -52,4 +52,36 @@ if (!globalThis.URL.createObjectURL) {
 	globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock');
 }
 
+// jsdom has no Worker. Stub a minimal one so WorkerPlaybackStore can construct.
+// Tests don't drive timing through the worker; they just need construction to succeed.
+class WorkerStub {
+	onmessage: ((event: MessageEvent) => void) | null = null;
+	onerror: ((event: ErrorEvent) => void) | null = null;
+	postMessage = vi.fn();
+	terminate = vi.fn();
+	addEventListener = vi.fn();
+	removeEventListener = vi.fn();
+	dispatchEvent = vi.fn();
+}
+(globalThis as any).Worker = WorkerStub;
+
+// jsdom has no IntersectionObserver. Stub one that immediately reports visible
+// so the grid virtualization code measures and renders content under test.
+class IntersectionObserverStub {
+	constructor(private callback: IntersectionObserverCallback) {}
+	observe = vi.fn((target: Element) => {
+		this.callback(
+			[{ isIntersecting: true, target } as IntersectionObserverEntry],
+			this as unknown as IntersectionObserver
+		);
+	});
+	unobserve = vi.fn();
+	disconnect = vi.fn();
+	takeRecords = vi.fn(() => []);
+	root = null;
+	rootMargin = '';
+	thresholds: ReadonlyArray<number> = [];
+}
+(globalThis as any).IntersectionObserver = IntersectionObserverStub;
+
 // add more mocks here if you need them

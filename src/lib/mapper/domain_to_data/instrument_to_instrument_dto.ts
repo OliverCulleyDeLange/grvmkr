@@ -14,8 +14,7 @@ export function mapInstrumentToInstrumentDto(instrument: InstrumentWithId): Inst
 		id: instrument.id,
 		gridIndex: instrument.gridIndex,
 		name: instrument.name,
-		hitTypes: [...instrument.hitTypes.keys()],
-		volume: instrument.volume
+		hitTypes: [...instrument.hitTypes.keys()]
 	};
 	return instrumentDto;
 }

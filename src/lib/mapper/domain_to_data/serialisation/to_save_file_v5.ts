@@ -1,4 +1,5 @@
 import {
+	defaultVolume,
 	type Grid,
 	type GridCell,
 	type GridRow,
@@ -17,9 +18,13 @@ import {
 export function serialiseToSaveFileV5(
 	name: string,
 	grids: Grid[],
-	instruments: InstrumentWithId[]
+	instruments: InstrumentWithId[],
+	instrumentVolumes?: Record<string, number>
 ): SaveFileV5 {
-	let savedInstruments: SavedInstrumentV4[] = mapInstrumentsToSavedInstrumentsV4(instruments);
+	let savedInstruments: SavedInstrumentV4[] = mapInstrumentsToSavedInstrumentsV4(
+		instruments,
+		instrumentVolumes
+	);
 	let savedGrids: SavedGridV5[] = mapGridsToSavedGridV5(grids);
 
 	let saveFile: SaveFileV5 = {
@@ -85,7 +90,10 @@ function mapHitToSavedInstrumentHitV1(hit: InstrumentHit): SavedInstrumentHitV1 
 	return savedHit;
 }
 
-function mapInstrumentsToSavedInstrumentsV4(instruments: InstrumentWithId[]): SavedInstrumentV4[] {
+function mapInstrumentsToSavedInstrumentsV4(
+	instruments: InstrumentWithId[],
+	instrumentVolumes?: Record<string, number>
+): SavedInstrumentV4[] {
 	return instruments.map((instrument) => {
 		let savedHits: SavedHitV1[] = mapInstrumentToSavedHitsV1(instrument);
 
@@ -96,7 +104,7 @@ function mapInstrumentsToSavedInstrumentsV4(instruments: InstrumentWithId[]): Sa
 			name: instrument.name,
 			hits: savedHits,
 			gridIndex: instrument.gridIndex,
-			volume: instrument.volume
+			volume: instrumentVolumes?.[instrument.id] ?? defaultVolume
 		};
 		return savedInstrument;
 	});

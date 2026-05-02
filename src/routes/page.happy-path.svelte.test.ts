@@ -99,11 +99,14 @@ describe('GrvMkr happy path user flow', () => {
         const gridIds = page.getGrids().map(grid => grid.id);
         await page.openGridTools(1);
         await page.moveGridUp(1);
-        // assert grid ids are reversed
-        const newGridIds = page.getGrids().map(grid => grid.id);
-        expect(newGridIds.length).toBe(2);
-        expect(newGridIds[0]).toBe(gridIds[1]);
-        expect(newGridIds[1]).toBe(gridIds[0]);
+        // assert grid ids are reversed (move is async; the click handler
+        // does not await the store update, so wait for the DOM to reflect it)
+        await waitFor(() => {
+            const newGridIds = page.getGrids().map(grid => grid.id);
+            expect(newGridIds.length).toBe(2);
+            expect(newGridIds[0]).toBe(gridIds[1]);
+            expect(newGridIds[1]).toBe(gridIds[0]);
+        });
 
         // TODO Check this persist after a page reload
     });

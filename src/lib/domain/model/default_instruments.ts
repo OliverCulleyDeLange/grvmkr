@@ -5,8 +5,7 @@ export const defaultVolume = 0.8;
 export const defaultHitType: HitType = {
 	key: 'X',
 	description: '',
-	audioFileName: '',
-	volume: defaultVolume
+	audioFileName: ''
 };
 
 export const defaultInstrumentConfig: InstrumentConfig = {

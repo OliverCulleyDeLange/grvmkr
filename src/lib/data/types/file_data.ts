@@ -8,4 +8,6 @@ export type FileDto = {
 	name: string;
 	grids: GridDtoId[];
 	instruments: InstrumentId[];
+	// Volume (0-1) per instrument id. Optional for files saved before this was tracked.
+	instrumentVolumes?: Record<InstrumentId, number>;
 };

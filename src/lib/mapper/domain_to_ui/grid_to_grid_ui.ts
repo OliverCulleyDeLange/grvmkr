@@ -23,9 +23,10 @@ export function mapGridUi(
 	grids: Map<GridId, Grid>,
 	instruments: Map<InstrumentId, InstrumentWithId>,
 	screenWidth?: number,
+	instrumentVolumes?: Record<InstrumentId, number>
 ): GridUis {
 	let gridUis: GridUi[] = [...grids.values()].map((grid) =>
-		mapRowsToGridUi(grid, instruments, screenWidth)
+		mapRowsToGridUi(grid, instruments, screenWidth, instrumentVolumes)
 	);
 	let ui: GridUis = {
 		grids: gridUis.sort((a, b) => a.index - b.index)
@@ -37,8 +38,9 @@ export function mapRowsToGridUi(
 	grid: Grid,
 	instruments: Map<InstrumentId, InstrumentWithId>,
 	screenWidth?: number,
+	instrumentVolumes?: Record<InstrumentId, number>
 ): GridUi {
-	let rows = mapRows(grid, instruments);
+	let rows = mapRows(grid, instruments, instrumentVolumes);
 	let sections = splitRowsIntoSections(grid.id, rows, grid.config, grid.gridCols, screenWidth);
 
 	let ui: GridUi = {
@@ -54,9 +56,13 @@ export function mapRowsToGridUi(
 }
 
 // Maps a domain grids rows into a list of GridRowUI
-function mapRows(grid: Grid, instruments: Map<InstrumentId, InstrumentWithId>): GridRowUi[] {
+function mapRows(
+	grid: Grid,
+	instruments: Map<InstrumentId, InstrumentWithId>,
+	instrumentVolumes?: Record<InstrumentId, number>
+): GridRowUi[] {
 	return grid.rows
-		.map((row, rowI) => mapRow(row, rowI, instruments, grid.config, grid.id))
+		.map((row, rowI) => mapRow(row, rowI, instruments, grid.config, grid.id, instrumentVolumes))
 		.sort((a, b) => a.index - b.index);
 }
 
@@ -65,7 +71,8 @@ function mapRow(
 	rowIndex: number,
 	instruments: Map<string, InstrumentWithId>,
 	config: GridConfig,
-	gridId: string
+	gridId: string,
+	instrumentVolumes?: Record<InstrumentId, number>
 ): GridRowUi {
 	let gridCells: GridCellUi[] = row.cells
 		.map((cell, cellIndex) => {
@@ -77,10 +84,10 @@ function mapRow(
 		})
 		.filter((x) => x != undefined);
 	let instrument = instruments.get(row.instrument.id);
-	let volume: VolumeControlUi = {
-		volume: instrument?.volume ?? defaultVolume,
-		volumeString:
-			instrument?.volume != undefined ? `${Math.round(instrument.volume * 100)}%` : '80%',
+	const volume = instrumentVolumes?.[row.instrument.id] ?? defaultVolume;
+	let volumeControl: VolumeControlUi = {
+		volume: volume,
+		volumeString: `${Math.round(volume * 100)}%`,
 		muted: instrument?.muted ?? false,
 		soloed: instrument?.soloed ?? false
 	};
@@ -89,7 +96,7 @@ function mapRow(
 		instrumentId: instrument?.id ?? 'error',
 		instrumentName: instrument?.name ?? 'error',
 		gridCells,
-		volume
+		volume: volumeControl
 	};
 	return rowUi;
 }
