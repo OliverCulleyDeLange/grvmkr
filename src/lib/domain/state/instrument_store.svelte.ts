@@ -3,8 +3,6 @@ import {
 	AudioManager,
 	defaultInstrumentConfig,
 	defaultInstruments,
-	defaultVolume,
-	InstrumentEvent,
 	InstrumentRepository,
 	mapHitTypeToHitTypeWithId,
 	type HitId,
@@ -18,7 +16,6 @@ import {
 	type SavedInstrumentV4
 } from '$lib';
 import type { OnEvent } from '$lib/domain/event';
-import { clamp } from '$lib/util/math';
 import { SvelteMap } from 'svelte/reactivity';
 
 // Responsible for storing, modifying and playing instruments
@@ -140,20 +137,12 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		this.audioManager.removeHit(hitId);
 	}
 
-	onChangeVolume(id: InstrumentId, volume: number | undefined, delta: number | undefined) {
-		this.updateInstrument(id, (instrument) => {
-			if (instrument.volume != undefined && delta != undefined) {
-				instrument.volume = clamp((instrument.volume += delta / 100), 0, 1);
-			} else if (volume != undefined) {
-				instrument.volume = clamp(volume, 0, 1);
-			} else {
-				instrument.volume = defaultVolume;
-			}
-
-			// modify volume for each hit type
-			instrument.hitTypes.forEach((hit) => {
-				this.audioManager.setVolume(hit, instrument.volume);
-			});
+	// Pushes the file-level volume into the audio manager for every hit on this instrument.
+	applyInstrumentVolumeToAudio(id: InstrumentId, volume: number) {
+		const instrument = this.instruments.get(id);
+		if (!instrument) return;
+		instrument.hitTypes.forEach((hit) => {
+			this.audioManager.setVolume(hit, volume);
 		});
 	}
 
@@ -194,7 +183,7 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		let instruments = [...this.instruments.values()];
 		let maxIndex = Math.max(0, ...[...instruments.map((i) => i.gridIndex)]);
 		let index = maxIndex + 1;
-		await this.addInstrument(instrumentId, hitMap, instrument.name, index, defaultVolume);
+		await this.addInstrument(instrumentId, hitMap, instrument.name, index);
 	}
 
 	// Saves a reactive instrument in state and db
@@ -202,15 +191,13 @@ export class InstrumentStore implements InstrumentRepositoryI {
 		instrumentId: string,
 		hitMap: SvelteMap<string, HitTypeWithId>,
 		name: string,
-		index: number,
-		volume: number
+		index: number
 	) {
 		let instrument: InstrumentWithId = {
 			id: instrumentId,
 			hitTypes: hitMap,
 			gridIndex: index,
 			name: name,
-			volume: volume,
 			muted: false,
 			soloed: false
 		};
@@ -308,20 +295,13 @@ export class InstrumentStore implements InstrumentRepositoryI {
 					let hitType: HitType = {
 						key: hit.key,
 						description: hit.description,
-						audioFileName: hit.audio_file_name,
-						volume: instrument.volume
+						audioFileName: hit.audio_file_name
 					};
 					let hitWithId: HitTypeWithId = mapHitTypeToHitTypeWithId(hit.id, hitType);
 					return [hitWithId.id, hitWithId];
 				})
 			);
-			await this.addInstrument(
-				instrument.id,
-				hitMap,
-				instrument.name,
-				instrument.gridIndex,
-				instrument.volume
-			);
+			await this.addInstrument(instrument.id, hitMap, instrument.name, instrument.gridIndex);
 		}
 	}
 

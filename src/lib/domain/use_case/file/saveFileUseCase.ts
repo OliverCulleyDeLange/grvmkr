@@ -18,7 +18,8 @@ export async function saveFileUseCase(
 	const saveFile: SaveFileV5 = serialiseToSaveFileV5(
 		fileStore.getFile().name,
 		Array.from(gridStore.getGrids().values()),
-		Array.from(instrumentStore.getInstruments().values())
+		Array.from(instrumentStore.getInstruments().values()),
+		fileStore.getFile().instrumentVolumes
 	);
 
 	const zip = new JSZip();

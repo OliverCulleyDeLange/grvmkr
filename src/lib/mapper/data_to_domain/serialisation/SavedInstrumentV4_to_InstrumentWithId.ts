@@ -18,7 +18,7 @@ export function mapSavedInstrumentV4ToInstrumentWithId(
 ): InstrumentWithId {
 	const hitTypes: Map<HitId, HitTypeWithId> = new SvelteMap(
 		instrument.hits.map((savedHit) => {
-			const hit = mapSavedHitV1ToHitTypeWithId(savedHit, instrument.volume);
+			const hit = mapSavedHitV1ToHitTypeWithId(savedHit);
 			return [hit.id, hit];
 		})
 	);
@@ -26,7 +26,6 @@ export function mapSavedInstrumentV4ToInstrumentWithId(
 		id: instrument.id,
 		gridIndex: instrument.gridIndex,
 		name: instrument.name,
-		volume: instrument.volume,
 		muted: false,
 		soloed: false,
 		hitTypes

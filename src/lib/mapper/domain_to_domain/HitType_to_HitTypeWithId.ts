@@ -5,8 +5,7 @@ export function mapHitTypeToHitTypeWithId(hitId: string, hit: HitType): HitTypeW
 		id: hitId,
 		key: hit.key,
 		description: hit.description,
-		audioFileName: hit.audioFileName,
-		volume: hit.volume
+		audioFileName: hit.audioFileName
 	};
 	return hitWithId;
 }

@@ -72,7 +72,8 @@ export class UiStore {
 			mapGridUi(
 				this.gridStore.getGrids(),
 				this.instrumentStore.getInstruments(),
-				this.screenWidth
+				this.screenWidth,
+				this.fileStore.file.instrumentVolumes
 			)
 		);
 	});

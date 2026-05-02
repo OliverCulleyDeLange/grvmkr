@@ -5,6 +5,7 @@ export function mapToDto(file: GrvMkrFile): FileDto {
 		id: file.id,
 		name: file.name,
 		grids: Array.from(file.grids.keys()),
-		instruments: Array.from(file.instruments.keys())
+		instruments: Array.from(file.instruments.keys()),
+		instrumentVolumes: file.instrumentVolumes ? { ...file.instrumentVolumes } : undefined
 	};
 }

@@ -3,6 +3,7 @@ import {
 	CellToolsStore,
 	defaultHitType,
 	defaultInstrumentConfig,
+	defaultVolume,
 	ErrorStore,
 	FileStore,
 	GridEvent,
@@ -37,7 +38,9 @@ import {
 	loadExampleFileUseCase
 } from '$lib';
 import { moveInstrumentUpUseCase } from '../use_case/instrument/moveInstrumentUpUseCase';
+import { syncInstruments } from '../use_case/instrument/sync';
 import type { PlaybackControllerI } from '../interface/PlaybackControllerI';
+import { clamp } from '$lib/util/math';
 
 export class AppStateStore {
 	public instrumentStore: InstrumentStore = new InstrumentStore(this.onEvent.bind(this));
@@ -57,7 +60,7 @@ export class AppStateStore {
 	);
 
 
-	onEvent(event: AppEvent) {
+	async onEvent(event: AppEvent) {
 		this.logEvent(event);
 		switch (event.event) {
 			case UiEvent.Mounted:
@@ -142,14 +145,27 @@ export class AppStateStore {
 			case GridEvent.MoveGridUp:
 				this.gridStore.moveGrid('up', event.gridId);
 				break;
-			case GridEvent.VolumeChanged:
-				this.instrumentStore.onChangeVolume(event.instrumentId, event.volume, event.delta);
+			case GridEvent.VolumeChanged: {
+				let newVolume: number | undefined;
+				if (event.volume !== undefined) {
+					newVolume = clamp(event.volume, 0, 1);
+				} else if (event.delta !== undefined) {
+					const currentVolume = this.fileStore.getInstrumentVolume(event.instrumentId);
+					newVolume = clamp(currentVolume + event.delta / 100, 0, 1);
+				}
+				if (newVolume !== undefined) {
+					this.fileStore.setInstrumentVolume(event.instrumentId, newVolume);
+					this.instrumentStore.applyInstrumentVolumeToAudio(event.instrumentId, newVolume);
+				}
 				break;
+			}
 			case GridEvent.MuteInstrument:
 				this.instrumentStore.onToggleMute(event.instrumentId);
+				await syncInstruments(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore);
 				break;
 			case GridEvent.SoloInstrument:
 				this.instrumentStore.onToggleSolo(event.instrumentId);
+				await syncInstruments(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore);
 				break;
 			case GridEvent.ToggleToolsExpansion:
 				this.gridStore.toggleToolsExpansion(event.id);
@@ -176,6 +192,7 @@ export class AppStateStore {
 				break;
 			case InstrumentEvent.RenameInstrument:
 				this.instrumentStore.onChangeName(event.newName, event.instrumentId);
+				await syncInstruments(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore);
 				break;
 			case InstrumentEvent.AddHit:
 				addHitUseCase(
@@ -206,6 +223,7 @@ export class AppStateStore {
 				break;
 			case InstrumentEvent.ChangeHitKey:
 				this.instrumentStore.onChangeHitKey(event.newKey, event.instrumentId, event.hitId);
+				await syncInstruments(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore);
 				break;
 			case InstrumentEvent.ChangeHitDescription:
 				this.instrumentStore.onChangeHitDescription(
@@ -213,12 +231,15 @@ export class AppStateStore {
 					event.instrumentId,
 					event.hitId
 				);
+				await syncInstruments(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore);
 				break;
 			case InstrumentEvent.ChangeSample:
 				this.instrumentStore.onChangeSample(event.file, event.instrumentId, event.hitId);
+				await syncInstruments(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore);
 				break;
 			case InstrumentEvent.RemoveHit:
 				this.instrumentStore.removeHit(event.instrumentId, event.hitId);
+				await syncInstruments(this.fileStore, this.gridStore, this.instrumentStore, this.cellToolsStore);
 				break;
 			case InstrumentEvent.PlayHit:
 				this.instrumentStore.playHit(event.instrumentHit);
@@ -230,7 +251,7 @@ export class AppStateStore {
 				saveFileUseCase(this.fileStore, this.gridStore, this.instrumentStore);
 				break;
 			case ToolbarEvent.LoadFile:
-				loadFileUseCase(
+				await loadFileUseCase(
 					this.onEvent.bind(this),
 					event.file,
 					this.fileStore,
@@ -238,6 +259,7 @@ export class AppStateStore {
 					this.gridStore,
 					this.playbackStore
 				);
+				this.applyFileVolumesToAudio(this.fileStore.getFile());
 				break;
 			case ToolbarEvent.LoadLocalGroove:
 				this.loadGroove(event.id);
@@ -266,13 +288,14 @@ export class AppStateStore {
 				this.uiStore.toggleShowDebug()
 				break;
 			case HelpEvent.LoadExampleFile:
-				loadExampleFileUseCase(
+				await loadExampleFileUseCase(
 					this.onEvent.bind(this),
 					this.fileStore,
 					this.instrumentStore,
 					this.gridStore,
 					this.playbackStore
 				);
+				this.applyFileVolumesToAudio(this.fileStore.getFile());
 				break;
 			case ProblemEvent.MissingSampleAudio:
 			case ProblemEvent.DatabaseError:
@@ -329,6 +352,7 @@ export class AppStateStore {
 		console.log('Loaded file:', newWorkingFile);
 		await this.gridStore.replaceGrids(Array.from(newWorkingFile.grids.values()), false);
 		await this.instrumentStore.replaceInstruments(Array.from(newWorkingFile.instruments.values()));
+		this.applyFileVolumesToAudio(newWorkingFile);
 	}
 
 	async deleteGroove(id: GrvMkrFileId) {
@@ -355,6 +379,15 @@ export class AppStateStore {
 
 		const grids = await this.gridStore.initialise(workingFile.grids, instruments);
 		await this.fileStore.setGrids(grids);
+
+		this.applyFileVolumesToAudio(workingFile);
+	}
+
+	private applyFileVolumesToAudio(file: GrvMkrFile) {
+		const volumes = file.instrumentVolumes ?? {};
+		for (const id of file.instruments.keys()) {
+			this.instrumentStore.applyInstrumentVolumeToAudio(id, volumes[id] ?? defaultVolume);
+		}
 	}
 
 	// Updates grid in state and DB

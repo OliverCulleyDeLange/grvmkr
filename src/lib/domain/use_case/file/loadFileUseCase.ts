@@ -82,13 +82,14 @@ async function loadFromJsonFile(file: File): Promise<GrvMkrFile> {
 	return grvMkrFile;
 }
 
-function parseSaveFile(saveFileText: string): GrvMkrFile {
+export function parseSaveFile(saveFileText: string): GrvMkrFile {
 	const saveFileBase: SaveFile = JSON.parse(saveFileText);
 
 	let instruments: InstrumentWithId[] = [];
 	let grids: Grid[] = [];
 	let keyedInstruments = new Map<InstrumentId, InstrumentWithId>();
 	let fileName = '';
+	let instrumentVolumes: Record<InstrumentId, number> | undefined;
 
 	switch (saveFileBase.version) {
 		case 1: {
@@ -120,6 +121,7 @@ function parseSaveFile(saveFileText: string): GrvMkrFile {
 			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
 			grids = f.grids.map((g, i) => mapSavedGridV3ToGrid(g, i, keyedInstruments));
 			fileName = f.name;
+			instrumentVolumes = Object.fromEntries(f.instruments.map((i) => [i.id, i.volume]));
 			break;
 		}
 		case 5: {
@@ -128,6 +130,7 @@ function parseSaveFile(saveFileText: string): GrvMkrFile {
 			keyedInstruments = new Map(instruments.map((i) => [i.id, i]));
 			grids = f.grids.map((g) => mapSavedGridV5ToGrid(g, keyedInstruments));
 			fileName = f.name;
+			instrumentVolumes = Object.fromEntries(f.instruments.map((i) => [i.id, i.volume]));
 			break;
 		}
 		default:
@@ -140,7 +143,8 @@ function parseSaveFile(saveFileText: string): GrvMkrFile {
 		id: generateFileId(),
 		name: fileName,
 		grids: keyedGrids,
-		instruments: keyedInstruments
+		instruments: keyedInstruments,
+		instrumentVolumes
 	};
 	return grvMkrFile;
 }

@@ -75,7 +75,7 @@ export class InstrumentRepository {
 			)
 		)
 			.filter((hitType) => hitType != null)
-			.map((dto) => mapHitDtoToHitTypeWithId(dto, instrumentDto.volume));
+			.map((dto) => mapHitDtoToHitTypeWithId(dto));
 
 		return mapInstrumentDtoToInstrumentWithId(instrumentDto, hitTypes);
 	}

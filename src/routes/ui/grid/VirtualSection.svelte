@@ -55,6 +55,8 @@
 				isVisible = true;
 
 				requestAnimationFrame(() => {
+					// Component may have unmounted between scheduling and running this rAF.
+					if (!containerElement) return;
 					// Measure the total height
 					if (containerElement.scrollHeight > 0) {
 						// Find the grid config bar (sticky header)
