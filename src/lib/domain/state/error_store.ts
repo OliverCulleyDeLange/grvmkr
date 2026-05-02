@@ -1,4 +1,4 @@
-import type { ErrorId, AppError, LoadedNonGrooveFile } from '$lib';
+import type { ErrorId, AppError, LoadedNonGrooveFile, LoadedInvalidGrooveFile } from '$lib';
 import {
 	ProblemEvent,
 	type DatabaseError,
@@ -7,6 +7,8 @@ import {
 	type ProblemEvents
 } from '$lib';
 import { SvelteMap } from 'svelte/reactivity';
+
+const SUPPORT_EMAIL = 'grvmkr@oliverdelange.co.uk';
 
 export class ErrorStore {
 	errors: SvelteMap<ErrorId, AppError> = new SvelteMap();
@@ -21,6 +23,9 @@ export class ErrorStore {
 				break;
 			case ProblemEvent.LoadedNonGrooveFile:
 				this.handleLoadedNonGrooveFile(event);
+				break;
+			case ProblemEvent.LoadedInvalidGrooveFile:
+				this.handleLoadedInvalidGrooveFile(event);
 				break;
 		}
 	}
@@ -65,7 +70,27 @@ export class ErrorStore {
 	private handleLoadedNonGrooveFile(event: LoadedNonGrooveFile) {
 		const error: AppError = {
 			id: crypto.randomUUID(),
-			message: `The file you tried to load was not a groove file. Please select only .grv files. `
+			message: `"${event.fileName}" doesn't look like a groove file. GrvMkr expects a .grv file (or .zip / .json export).`,
+			contact: {
+				email: SUPPORT_EMAIL,
+				subject: `GrvMkr: unrecognised file "${event.fileName}"`,
+				prompt: "If you think this file should work, send it to me and I'll take a look:"
+			}
+		};
+
+		this.errors.set(error.id, error);
+	}
+
+	private handleLoadedInvalidGrooveFile(event: LoadedInvalidGrooveFile) {
+		const error: AppError = {
+			id: crypto.randomUUID(),
+			message: `Couldn't load "${event.fileName}" — the file looks like a groove file but something went wrong: ${event.reason}`,
+			contact: {
+				email: SUPPORT_EMAIL,
+				subject: `GrvMkr: failed to load "${event.fileName}"`,
+				prompt:
+					"If this groove is important to you, send the file over and I'll see if I can recover it:"
+			}
 		};
 
 		this.errors.set(error.id, error);

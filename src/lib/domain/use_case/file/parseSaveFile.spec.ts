@@ -111,6 +111,46 @@ describe('parseSaveFile', () => {
 		expect(file.instrumentVolumes).toBeUndefined();
 	});
 
+	it('throws an unsupported-version error when the version field is missing', () => {
+		const malformed = JSON.stringify({ type: 'savefile', name: 'mystery' });
+		expect(() => parseSaveFile(malformed)).toThrow(/Unsupported file version/);
+	});
+
+	it('throws a descriptive error when an instrument has no hits array', () => {
+		const save = {
+			type: 'savefile',
+			version: 5,
+			name: 'broken',
+			instruments: [
+				{
+					type: 'instrument',
+					version: 4,
+					id: 'a',
+					name: 'kick',
+					gridIndex: 0,
+					volume: 0.5
+					// hits intentionally missing
+				}
+			],
+			grids: [makeV5Grid('g1', 0)]
+		};
+
+		expect(() => parseSaveFile(JSON.stringify(save))).toThrow(
+			/instrument "kick" is missing its hits/
+		);
+	});
+
+	it('throws a descriptive error when the instruments list is missing entirely', () => {
+		const save = {
+			type: 'savefile',
+			version: 5,
+			name: 'broken',
+			grids: [makeV5Grid('g1', 0)]
+		};
+
+		expect(() => parseSaveFile(JSON.stringify(save))).toThrow(/missing its instruments/);
+	});
+
 	it('does not leak a volume field onto the resulting hit/instrument domain objects', () => {
 		const save: SaveFileV5 = {
 			type: 'savefile',
@@ -138,7 +178,7 @@ describe('parseSaveFile', () => {
 		const instrument = file.instruments.get('a')!;
 		const hit = instrument.hitTypes.get('h1')!;
 
-		expect((instrument as any).volume).toBeUndefined();
-		expect((hit as any).volume).toBeUndefined();
+		expect('volume' in instrument).toBe(false);
+		expect('volume' in hit).toBe(false);
 	});
 });
