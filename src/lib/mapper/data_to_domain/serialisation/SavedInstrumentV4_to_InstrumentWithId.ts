@@ -10,12 +10,19 @@ import type {
 export function mapSavedInstrumentsV4ToInstrumentWithIds(
 	instruments: SavedInstrumentV4[]
 ): InstrumentWithId[] {
+	if (!Array.isArray(instruments)) {
+		throw new Error('file is missing its instruments list');
+	}
 	return instruments.map((i) => mapSavedInstrumentV4ToInstrumentWithId(i));
 }
 
 export function mapSavedInstrumentV4ToInstrumentWithId(
 	instrument: SavedInstrumentV4
 ): InstrumentWithId {
+	if (!instrument || !Array.isArray(instrument.hits)) {
+		const label = instrument?.name ?? instrument?.id ?? 'unknown';
+		throw new Error(`instrument "${label}" is missing its hits list`);
+	}
 	const hitTypes: Map<HitId, HitTypeWithId> = new SvelteMap(
 		instrument.hits.map((savedHit) => {
 			const hit = mapSavedHitV1ToHitTypeWithId(savedHit);

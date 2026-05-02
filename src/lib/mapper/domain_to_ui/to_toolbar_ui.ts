@@ -7,13 +7,20 @@ export function mapToolbarUi(
 	darkMode: boolean,
 	playingFile: boolean
 ): ToolbarUi {
-	let errorUi: AppErrorUi[] = [...errors.values()].map((e) => {
+	const errorUi: AppErrorUi[] = [...errors.values()].map((e) => {
 		return {
 			id: e.id,
-			message: e.message
+			message: e.message,
+			contact: e.contact
+				? {
+						email: e.contact.email,
+						mailto: `mailto:${e.contact.email}?subject=${encodeURIComponent(e.contact.subject)}`,
+						prompt: e.contact.prompt
+					}
+				: undefined
 		};
 	});
-	let ui: ToolbarUi = {
+	const ui: ToolbarUi = {
 		errors: errorUi,
 		fileName: filename,
 		darkMode,

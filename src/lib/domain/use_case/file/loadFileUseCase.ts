@@ -35,21 +35,44 @@ export async function loadFileUseCase(
 	gridRepository: GridRepositoryI,
 	player: PlaybackControllerI
 ) {
-	if (file.name.endsWith('.grv') || file.name.endsWith('.zip') || file.name.endsWith('.json')) {
-		const audioDb = new AudioDb();
-		player.stop();
+	if (!(file.name.endsWith('.grv') || file.name.endsWith('.zip') || file.name.endsWith('.json'))) {
+		onEvent({ event: ProblemEvent.LoadedNonGrooveFile, fileName: file.name });
+		return;
+	}
 
-		const isGrvMkrFile = file.name.endsWith('.grv') || file.name.endsWith('.zip');
-		const grvMkrFile = isGrvMkrFile
-			? await loadFromZip(file, audioDb)
-			: await loadFromJsonFile(file);
+	const audioDb = new AudioDb();
+	player.stop();
 
+	const isGrvMkrFile = file.name.endsWith('.grv') || file.name.endsWith('.zip');
+	let grvMkrFile: GrvMkrFile;
+	try {
+		grvMkrFile = isGrvMkrFile ? await loadFromZip(file, audioDb) : await loadFromJsonFile(file);
+	} catch (e) {
+		onEvent({
+			event: ProblemEvent.LoadedInvalidGrooveFile,
+			fileName: file.name,
+			reason: describeLoadError(e)
+		});
+		return;
+	}
+
+	try {
 		await instrumentRepository.replaceInstruments(Array.from(grvMkrFile.instruments.values()));
 		await gridRepository.replaceGrids(Array.from(grvMkrFile.grids.values()), true);
 		await fileRepository.loadFile(grvMkrFile);
-	} else {
-		onEvent({ event: ProblemEvent.LoadedNonGrooveFile });
+	} catch (e) {
+		onEvent({
+			event: ProblemEvent.LoadedInvalidGrooveFile,
+			fileName: file.name,
+			reason: describeLoadError(e)
+		});
 	}
+}
+
+function describeLoadError(e: unknown): string {
+	if (e instanceof Error) return e.message;
+	if (typeof e === 'string') return e;
+	return 'unknown error';
 }
 
 async function loadFromZip(file: File, audioDb: AudioDb): Promise<GrvMkrFile> {
@@ -137,7 +160,7 @@ export function parseSaveFile(saveFileText: string): GrvMkrFile {
 			throw new Error(`Unsupported file version: ${saveFileBase.version}`);
 	}
 
-	let keyedGrids = new Map(grids.map((g) => [g.id, g]));
+	const keyedGrids = new Map(grids.map((g) => [g.id, g]));
 
 	const grvMkrFile: GrvMkrFile = {
 		id: generateFileId(),

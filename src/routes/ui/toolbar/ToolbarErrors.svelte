@@ -14,7 +14,15 @@
 	<div class="my-4 flex flex-col gap-2">
 		{#each errorsUi as error}
 			<div class="alert alert-error flex items-start justify-between gap-4">
-				<span>{error.message}</span>
+				<div class="flex flex-col gap-1">
+					<span>{error.message}</span>
+					{#if error.contact}
+						<span>
+							{error.contact.prompt}
+							<a class="link link-primary" href={error.contact.mailto}>{error.contact.email}</a>
+						</span>
+					{/if}
+				</div>
 				<button
 					class="btn btn-circle btn-ghost btn-xs"
 					onclick={() => onEvent({ event: ToolbarEvent.DismissError, id: error.id })}

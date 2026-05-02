@@ -1,15 +1,17 @@
 import {
 	AudioDb,
+	ProblemEvent,
 	serialiseToSaveFileV5,
 	type FileRepositoryI,
 	type GridRepositoryI,
 	type InstrumentRepositoryI,
-	type SaveFileV4,
+	type OnEvent,
 	type SaveFileV5
 } from '$lib';
 import JSZip from 'jszip';
 
 export async function saveFileUseCase(
+	onEvent: OnEvent,
 	fileStore: FileRepositoryI,
 	gridStore: GridRepositoryI,
 	instrumentStore: InstrumentRepositoryI
@@ -36,12 +38,17 @@ export async function saveFileUseCase(
 		for (const hit of instrument.hitTypes.values()) {
 			if (!hit.audioFileName) continue;
 
-			const audioFileUrl = await audioDb.loadAudioFileUrl(hit.audioFileName);
-			if (audioFileUrl) {
-				const response = await fetch(audioFileUrl);
-				const blob = await response.blob();
+			try {
+				const audioFileUrl = await audioDb.loadAudioFileUrl(hit.audioFileName);
+				if (audioFileUrl) {
+					const response = await fetch(audioFileUrl);
+					const blob = await response.blob();
 
-				instrumentFolder?.file(hit.audioFileName, blob);
+					instrumentFolder?.file(hit.audioFileName, blob);
+				}
+			} catch {
+				// Sample missing from IndexedDB or fetch failed — skip it so the rest of the save still works.
+				onEvent({ event: ProblemEvent.MissingSampleAudio, hit });
 			}
 		}
 	}
