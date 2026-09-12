@@ -185,6 +185,7 @@ export class GridStore implements GridRepositoryI {
 	pasteCells(instruments: Map<string, InstrumentWithId>) {
 		// Find the instrument for the currently selected cell[0]
 		const firstSelectedCell = this.currentlySelectedCells[0];
+		if (!firstSelectedCell) return;
 		let instrumentForPaste = this.grids.get(firstSelectedCell.grid)?.rows[firstSelectedCell.row]
 			.instrument;
 		if (instrumentForPaste == undefined) {
