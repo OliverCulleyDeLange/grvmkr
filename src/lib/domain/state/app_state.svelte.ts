@@ -70,6 +70,12 @@ export class AppStateStore {
 			case UiEvent.Paste:
 				this.gridStore.pasteCells(this.instrumentStore.getInstruments());
 				break;
+			case UiEvent.TypeHitKey:
+				this.onTypeHitKey(event.key);
+				break;
+			case UiEvent.ClearHits:
+				this.onClearHits();
+				break;
 			case UiEvent.PlayPause:
 				togglePlayFileFromRecentlyPlayedUseCase(
 					this.gridStore,
@@ -358,6 +364,22 @@ export class AppStateStore {
 	// Filters chatty events, and logs
 	private logEvent(event: AppEvent) {
 		console.log('Event:', event?.event, event);
+	}
+
+	// Sets the hit matching `key` on all currently selected cells.
+	// Each cell's row instrument is checked for a hit with that key; unmatched cells are unchanged.
+	// The first matched hit is played for audio feedback.
+	private async onTypeHitKey(key: string) {
+		const applied = this.gridStore.setCurrentlySelectedCellHitsByKey(key);
+		if (applied.length > 0) {
+			await this.instrumentStore.playHit(applied[0]);
+		}
+		this.updateCellTools();
+	}
+
+	private onClearHits() {
+		this.gridStore.clearCurrentlySelectedCellHits();
+		this.updateCellTools();
 	}
 
 	// Combined all actions to be complete when a cell is clicked:

@@ -21,13 +21,17 @@ export type UiEvents =
 	| Mounted
 	| Copy
 	| Paste
-	| PlayPause;
+	| PlayPause
+	| TypeHitKey
+	| ClearHits;
 
 export enum UiEvent {
 	Mounted = 'Mounted',
 	Copy = 'Copy',
 	Paste = 'Paste',
-	PlayPause = 'PlayPause'
+	PlayPause = 'PlayPause',
+	TypeHitKey = 'TypeHitKey',
+	ClearHits = 'ClearHits'
 }
 
 export type Mounted = {
@@ -41,4 +45,11 @@ export type Paste = {
 };
 export type PlayPause = {
 	event: UiEvent.PlayPause;
+};
+export type TypeHitKey = {
+	event: UiEvent.TypeHitKey;
+	key: string;
+};
+export type ClearHits = {
+	event: UiEvent.ClearHits;
 };
