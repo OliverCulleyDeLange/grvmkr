@@ -134,6 +134,44 @@ export class GridStore implements GridRepositoryI {
 		});
 	}
 
+	// Clears hits from every currently selected cell. Returns the number of cells cleared.
+	clearCurrentlySelectedCellHits(): number {
+		let cleared = 0;
+		this.currentlySelectedCells.forEach((locator) => {
+			this.updateGridCell(locator, (cell) => {
+				cell.hits = [];
+			});
+			cleared++;
+		});
+		return cleared;
+	}
+
+	/**
+	 * For each currently selected cell, look up the hit whose key matches `key` in that cell's
+	 * row instrument and set it. Cells whose instrument has no matching key are left unchanged.
+	 * Returns the set of InstrumentHit values that were applied (one per unique instrument match).
+	 */
+	setCurrentlySelectedCellHitsByKey(key: string): InstrumentHit[] {
+		const applied: InstrumentHit[] = [];
+		this.currentlySelectedCells.forEach((locator) => {
+			const row = this.grids.get(locator.grid)?.rows[locator.row];
+			if (!row) return;
+			const matchingHit = Array.from(row.instrument.hitTypes.values()).find(
+				(h) => h.key === key
+			);
+			if (!matchingHit) return;
+			const instrumentHit: InstrumentHit = {
+				instrumentId: row.instrument.id,
+				hitId: matchingHit.id
+			};
+			this.updateGridCell(locator, (cell) => {
+				cell.hits = [instrumentHit];
+			});
+			applied.push(instrumentHit);
+		});
+		return applied;
+	}
+
 	// Adds a cell to the selection only if not already present
 	addCellToSelection(locator: CellLocator) {
 		const key = `${locator.grid}:${locator.row}:${locator.cell}`;
