@@ -6,10 +6,13 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [
 		sentrySvelteKit({
-			sourceMapsUploadOptions: {
-				org: 'ocd-4h',
-				project: 'javascript-sveltekit'
-			}
+			sourceMapsUploadOptions:
+				process.env.CI === 'true'
+					? {
+							org: 'ocd-4h',
+							project: 'javascript-sveltekit'
+						}
+					: undefined
 		}),
 		sveltekit()
 	],
