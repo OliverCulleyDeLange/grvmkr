@@ -54,7 +54,7 @@ function makeGrid(): Grid {
 }
 
 function playbackNow() {
-	return performance.timeOrigin + performance.now();
+	return performance.now();
 }
 
 describe('WorkerPlaybackStore', () => {
@@ -72,6 +72,9 @@ describe('WorkerPlaybackStore', () => {
 
 	it('schedules audio against the worker timestamp', () => {
 		store.togglePlayback(makeGrid(), 0);
+		expect(ControllableWorker.latest.postMessage).toHaveBeenCalledWith(
+			expect.objectContaining({ mainTimestamp: expect.any(Number) })
+		);
 		ControllableWorker.latest.emit({
 			type: 'beat',
 			timestamp: playbackNow() + 80,
@@ -107,7 +110,7 @@ describe('WorkerPlaybackStore', () => {
 		expect(playHit).not.toHaveBeenCalled();
 	});
 
-	it('does not discard current beats when the worker performance clock has a different origin', () => {
+	it('accepts worker timestamps translated onto the main-thread clock', () => {
 		store.togglePlayback(makeGrid(), 0);
 		ControllableWorker.latest.emit({
 			type: 'beat',

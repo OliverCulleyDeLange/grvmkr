@@ -116,7 +116,8 @@ export class WorkerPlaybackStore implements PlaybackControllerI {
 			this.worker.postMessage({
 				type: 'start',
 				interval: grid.msPerBeatDivision,
-				gridId: grid.id
+				gridId: grid.id,
+				mainTimestamp: performance.now()
 			} as TimingWorkerMessage);
 		}
 	}
@@ -177,7 +178,8 @@ export class WorkerPlaybackStore implements PlaybackControllerI {
 			this.worker.postMessage({
 				type: 'start',
 				interval: this.playingGrid.msPerBeatDivision,
-				gridId: this.playingGrid.id
+				gridId: this.playingGrid.id,
+				mainTimestamp: performance.now()
 			} as TimingWorkerMessage);
 		}
 	}
@@ -189,7 +191,7 @@ export class WorkerPlaybackStore implements PlaybackControllerI {
 	private onBeat(timestamp: number, beatNumber: number) {
 		if (!this.playingGrid) return;
 		const onBeatStart = performance.now();
-		const now = performance.timeOrigin + onBeatStart;
+		const now = onBeatStart;
 
 		const grid = this.playingGrid;
 		const delayMs = Math.max(0, timestamp - now);

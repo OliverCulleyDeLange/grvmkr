@@ -6,6 +6,7 @@ export interface TimingWorkerMessage {
 	interval?: number;
 	gridId?: string;
 	sectionIndex?: number;
+	mainTimestamp?: number;
 }
 
 export interface TimingWorkerResponse {
@@ -21,18 +22,16 @@ class TimingWorker {
 	private intervalId: ReturnType<typeof setInterval> | null = null;
 	private beatCount = 0;
 	private currentGridId: string | null = null;
-	private nextBeatAt = 0;
+	private mainTimestampAtStart = 0;
+	private workerTimestampAtStart = 0;
 	private readonly scheduleAheadMs = 100;
 
-	start(interval: number, gridId: string) {
+	start(interval: number, gridId: string, mainTimestamp: number) {
 		this.stop(); // Clear any existing interval
 		this.beatCount = 0;
 		this.currentGridId = gridId;
-		this.currentInterval = interval;
-		// Worker and window performance.now() clocks may have different time origins.
-		// Send epoch-based high-resolution timestamps so the main thread can safely
-		// calculate scheduling delays and identify genuinely stale messages.
-		this.nextBeatAt = performance.timeOrigin + performance.now() + this.scheduleAheadMs;
+		this.mainTimestampAtStart = mainTimestamp;
+		this.workerTimestampAtStart = performance.now();
 
 		// Initial beat
 		this.sendBeat();
@@ -50,11 +49,14 @@ class TimingWorker {
 		}
 		this.beatCount = 0;
 		this.currentGridId = null;
-		this.currentInterval = 0;
 	}
 
 	private sendBeat() {
-		const timestamp = this.nextBeatAt;
+		// performance.timeOrigin can be inconsistent between Firefox processes.
+		// Translate elapsed worker time onto the main thread's performance clock
+		// instead of comparing absolute time origins across contexts.
+		const elapsedWorkerTime = performance.now() - this.workerTimestampAtStart;
+		const timestamp = this.mainTimestampAtStart + elapsedWorkerTime + this.scheduleAheadMs;
 
 		self.postMessage({
 			type: 'beat',
@@ -65,21 +67,18 @@ class TimingWorker {
 		} as TimingWorkerResponse);
 
 		this.beatCount++;
-		this.nextBeatAt += this.currentInterval;
 	}
-
-	private currentInterval = 0;
 }
 
 const worker = new TimingWorker();
 
 self.onmessage = (event: MessageEvent<TimingWorkerMessage>) => {
-	const { type, interval, gridId } = event.data;
+	const { type, interval, gridId, mainTimestamp } = event.data;
 
 	switch (type) {
 		case 'start':
-			if (interval && gridId) {
-				worker.start(interval, gridId);
+			if (interval && gridId && mainTimestamp !== undefined) {
+				worker.start(interval, gridId, mainTimestamp);
 			}
 			break;
 		case 'stop':
