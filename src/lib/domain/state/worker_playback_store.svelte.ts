@@ -189,9 +189,10 @@ export class WorkerPlaybackStore implements PlaybackControllerI {
 	private onBeat(timestamp: number, beatNumber: number) {
 		if (!this.playingGrid) return;
 		const onBeatStart = performance.now();
+		const now = performance.timeOrigin + onBeatStart;
 
 		const grid = this.playingGrid;
-		const delayMs = Math.max(0, timestamp - performance.now());
+		const delayMs = Math.max(0, timestamp - now);
 		const playingCell = beatNumber % grid.gridCols;
 		this.currentlyPlayingColumnInGrid.set(grid.id, playingCell); // Check for completion
 		if (beatNumber > 0 && beatNumber % grid.gridCols === 0) {
@@ -220,7 +221,7 @@ export class WorkerPlaybackStore implements PlaybackControllerI {
 
 		// When the main thread was blocked, old worker messages can arrive in a
 		// burst. Do not play stale beats back-to-back.
-		if (performance.now() - timestamp > grid.msPerBeatDivision / 2) return;
+		if (now - timestamp > grid.msPerBeatDivision / 2) return;
 
 		// CRITICAL: Section change detection and scrolling - this still happens on main thread
 		// but the timing precision comes from the worker

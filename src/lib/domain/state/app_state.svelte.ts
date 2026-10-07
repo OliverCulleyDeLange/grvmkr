@@ -40,6 +40,7 @@ import type { PlaybackControllerI } from '../interface/PlaybackControllerI';
 import { clamp } from '$lib/util/math';
 
 export class AppStateStore {
+	private pointerDownSelection: { locator: CellLocator; wasSelected: boolean } | undefined;
 	public instrumentStore: InstrumentStore = new InstrumentStore(this.onEvent.bind(this));
 	public fileStore: FileStore = new FileStore(this.onEvent.bind(this));
 	public gridStore: GridStore = new GridStore(this.onEvent.bind(this));
@@ -75,6 +76,10 @@ export class AppStateStore {
 				break;
 			case UiEvent.ClearHits:
 				this.onClearHits();
+				break;
+			case UiEvent.MoveCellSelection:
+				this.gridStore.moveCellSelection(event.direction);
+				this.updateCellTools();
 				break;
 			case UiEvent.PlayPause:
 				togglePlayFileFromRecentlyPlayedUseCase(
@@ -382,23 +387,37 @@ export class AppStateStore {
 		this.updateCellTools();
 	}
 
-	// Combined all actions to be complete when a cell is clicked:
-	// - Toggle the hit
-	// - Play the new hit
-	// - Update the selected state
-	// - Update cell tools
+	// A first click only selects a cell. Clicking it again cycles and previews its hit.
 	async onTapGridCell(event: TappedGridCell) {
 		if (event.shiftHeld) {
 			this.gridStore.selectUpTo(event.locator);
 		} else {
-			this.gridStore.onTapGridCell(event.locator);
-			const hit = this.gridStore.getHitAt(event.locator);
-			this.instrumentStore?.playHit(hit);
+			const pointerSelection = this.pointerDownSelection;
+			const pointerMatches =
+				pointerSelection?.locator.grid === event.locator.grid &&
+				pointerSelection.locator.row === event.locator.row &&
+				pointerSelection.locator.cell === event.locator.cell;
+			const wasSelected = pointerMatches
+				? pointerSelection.wasSelected
+				: this.gridStore.isCellSelected(event.locator);
+
+			if (wasSelected) {
+				this.gridStore.onTapGridCell(event.locator);
+				const hit = this.gridStore.getHitAt(event.locator);
+				this.instrumentStore?.playHit(hit);
+			} else {
+				this.gridStore.onStartCellSelection(event.locator);
+			}
 		}
+		this.pointerDownSelection = undefined;
 		this.updateCellTools();
 	}
 
 	onStartCellSelection(event: StartCellSelection) {
+		this.pointerDownSelection = {
+			locator: event.locator,
+			wasSelected: this.gridStore.isCellSelected(event.locator)
+		};
 		if (!event.shiftHeld) {
 			this.gridStore.onStartCellSelection(event.locator);
 		}

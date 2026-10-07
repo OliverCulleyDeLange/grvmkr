@@ -48,6 +48,9 @@ describe('GrvMkr happy path user flow', () => {
 	it('allows toggling instrument hits in grid cells', async () => {
 		// First row is a surdo, with X or m hits
 		const firstGridCell = await waitFor(() => page.clickGridCell(0, 0, 0));
+		// The first click only selects the cell.
+		expect(firstGridCell).toHaveTextContent('');
+		await fireEvent.click(firstGridCell);
 		expect(firstGridCell).toHaveTextContent('X');
 		await fireEvent.click(firstGridCell);
 		expect(firstGridCell).toHaveTextContent('m');

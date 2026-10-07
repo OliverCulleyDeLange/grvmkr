@@ -132,6 +132,33 @@ describe('registerAppKeyboardShortcuts – TypeHitKey buffering', () => {
 		expect(onEvent).toHaveBeenCalledWith({ event: UiEvent.Paste });
 	});
 
+	it('handles a native browser copy event outside an input', () => {
+		window.dispatchEvent(new Event('copy', { bubbles: true, cancelable: true }));
+		expect(onEvent).toHaveBeenCalledWith({ event: UiEvent.Copy });
+	});
+
+	it('leaves Cmd/Ctrl+C and native copy to selected page text', () => {
+		const text = document.createElement('p');
+		text.textContent = 'Copy this text';
+		document.body.appendChild(text);
+		const range = document.createRange();
+		range.selectNodeContents(text);
+		window.getSelection()?.removeAllRanges();
+		window.getSelection()?.addRange(range);
+
+		keydown('c', { metaKey: true });
+		window.dispatchEvent(new Event('copy', { bubbles: true, cancelable: true }));
+
+		expect(onEvent).not.toHaveBeenCalledWith({ event: UiEvent.Copy });
+		window.getSelection()?.removeAllRanges();
+		text.remove();
+	});
+
+	it('handles a native browser paste event outside an input', () => {
+		window.dispatchEvent(new Event('paste', { bubbles: true, cancelable: true }));
+		expect(onEvent).toHaveBeenCalledWith({ event: UiEvent.Paste });
+	});
+
 	it('leaves Ctrl+C to a focused input', () => {
 		const input = document.createElement('input');
 		document.body.appendChild(input);
@@ -151,16 +178,49 @@ describe('registerAppKeyboardShortcuts – TypeHitKey buffering', () => {
 		editable.remove();
 	});
 
+	it('leaves native copy and paste events to a focused input', () => {
+		const input = document.createElement('input');
+		document.body.appendChild(input);
+		input.dispatchEvent(new Event('copy', { bubbles: true, cancelable: true }));
+		input.dispatchEvent(new Event('paste', { bubbles: true, cancelable: true }));
+		expect(onEvent).not.toHaveBeenCalledWith({ event: UiEvent.Copy });
+		expect(onEvent).not.toHaveBeenCalledWith({ event: UiEvent.Paste });
+		input.remove();
+	});
+
 	it('does not dispatch TypeHitKey for non-printable keys like Escape', () => {
 		keydown('Escape');
 		vi.advanceTimersByTime(HIT_KEY_WINDOW_MS);
 		expect(typeHitCalls(onEvent)).toHaveLength(0);
 	});
 
-	it('does not dispatch TypeHitKey for Arrow keys', () => {
+	it('moves the selected cell for Arrow keys without dispatching TypeHitKey', () => {
 		keydown('ArrowRight');
 		vi.advanceTimersByTime(HIT_KEY_WINDOW_MS);
 		expect(typeHitCalls(onEvent)).toHaveLength(0);
+		expect(onEvent).toHaveBeenCalledWith({
+			event: UiEvent.MoveCellSelection,
+			direction: 'right'
+		});
+	});
+
+	it('flushes a pending hit before moving the selection', () => {
+		keydown('X');
+		keydown('ArrowRight');
+		expect(onEvent.mock.calls).toEqual([
+			[{ event: UiEvent.TypeHitKey, key: 'X' }],
+			[{ event: UiEvent.MoveCellSelection, direction: 'right' }]
+		]);
+	});
+
+	it('leaves Arrow keys to a focused input', () => {
+		const input = document.createElement('input');
+		document.body.appendChild(input);
+		input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+		expect(onEvent).not.toHaveBeenCalledWith(
+			expect.objectContaining({ event: UiEvent.MoveCellSelection })
+		);
+		input.remove();
 	});
 
 	it('cancels pending dispatch when unregistered', () => {

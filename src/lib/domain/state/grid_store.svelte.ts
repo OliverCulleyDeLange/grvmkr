@@ -209,6 +209,40 @@ export class GridStore implements GridRepositoryI {
 		console.log('Currently selected cells updated:', $state.snapshot(this.currentlySelectedCells));
 	}
 
+	moveCellSelection(direction: 'up' | 'down' | 'left' | 'right'): boolean {
+		const current = this.currentlySelectedCells[0];
+		if (!current) return false;
+
+		const grid = this.grids.get(current.grid);
+		const currentRow = grid?.rows[current.row];
+		if (!grid || !currentRow) return false;
+
+		let row = current.row;
+		let cell = current.cell;
+		if (direction === 'up') row--;
+		if (direction === 'down') row++;
+		if (direction === 'left') {
+			cell--;
+			while (cell >= 0 && currentRow.cells[cell]?.cells_occupied === 0) cell--;
+		}
+		if (direction === 'right') {
+			const occupied = currentRow.cells[cell]?.cells_occupied ?? 1;
+			cell += Math.max(occupied, 1);
+			while (cell < currentRow.cells.length && currentRow.cells[cell]?.cells_occupied === 0) cell++;
+		}
+
+		const targetRow = grid.rows[row];
+		if (!targetRow || cell < 0 || cell >= targetRow.cells.length) return false;
+		// Moving vertically into the covered part of a merged cell selects its visible start.
+		while (cell > 0 && targetRow.cells[cell]?.cells_occupied === 0) cell--;
+		if (!targetRow.cells[cell]) return false;
+
+		const target = { grid: current.grid, row, cell };
+		this.selectionStartCell = target;
+		this.setCurrentlySelectedCells([target]);
+		return true;
+	}
+
 	selectUpTo(locator: CellLocator) {
 		if (!this.selectionStartCell) return;
 

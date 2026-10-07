@@ -23,7 +23,8 @@ export type UiEvents =
 	| Paste
 	| PlayPause
 	| TypeHitKey
-	| ClearHits;
+	| ClearHits
+	| MoveCellSelection;
 
 export enum UiEvent {
 	Mounted = 'Mounted',
@@ -31,7 +32,8 @@ export enum UiEvent {
 	Paste = 'Paste',
 	PlayPause = 'PlayPause',
 	TypeHitKey = 'TypeHitKey',
-	ClearHits = 'ClearHits'
+	ClearHits = 'ClearHits',
+	MoveCellSelection = 'MoveCellSelection'
 }
 
 export type Mounted = {
@@ -52,4 +54,8 @@ export type TypeHitKey = {
 };
 export type ClearHits = {
 	event: UiEvent.ClearHits;
+};
+export type MoveCellSelection = {
+	event: UiEvent.MoveCellSelection;
+	direction: 'up' | 'down' | 'left' | 'right';
 };

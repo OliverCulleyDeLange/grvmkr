@@ -41,8 +41,8 @@ describe('Keyboard hit toggle', () => {
 			expect(screen.getByTestId(`gridcell-${firstGridId}-0-0`)).toHaveClass('outline-green-500');
 		});
 
-		// Cell starts with 'X' after first click
-		expect(cell).toHaveTextContent('X');
+		// The first click selects without changing the cell.
+		expect(cell).toHaveTextContent('');
 
 		// Type 'm' and advance past the composition window
 		keydown('m');
@@ -55,7 +55,8 @@ describe('Keyboard hit toggle', () => {
 
 	it('typing "X" on a cell that already has "m" changes it to "X"', async () => {
 		const firstGridId = page.getGridIdByIndex(0);
-		// Click twice to reach 'm'
+		// First click selects, then two more clicks cycle through X to m.
+		await page.clickGridCell(0, 0, 0);
 		await page.clickGridCell(0, 0, 0);
 		await page.clickGridCell(0, 0, 0);
 		await waitFor(() => {

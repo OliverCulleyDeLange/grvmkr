@@ -53,6 +53,10 @@ function makeGrid(): Grid {
 	};
 }
 
+function playbackNow() {
+	return performance.timeOrigin + performance.now();
+}
+
 describe('WorkerPlaybackStore', () => {
 	let playHit: ReturnType<typeof vi.fn>;
 	let store: WorkerPlaybackStore;
@@ -70,7 +74,7 @@ describe('WorkerPlaybackStore', () => {
 		store.togglePlayback(makeGrid(), 0);
 		ControllableWorker.latest.emit({
 			type: 'beat',
-			timestamp: performance.now() + 80,
+			timestamp: playbackNow() + 80,
 			beatNumber: 0,
 			playingCell: 0,
 			gridId: 'grid-1'
@@ -94,12 +98,25 @@ describe('WorkerPlaybackStore', () => {
 		store.togglePlayback(makeGrid(), 0);
 		ControllableWorker.latest.emit({
 			type: 'beat',
-			timestamp: performance.now() - 400,
+			timestamp: playbackNow() - 400,
 			beatNumber: 0,
 			playingCell: 0,
 			gridId: 'grid-1'
 		});
 
 		expect(playHit).not.toHaveBeenCalled();
+	});
+
+	it('does not discard current beats when the worker performance clock has a different origin', () => {
+		store.togglePlayback(makeGrid(), 0);
+		ControllableWorker.latest.emit({
+			type: 'beat',
+			timestamp: playbackNow() + 80,
+			beatNumber: 0,
+			playingCell: 0,
+			gridId: 'grid-1'
+		});
+
+		expect(playHit).toHaveBeenCalledOnce();
 	});
 });

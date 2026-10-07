@@ -24,11 +24,51 @@ export function registerAppKeyboardShortcuts(onEvent: (event: UiEvents) => void)
 		);
 	}
 
+	function hasTextSelection(): boolean {
+		return (window.getSelection()?.toString().length ?? 0) > 0;
+	}
+
+	function handleCopy(event: ClipboardEvent) {
+		if (isInputTarget(event.target) || hasTextSelection()) return;
+		event.preventDefault();
+		onEvent({ event: UiEvent.Copy });
+	}
+
+	function handlePaste(event: ClipboardEvent) {
+		if (isInputTarget(event.target)) return;
+		event.preventDefault();
+		onEvent({ event: UiEvent.Paste });
+	}
+
 	function handleKeyDown(event: KeyboardEvent) {
+		const arrowDirections = {
+			ArrowUp: 'up',
+			ArrowDown: 'down',
+			ArrowLeft: 'left',
+			ArrowRight: 'right'
+		} as const;
+		const direction = arrowDirections[event.key as keyof typeof arrowDirections];
+		if (
+			direction &&
+			!isInputTarget(event.target) &&
+			!event.ctrlKey &&
+			!event.metaKey &&
+			!event.altKey
+		) {
+			event.preventDefault();
+			// Commit a buffered hit before changing the selection so fast keyboard entry
+			// applies the hit to the cell it was typed on.
+			if (pendingTimeout !== null) clearTimeout(pendingTimeout);
+			flushPendingKey();
+			onEvent({ event: UiEvent.MoveCellSelection, direction });
+			return;
+		}
+
 		if (
 			(event.ctrlKey || event.metaKey) &&
 			event.key.toLowerCase() === 'c' &&
-			!isInputTarget(event.target)
+			!isInputTarget(event.target) &&
+			!hasTextSelection()
 		) {
 			event.preventDefault();
 			onEvent({ event: UiEvent.Copy });
@@ -70,8 +110,12 @@ export function registerAppKeyboardShortcuts(onEvent: (event: UiEvents) => void)
 	}
 
 	window.addEventListener('keydown', handleKeyDown);
+	window.addEventListener('copy', handleCopy);
+	window.addEventListener('paste', handlePaste);
 	return () => {
 		window.removeEventListener('keydown', handleKeyDown);
+		window.removeEventListener('copy', handleCopy);
+		window.removeEventListener('paste', handlePaste);
 		if (pendingTimeout !== null) clearTimeout(pendingTimeout);
 	};
 }

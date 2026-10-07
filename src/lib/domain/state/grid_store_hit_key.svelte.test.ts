@@ -307,6 +307,44 @@ describe('GridStore.clearCurrentlySelectedCellHits', () => {
 	});
 });
 
+describe('GridStore.moveCellSelection', () => {
+	it('moves in all four directions and stops at grid boundaries', async () => {
+		const store = new GridStore(() => {});
+		const first = makeInstrument('inst-1', [{ id: 'hit-x', key: 'X' }]);
+		const second = makeInstrument('inst-2', [{ id: 'hit-x2', key: 'X' }]);
+		const grid = makeGrid('grid-1', first, 4);
+		grid.rows.push({
+			instrument: second,
+			cells: Array.from({ length: 4 }, () => ({ hits: [], cells_occupied: 1 }))
+		});
+		await store.addGrid(grid, false);
+		store.setCurrentlySelectedCells([{ grid: 'grid-1', row: 0, cell: 0 }]);
+
+		expect(store.moveCellSelection('left')).toBe(false);
+		expect(store.moveCellSelection('up')).toBe(false);
+		expect(store.moveCellSelection('right')).toBe(true);
+		expect(store.getCurrentlySelectedCells()).toEqual([{ grid: 'grid-1', row: 0, cell: 1 }]);
+		expect(store.moveCellSelection('down')).toBe(true);
+		expect(store.getCurrentlySelectedCells()).toEqual([{ grid: 'grid-1', row: 1, cell: 1 }]);
+		expect(store.moveCellSelection('down')).toBe(false);
+	});
+
+	it('skips cells hidden by a merged cell', async () => {
+		const store = new GridStore(() => {});
+		const instrument = makeInstrument('inst-1', [{ id: 'hit-x', key: 'X' }]);
+		const grid = makeGrid('grid-1', instrument, 4);
+		grid.rows[0].cells[0].cells_occupied = 2;
+		grid.rows[0].cells[1].cells_occupied = 0;
+		await store.addGrid(grid, false);
+		store.setCurrentlySelectedCells([{ grid: 'grid-1', row: 0, cell: 0 }]);
+
+		store.moveCellSelection('right');
+		expect(store.getCurrentlySelectedCells()).toEqual([{ grid: 'grid-1', row: 0, cell: 2 }]);
+		store.moveCellSelection('left');
+		expect(store.getCurrentlySelectedCells()).toEqual([{ grid: 'grid-1', row: 0, cell: 0 }]);
+	});
+});
+
 describe('GridStore editing regressions', () => {
 	it('creates independent cells when a grid is expanded', async () => {
 		const store = new GridStore(() => {});

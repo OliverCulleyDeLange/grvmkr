@@ -29,7 +29,10 @@ class TimingWorker {
 		this.beatCount = 0;
 		this.currentGridId = gridId;
 		this.currentInterval = interval;
-		this.nextBeatAt = performance.now() + this.scheduleAheadMs;
+		// Worker and window performance.now() clocks may have different time origins.
+		// Send epoch-based high-resolution timestamps so the main thread can safely
+		// calculate scheduling delays and identify genuinely stale messages.
+		this.nextBeatAt = performance.timeOrigin + performance.now() + this.scheduleAheadMs;
 
 		// Initial beat
 		this.sendBeat();
