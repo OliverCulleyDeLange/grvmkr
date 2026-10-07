@@ -30,6 +30,7 @@
 			<div class="flex w-full gap-2 p-1">
 				<div class="">{instrumentUi.gridIndex}</div>
 				<input
+					aria-label={`Instrument ${instrumentUi.gridIndex} name`}
 					value={instrumentUi.name}
 					oninput={(e: Event) => {
 						const target = e.target as HTMLInputElement | null;
@@ -76,6 +77,7 @@
 				<ul class="ml-8 text-sm text-gray-600" data-testid={`instrument-hit-${hitUi.id}`}>
 					<li class="flex-right flex gap-2 p-1">
 						<input
+							aria-label={`Hit key for ${instrumentUi.name}`}
 							value={hitUi.key}
 							oninput={(e: Event) => {
 								const target = e.target as HTMLInputElement | null;
@@ -93,6 +95,7 @@
 						/>
 						➜
 						<input
+							aria-label={`Hit description for ${instrumentUi.name}`}
 							value={hitUi.description}
 							oninput={(e: Event) => {
 								const target = e.target as HTMLInputElement | null;

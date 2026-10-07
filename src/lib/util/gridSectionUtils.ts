@@ -16,7 +16,7 @@ export function calculateGridSectionConfig(
 ): GridSectionConfig {
 	const barSize = gridCols / config.bars;
 	let chunkSize: number;
-	
+
 	if (screenWidth) {
 		const minCellWidth = 25; // Minimum width of a cell in pixels
 		const maxCellsPerSection = Math.max(1, Math.floor(screenWidth / minCellWidth));
@@ -33,9 +33,9 @@ export function calculateGridSectionConfig(
 			chunkSize = barSize; // Fallback: 1 bar per section if > 32 cells
 		}
 	}
-	
+
 	const numSections = Math.ceil(gridCols / chunkSize);
-	
+
 	return {
 		chunkSize,
 		numSections,
@@ -46,10 +46,7 @@ export function calculateGridSectionConfig(
 /**
  * Calculate which section a given column belongs to
  */
-export function calculateSectionIndex(
-	column: number,
-	sectionConfig: GridSectionConfig
-): number {
+export function calculateSectionIndex(column: number, sectionConfig: GridSectionConfig): number {
 	return Math.floor(column / sectionConfig.chunkSize);
 }
 

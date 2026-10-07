@@ -8,7 +8,6 @@ import {
 	type GrvMkrFileId,
 	type InstrumentId,
 	InstrumentRepository,
-	InstrumentStore,
 	type InstrumentWithId,
 	keyValueRepository,
 	mapFileDtoToFile,
@@ -23,7 +22,6 @@ export class FileRepository {
 	async saveFile(file: GrvMkrFile): Promise<void> {
 		const fileDto = mapToDto(file);
 		await this.fileTable.saveFile(fileDto);
-		console.log('Saved File to DB', fileDto);
 	}
 
 	async getWorkingFile(): Promise<GrvMkrFile | null> {
@@ -46,7 +44,6 @@ export class FileRepository {
 
 	async deleteFile(id: GrvMkrFileId): Promise<void> {
 		await this.fileTable.deleteFile(id);
-		console.log('Deleted File from DB', id);
 	}
 
 	async deleteAllFiles(): Promise<void> {
@@ -73,7 +70,7 @@ export class FileRepository {
 		}
 
 		const instruments = new Map<InstrumentId, InstrumentWithId>();
-		// FIXME fileDto.instruments is not iterable 
+		// FIXME fileDto.instruments is not iterable
 		for (const instrumentId of fileDto.instruments) {
 			const instrument = await this.instrumentRepository.getInstrument(instrumentId);
 			if (instrument) instruments.set(instrument.id, instrument);

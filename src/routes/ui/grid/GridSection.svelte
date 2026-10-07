@@ -11,7 +11,7 @@
 		type GridSection,
 		type OnUiEvent
 	} from '$lib';
-	
+
 	let {
 		section,
 		totalSections,
@@ -53,8 +53,9 @@
 	class="grid-section"
 	style="--cells: {section.columns};"
 	data-testid={`gridsection-${gridId}-${gridIndex}-${section.index}`}
->	<div>
-		Section {section.index+1}/{totalSections}
+>
+	<div>
+		Section {section.index + 1}/{totalSections}
 	</div>
 	<div class="beat-indicator">
 		{#each beatIndicators as indicator, i}

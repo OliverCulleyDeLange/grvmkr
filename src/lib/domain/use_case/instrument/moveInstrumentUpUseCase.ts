@@ -14,6 +14,6 @@ export async function moveInstrumentUpUseCase(
 	instrumentStore: InstrumentRepositoryI,
 	cellToolsStore: CellToolsRepositoryI
 ) {
-	instrumentStore.moveInstrument('up', instrumentId);
-	syncInstruments(fileStore, gridStore, instrumentStore, cellToolsStore);
+	await instrumentStore.moveInstrument('up', instrumentId);
+	await syncInstruments(fileStore, gridStore, instrumentStore, cellToolsStore);
 }

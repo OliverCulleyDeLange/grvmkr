@@ -18,7 +18,7 @@ export function mapGridToGridDto(grid: Grid): GridDto {
 		config: mapGridConfigToGridConfigDto(grid.config),
 		rows: grid.rows.map((row) => mapGridRowToGridRowDto(row)),
 		msPerBeatDivision: grid.msPerBeatDivision,
-		gridCols: grid.gridCols,
+		gridCols: grid.gridCols
 	};
 }
 
@@ -41,7 +41,7 @@ export function mapGridRowToGridRowDto(gridRow: GridRow): GridRowDto {
 }
 
 export function mapCellToCellDto(cell: GridCell): GridCellDto {
-	let dto: GridCellDto = {
+	const dto: GridCellDto = {
 		hits: cell.hits.map((hit) => mapInstrumentHitToInstrumentHitDto(hit)),
 		cells_occupied: cell.cells_occupied
 	};

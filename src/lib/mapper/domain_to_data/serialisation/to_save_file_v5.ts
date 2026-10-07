@@ -21,13 +21,13 @@ export function serialiseToSaveFileV5(
 	instruments: InstrumentWithId[],
 	instrumentVolumes?: Record<string, number>
 ): SaveFileV5 {
-	let savedInstruments: SavedInstrumentV4[] = mapInstrumentsToSavedInstrumentsV4(
+	const savedInstruments: SavedInstrumentV4[] = mapInstrumentsToSavedInstrumentsV4(
 		instruments,
 		instrumentVolumes
 	);
-	let savedGrids: SavedGridV5[] = mapGridsToSavedGridV5(grids);
+	const savedGrids: SavedGridV5[] = mapGridsToSavedGridV5(grids);
 
-	let saveFile: SaveFileV5 = {
+	const saveFile: SaveFileV5 = {
 		type: 'savefile',
 		version: 5,
 		name: name,
@@ -39,8 +39,8 @@ export function serialiseToSaveFileV5(
 
 function mapGridsToSavedGridV5(grids: Grid[]): SavedGridV5[] {
 	return grids.map((grid) => {
-		let savedGridRows: SavedGridRowV3[] = mapGridToSavedGridRowsV3(grid);
-		let savedGrid: SavedGridV5 = {
+		const savedGridRows: SavedGridRowV3[] = mapGridToSavedGridRowsV3(grid);
+		const savedGrid: SavedGridV5 = {
 			type: 'grid',
 			version: 5,
 			id: grid.id,
@@ -60,15 +60,15 @@ function mapGridsToSavedGridV5(grids: Grid[]): SavedGridV5[] {
 }
 
 export function mapGridToSavedGridRowsV3(grid: Grid): SavedGridRowV3[] {
-	let savedGridRows: SavedGridRowV3[] = grid.rows.map((row) => {
+	const savedGridRows: SavedGridRowV3[] = grid.rows.map((row) => {
 		return mapRowToSavedGridRowV3(row);
 	});
 	return savedGridRows;
 }
 
 function mapRowToSavedGridRowV3(row: GridRow): SavedGridRowV3 {
-	let cells: SavedGridCellV3[] = row.cells.map((cell) => mapCellToSavedCellV3(cell));
-	let savedGridRow: SavedGridRowV3 = {
+	const cells: SavedGridCellV3[] = row.cells.map((cell) => mapCellToSavedCellV3(cell));
+	const savedGridRow: SavedGridRowV3 = {
 		instrument_id: row.instrument.id,
 		cells
 	};
@@ -83,7 +83,7 @@ function mapCellToSavedCellV3(cell: GridCell): SavedGridCellV3 {
 }
 
 function mapHitToSavedInstrumentHitV1(hit: InstrumentHit): SavedInstrumentHitV1 {
-	let savedHit: SavedInstrumentHitV1 = {
+	const savedHit: SavedInstrumentHitV1 = {
 		instrument_id: hit.instrumentId ?? '',
 		hit_id: hit.hitId ?? ''
 	};
@@ -95,9 +95,9 @@ function mapInstrumentsToSavedInstrumentsV4(
 	instrumentVolumes?: Record<string, number>
 ): SavedInstrumentV4[] {
 	return instruments.map((instrument) => {
-		let savedHits: SavedHitV1[] = mapInstrumentToSavedHitsV1(instrument);
+		const savedHits: SavedHitV1[] = mapInstrumentToSavedHitsV1(instrument);
 
-		let savedInstrument: SavedInstrumentV4 = {
+		const savedInstrument: SavedInstrumentV4 = {
 			type: 'instrument',
 			version: 4,
 			id: instrument.id,
@@ -112,7 +112,7 @@ function mapInstrumentsToSavedInstrumentsV4(
 
 function mapInstrumentToSavedHitsV1(instrument: InstrumentWithId): SavedHitV1[] {
 	return [...instrument.hitTypes.values()].map((hit) => {
-		let savedHit: SavedHitV1 = {
+		const savedHit: SavedHitV1 = {
 			type: 'hit',
 			version: 1,
 			id: hit.id,

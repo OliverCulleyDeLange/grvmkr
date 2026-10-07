@@ -1,6 +1,4 @@
 import {
-	type BeatIndicatorUi,
-	type CellTools,
 	defaultVolume,
 	type Grid,
 	type GridCell,
@@ -12,7 +10,6 @@ import {
 	type GridUi,
 	type GridUis,
 	type InstrumentId,
-	type InstrumentStore,
 	type InstrumentWithId,
 	type GridSection,
 	type VolumeControlUi
@@ -25,10 +22,10 @@ export function mapGridUi(
 	screenWidth?: number,
 	instrumentVolumes?: Record<InstrumentId, number>
 ): GridUis {
-	let gridUis: GridUi[] = [...grids.values()].map((grid) =>
+	const gridUis: GridUi[] = [...grids.values()].map((grid) =>
 		mapRowsToGridUi(grid, instruments, screenWidth, instrumentVolumes)
 	);
-	let ui: GridUis = {
+	const ui: GridUis = {
 		grids: gridUis.sort((a, b) => a.index - b.index)
 	};
 	return ui;
@@ -40,10 +37,10 @@ export function mapRowsToGridUi(
 	screenWidth?: number,
 	instrumentVolumes?: Record<InstrumentId, number>
 ): GridUi {
-	let rows = mapRows(grid, instruments, instrumentVolumes);
-	let sections = splitRowsIntoSections(grid.id, rows, grid.config, grid.gridCols, screenWidth);
+	const rows = mapRows(grid, instruments, instrumentVolumes);
+	const sections = splitRowsIntoSections(grid.id, rows, grid.config, grid.gridCols, screenWidth);
 
-	let ui: GridUi = {
+	const ui: GridUi = {
 		notationSections: sections,
 		id: grid.id,
 		index: grid.index,
@@ -74,7 +71,7 @@ function mapRow(
 	gridId: string,
 	instrumentVolumes?: Record<InstrumentId, number>
 ): GridRowUi {
-	let gridCells: GridCellUi[] = row.cells
+	const gridCells: GridCellUi[] = row.cells
 		.map((cell, cellIndex) => {
 			if (cell.cells_occupied < 1) {
 				return;
@@ -83,15 +80,15 @@ function mapRow(
 			}
 		})
 		.filter((x) => x != undefined);
-	let instrument = instruments.get(row.instrument.id);
+	const instrument = instruments.get(row.instrument.id);
 	const volume = instrumentVolumes?.[row.instrument.id] ?? defaultVolume;
-	let volumeControl: VolumeControlUi = {
+	const volumeControl: VolumeControlUi = {
 		volume: volume,
 		volumeString: `${Math.round(volume * 100)}%`,
 		muted: instrument?.muted ?? false,
 		soloed: instrument?.soloed ?? false
 	};
-	let rowUi: GridRowUi = {
+	const rowUi: GridRowUi = {
 		index: row.instrument.gridIndex,
 		instrumentId: instrument?.id ?? 'error',
 		instrumentName: instrument?.name ?? 'error',
@@ -111,15 +108,15 @@ function mapCellToCellUi(
 ): GridCellUi {
 	let cellContent = '';
 	cell.hits.forEach((instrumentHit) => {
-		let hit = instrument?.hitTypes.get(instrumentHit.hitId);
+		const hit = instrument?.hitTypes.get(instrumentHit.hitId);
 		if (hit) {
 			cellContent += hit.key;
 		}
 	});
-	let bar = Math.floor((cellIndex / (config.beatDivisions * config.beatsPerBar)) % config.bars);
-	let beat = Math.floor((cellIndex / config.beatDivisions) % config.beatsPerBar);
-	let beat_division = cellIndex % config.beatDivisions;
-	let cellUi: GridCellUi = {
+	const bar = Math.floor((cellIndex / (config.beatDivisions * config.beatsPerBar)) % config.bars);
+	const beat = Math.floor((cellIndex / config.beatDivisions) % config.beatsPerBar);
+	const beat_division = cellIndex % config.beatDivisions;
+	const cellUi: GridCellUi = {
 		id: `${gridId}-${rowIndex}-${cellIndex}`,
 		isBeat: cellIndex % config.beatDivisions == 0,
 		isFirstBeatOfBar: cellIndex % (config.beatsPerBar * config.beatDivisions) == 0,
@@ -142,20 +139,20 @@ function splitRowsIntoSections(
 	rows: GridRowUi[],
 	config: GridConfig,
 	gridCols: number,
-	screenWidth?: number,
+	screenWidth?: number
 ): GridSection[] {
 	const sections: GridSection[] = [];
 	const sectionConfig = calculateGridSectionConfig(gridCols, config, screenWidth);
 	const { chunkSize, numSections } = sectionConfig;
 
 	for (let i = 0; i < numSections; i++) {
-		let min = i * chunkSize;
-		let max = (i + 1) * chunkSize;
+		const min = i * chunkSize;
+		const max = (i + 1) * chunkSize;
 		const sectionRows: GridRowUi[] = rows.map((row) => {
-			let gridRowUi = {
+			const gridRowUi = {
 				...row,
 				gridCells: row.gridCells.reduce(
-					(acc, cell, index, arr) => {
+					(acc, cell) => {
 						if (acc.cnt >= min && acc.cnt < max) {
 							acc.acc.push(cell);
 						}
@@ -169,7 +166,7 @@ function splitRowsIntoSections(
 		});
 		if (sectionRows.length == 0) continue;
 
-		let sectionColumns = sectionRows[0].gridCells.reduce(
+		const sectionColumns = sectionRows[0].gridCells.reduce(
 			(acc, cell) => acc + cell.cellsOccupied,
 			0
 		);

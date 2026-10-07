@@ -181,4 +181,35 @@ describe('parseSaveFile', () => {
 		expect('volume' in instrument).toBe(false);
 		expect('volume' in hit).toBe(false);
 	});
+
+	it('regenerates imported instrument and hit IDs to avoid corrupting another local groove', () => {
+		const save: SaveFileV5 = {
+			type: 'savefile',
+			version: 5,
+			name: 'groove',
+			instruments: [
+				{
+					...makeV4Instrument('instrument-original', 0.3),
+					hits: [
+						{
+							type: 'hit',
+							version: 1,
+							id: 'hit-original',
+							key: 'X',
+							description: '',
+							audio_file_name: 'kick.mp3'
+						}
+					]
+				}
+			],
+			grids: [makeV5Grid('grid-original', 0)]
+		};
+
+		const file = parseSaveFile(JSON.stringify(save), true);
+		const instrument = Array.from(file.instruments.values())[0];
+
+		expect(instrument.id).not.toBe('instrument-original');
+		expect(Array.from(instrument.hitTypes.keys())).not.toContain('hit-original');
+		expect(file.instrumentVolumes?.[instrument.id]).toBe(0.3);
+	});
 });

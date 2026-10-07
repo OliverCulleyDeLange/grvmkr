@@ -1,7 +1,7 @@
 import type { CellTools, CellToolsUi, GridId, InstrumentHit } from '$lib';
 
 export function mapCellToolsUi(cellTools: CellTools | undefined, gridId: GridId): CellToolsUi {
-	let options: Map<string, InstrumentHit[]> = new Map([[' ', []]]);
+	const options: Map<string, InstrumentHit[]> = new Map([[' ', []]]);
 
 	const ui: CellToolsUi = {
 		show: false,

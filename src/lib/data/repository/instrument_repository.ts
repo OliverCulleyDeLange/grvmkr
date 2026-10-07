@@ -23,7 +23,6 @@ export class InstrumentRepository {
 		// Then save InstrumentDto
 		const instrumentDto = mapInstrumentToInstrumentDto(instrument);
 		await this.instrumentTable.saveInstrument(instrumentDto);
-		console.log('Saved Instrument to DB', instrumentDto);
 	}
 
 	async getInstrument(id: string): Promise<InstrumentWithId | null> {
@@ -58,13 +57,11 @@ export class InstrumentRepository {
 
 		// Delete instrument
 		await this.instrumentTable.deleteInstrument(id);
-		console.log('Deleted Instrument from DB', id);
 	}
 
 	async deleteAllInstruments(): Promise<void> {
 		await this.instrumentTable.deleteAllInstruments();
 		await this.hitTable.deleteAllHits();
-		console.log('Deleted all instruments from DB');
 	}
 
 	// Resolves instrument's hitIds into HitTypeWithId and builds InstrumentWithId

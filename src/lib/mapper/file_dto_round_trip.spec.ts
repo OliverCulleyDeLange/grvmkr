@@ -44,11 +44,20 @@ describe('FileDto <-> GrvMkrFile round-trip', () => {
 		// Simulate what $state does: deep reactive proxies wrap nested objects.
 		// A transparent Proxy over the volumes object cannot be structuredCloned by browsers
 		// (DataCloneError), so mapToDto must spread it into a plain object first.
-		const proxiedVolumes = new Proxy({ 'inst-1': 0.75 }, {
-			get(target, prop, receiver) { return Reflect.get(target, prop, receiver); },
-			ownKeys(target) { return Reflect.ownKeys(target); },
-			getOwnPropertyDescriptor(target, prop) { return Reflect.getOwnPropertyDescriptor(target, prop); }
-		});
+		const proxiedVolumes = new Proxy(
+			{ 'inst-1': 0.75 },
+			{
+				get(target, prop, receiver) {
+					return Reflect.get(target, prop, receiver);
+				},
+				ownKeys(target) {
+					return Reflect.ownKeys(target);
+				},
+				getOwnPropertyDescriptor(target, prop) {
+					return Reflect.getOwnPropertyDescriptor(target, prop);
+				}
+			}
+		);
 		const file = { ...makeFile({ 'inst-1': 0.75 }), instrumentVolumes: proxiedVolumes };
 		const dto = mapToDto(file);
 		// The result must be a plain object, not the proxy itself

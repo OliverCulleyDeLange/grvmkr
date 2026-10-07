@@ -92,7 +92,7 @@
 
 <!-- Grid config (non print) -->
 <div
-	class="print:hidden mb-2 flex flex-col flex-wrap items-start items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23]"
+	class="mb-2 flex flex-col flex-wrap items-start items-center gap-2 rounded-lg bg-gray-100 p-2 dark:bg-[#171c23] print:hidden"
 	data-testid={`gridtools-${gridUi.id}`}
 >
 	<!-- Play, grid name, settings button -->
@@ -102,6 +102,7 @@
 		</button>
 
 		<input
+			aria-label="Grid name"
 			bind:value={gridName}
 			oninput={onNameChange}
 			class="input input-sm input-bordered w-0 min-w-0 flex-1"
@@ -118,6 +119,7 @@
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div>Repetitions:</div>
 				<input
+					aria-label="Repetitions"
 					type="number"
 					step="1"
 					bind:value={repetitions}
@@ -131,6 +133,7 @@
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div>BPM:</div>
 				<input
+					aria-label="BPM"
 					type="number"
 					step="1"
 					bind:value={bpm}
@@ -140,6 +143,7 @@
 					class="input input-xs input-bordered w-16"
 				/>
 				<input
+					aria-label="BPM"
 					type="range"
 					step="1"
 					bind:value={bpm}
@@ -152,6 +156,7 @@
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div>Bars:</div>
 				<input
+					aria-label="Bars"
 					type="number"
 					step="1"
 					bind:value={bars}
@@ -164,6 +169,7 @@
 			<div class="mx-4 flex flex-nowrap items-center gap-2">
 				<div class="whitespace-nowrap">Grid size:</div>
 				<input
+					aria-label="Beats per bar"
 					type="number"
 					step="1"
 					bind:value={beatsPerBar}
@@ -174,6 +180,7 @@
 				/>
 				/
 				<input
+					aria-label="Beat divisions"
 					type="number"
 					step="1"
 					bind:value={beatNoteFraction}
@@ -186,28 +193,20 @@
 		</div>
 
 		<div class="grid-tools flex w-full flex-row flex-wrap items-start">
-			<Button
-				onClick={() => onEvent({ event: GridEvent.DuplicateGrid, gridId: gridUi.id })}
-			>
+			<Button onClick={() => onEvent({ event: GridEvent.DuplicateGrid, gridId: gridUi.id })}>
 				Duplicate Grid to End
 			</Button>
 
-			<Button
-				onClick={() => onEvent({ event: GridEvent.MoveGridUp, gridId: gridUi.id })}
-			>
+			<Button onClick={() => onEvent({ event: GridEvent.MoveGridUp, gridId: gridUi.id })}>
 				⬆️ Move Up
 			</Button>
 
-			<Button
-				onClick={() => onEvent({ event: GridEvent.MoveGridDown, gridId: gridUi.id })}
-			>
+			<Button onClick={() => onEvent({ event: GridEvent.MoveGridDown, gridId: gridUi.id })}>
 				⬇️ Move Down
 			</Button>
 
-			<Button
-				onClick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}
-				>
-					Delete Grid
+			<Button onClick={() => onEvent({ event: GridEvent.RemoveGrid, gridId: gridUi.id })}>
+				Delete Grid
 			</Button>
 		</div>
 	{/if}

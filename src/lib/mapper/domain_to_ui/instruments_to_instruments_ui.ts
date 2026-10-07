@@ -31,6 +31,6 @@ function mapHitTypeUi(hitType: HitTypeWithId): HitTypeUi {
 		id: hitType.id,
 		key: hitType.key,
 		description: hitType.description,
-		audioFileName: hitType.audioFileName
+		audioFileName: hitType.audioFileName.split('--grvmkr--').at(-1) ?? hitType.audioFileName
 	};
 }

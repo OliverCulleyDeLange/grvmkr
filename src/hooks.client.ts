@@ -22,3 +22,7 @@ if (import.meta.env.PROD) {
 
 // If you have a custom error handler, pass it to `handleErrorWithSentry`
 export const handleError = handleErrorWithSentry();
+
+// SvelteKit's generated client runtime always references this hook. Exporting
+// it explicitly avoids Rollup treating the missing optional export as a build warning.
+export const init = () => {};

@@ -3,7 +3,7 @@ import { SvelteMap } from 'svelte/reactivity';
 
 export function mapInstrumentDtoToInstrumentWithId(
 	instrumentDto: InstrumentDto,
-	hitTypes: HitTypeWithId[],
+	hitTypes: HitTypeWithId[]
 ): InstrumentWithId {
 	return {
 		id: instrumentDto.id,
@@ -11,7 +11,7 @@ export function mapInstrumentDtoToInstrumentWithId(
 		name: instrumentDto.name,
 		hitTypes: new SvelteMap(hitTypes.map((hitType) => [hitType.id, hitType])),
 		muted: false,
-		soloed: false,
+		soloed: false
 	};
 }
 
@@ -20,6 +20,6 @@ export function mapHitDtoToHitTypeWithId(dto: HitDto): HitTypeWithId {
 		id: dto.id,
 		key: dto.key ?? 'err',
 		description: dto.description,
-		audioFileName: dto.audioFileName,
+		audioFileName: dto.audioFileName
 	};
 }

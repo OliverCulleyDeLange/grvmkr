@@ -1,4 +1,4 @@
-import type { CellToolsUi, GridId, GridUis } from '$lib';
+import type { CellToolsUi, GridId } from '$lib';
 import { measurePerf } from '../../../lib/util/measurePerf';
 import { mapGridUi } from '../../mapper/domain_to_ui/grid_to_grid_ui';
 import { mapInstrumentsUi } from '../../mapper/domain_to_ui/instruments_to_instruments_ui';
@@ -28,7 +28,6 @@ export class UiStore {
 	private errorStore: ErrorStore;
 	private playbackStore: PlaybackControllerI;
 	private cellToolsStore: CellToolsStore;
-
 
 	// Initialize the store with dependencies
 	constructor(
@@ -64,8 +63,7 @@ export class UiStore {
 	});
 
 	public readonly gridsUi = $derived.by(() => {
-		if (this.gridStore.getGrids().size === 0 ||
-			this.instrumentStore.getInstruments().size === 0) {
+		if (this.gridStore.getGrids().size === 0 || this.instrumentStore.getInstruments().size === 0) {
 			return { grids: [] };
 		}
 		return measurePerf('mapGridUi', () =>
@@ -86,10 +84,7 @@ export class UiStore {
 
 	public readonly grooveSelectorUi = $derived.by(() => {
 		return measurePerf('mapGrooveSelectorUi', () =>
-			mapGrvMkrFilesToGrooveSelectorUi(
-				this.fileStore.files,
-				this.fileStore.file.id
-			)
+			mapGrvMkrFilesToGrooveSelectorUi(this.fileStore.files, this.fileStore.file.id)
 		);
 	});
 

@@ -3,8 +3,11 @@
 @import 'tailwindcss/utilities';
 
 @layer utilities {
-  button, .btn, .btn-xl, .btn-outline {
-    transition: none !important;
-    animation: none !important;
-  }
+	button,
+	.btn,
+	.btn-xl,
+	.btn-outline {
+		transition: none !important;
+		animation: none !important;
+	}
 }

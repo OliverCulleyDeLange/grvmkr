@@ -17,6 +17,8 @@ export class PlaybackStore implements PlaybackControllerI {
 	private currentSectionIndex: number = -1;
 	private sectionChangeCallback: ((gridId: GridId, sectionIndex: number) => void) | undefined;
 	private callbackScreenWidth: number | undefined;
+	private sequenceGeneration = 0;
+	private resolveCurrentSequenceStep: (() => void) | undefined;
 	// Allows recalculation of only the beat indicator state, to improve performance.
 	// Otherwise we're mapping entire grid state every time.
 	private currentlyPlayingColumnInGrid: SvelteMap<GridId, number> = new SvelteMap();
@@ -45,7 +47,7 @@ export class PlaybackStore implements PlaybackControllerI {
 	}
 
 	mostRecentlyPlayedGrid(): Grid | undefined {
-		return this.recentlyPlayedGrid
+		return this.recentlyPlayedGrid;
 	}
 
 	isPlayingFile(): boolean {
@@ -53,7 +55,7 @@ export class PlaybackStore implements PlaybackControllerI {
 	}
 
 	isPlayingGrid(id: GridId): boolean {
-		return this.playingGrid?.id === id
+		return this.playingGrid?.id === id;
 	}
 
 	togglePlayback(
@@ -63,10 +65,10 @@ export class PlaybackStore implements PlaybackControllerI {
 		onSectionChange?: (gridId: GridId, sectionIndex: number) => void,
 		screenWidth?: number
 	) {
-		const playing = this.playingGrid?.id === grid.id
+		const playing = this.playingGrid?.id === grid.id;
 		if (playing) {
 			this.stop();
-			this.playingGrid = undefined
+			this.playingGrid = undefined;
 		} else {
 			this.playingGrid = grid;
 			this.recentlyPlayedGrid = grid;
@@ -108,25 +110,35 @@ export class PlaybackStore implements PlaybackControllerI {
 		screenWidth?: number
 	) {
 		if (this.playingGrid) {
-			this.stop()
+			this.stop();
 		} else {
+			const generation = ++this.sequenceGeneration;
 			this.playingFile = true;
-			for (const grid of grids.sort((a, b) => a.index - b.index)) {
+			for (const grid of [...grids].sort((a, b) => a.index - b.index)) {
+				if (generation !== this.sequenceGeneration) return;
 				await new Promise<void>((resolve) => {
+					this.resolveCurrentSequenceStep = resolve;
 					this.togglePlayback(
 						grid,
 						grid.config.repetitions,
-						(grid: Grid) => resolve(),
+						() => {
+							this.resolveCurrentSequenceStep = undefined;
+							resolve();
+						},
 						onSectionChange,
 						screenWidth
 					);
 				});
+				if (generation !== this.sequenceGeneration) return;
 			}
-			this.stop()
+			this.stop();
 		}
 	}
 
 	stop() {
+		this.sequenceGeneration++;
+		this.resolveCurrentSequenceStep?.();
+		this.resolveCurrentSequenceStep = undefined;
 		this.playingFile = false;
 		this.playingGrid = undefined;
 		clearInterval(this.playingIntervalId);
@@ -135,6 +147,7 @@ export class PlaybackStore implements PlaybackControllerI {
 		this.currentSectionIndex = -1;
 		this.sectionChangeCallback = undefined;
 		this.callbackScreenWidth = undefined;
+		this.instrumentStore.stopScheduledAudio();
 	}
 
 	restartInterval() {
@@ -161,7 +174,9 @@ export class PlaybackStore implements PlaybackControllerI {
 		this.debugMetrics.onBeat = now - onBeatStart;
 		this.debugMetrics.position = {
 			repetition: Math.floor(count / grid.gridCols),
-			bar: Math.floor(count / (grid.config.beatsPerBar * grid.config.beatDivisions)) % grid.config.bars,
+			bar:
+				Math.floor(count / (grid.config.beatsPerBar * grid.config.beatDivisions)) %
+				grid.config.bars,
 			beat: Math.floor(count / grid.config.beatDivisions) % grid.config.beatsPerBar,
 			beatDivision: count % grid.config.beatDivisions,
 			cell: count,
@@ -183,17 +198,23 @@ export class PlaybackStore implements PlaybackControllerI {
 
 		// Check for section changes and trigger callback
 		if (this.sectionChangeCallback) {
-			const newSectionIndex = this.calculateSectionIndex(grid, playingCell, this.callbackScreenWidth);
+			const newSectionIndex = this.calculateSectionIndex(
+				grid,
+				playingCell,
+				this.callbackScreenWidth
+			);
 			if (newSectionIndex !== this.currentSectionIndex) {
 				this.currentSectionIndex = newSectionIndex;
 				this.sectionChangeCallback(grid.id, newSectionIndex);
 			}
-		} else { console.error('No section change callback set'); }
+		} else {
+			console.error('No section change callback set');
+		}
 
-		measurePaint()
+		measurePaint();
 
 		// Move updateDebugMetrics after all work is done
-		grid.rows.forEach((row, rowI) => {
+		grid.rows.forEach((row) => {
 			const cell = row?.cells[playingCell];
 			if (!cell || cell.hits.length === 0 || cell.cells_occupied < 1) return;
 
@@ -203,9 +224,7 @@ export class PlaybackStore implements PlaybackControllerI {
 				const mergedCellTime = grid.msPerBeatDivision * cell.cells_occupied;
 				cell.hits.forEach((hit, i) => {
 					const delay = (i / cell.hits.length) * mergedCellTime;
-					setTimeout(() => {
-						this.instrumentStore.playHit(hit);
-					}, delay);
+					void this.instrumentStore.playHit(hit, delay);
 				});
 			}
 		});

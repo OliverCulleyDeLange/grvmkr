@@ -6,7 +6,7 @@
 		playing
 	}: {
 		indicator: BeatIndicatorUi;
-		playing: Boolean;
+		playing: boolean;
 	} = $props();
 </script>
 

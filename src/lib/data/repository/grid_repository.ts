@@ -16,7 +16,6 @@ export class GridRepository {
 	async saveGrid(grid: Grid): Promise<void> {
 		const gridDto = mapGridToGridDto(grid);
 		await this.gridTable.saveGrid(gridDto);
-		console.log('Saved Grid to DB', gridDto);
 	}
 
 	async getGrid(id: GridId): Promise<Grid | null> {
@@ -39,7 +38,6 @@ export class GridRepository {
 
 	async deleteGrid(id: GridId): Promise<void> {
 		await this.gridTable.deleteGrid(id);
-		console.log('Deleted Grid from DB', id);
 	}
 
 	async getAllGrids(): Promise<Grid[]> {
@@ -49,7 +47,6 @@ export class GridRepository {
 
 	async deleteAllGrids(): Promise<void> {
 		await this.gridTable.deleteAllGrids();
-		console.log('Deleted all Grids from DB');
 	}
 
 	private async gridDtoToGrid(gridDto: GridDto): Promise<Grid> {

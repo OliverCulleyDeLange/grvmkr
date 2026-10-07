@@ -128,8 +128,8 @@
 		<div class="px-4">
 			{#if appStateStore.instrumentStore != undefined}
 				<div id="all-grids" class="flex flex-col gap-8">
-					{#each gridsUi.grids as gridUi, i}
-						<VirtualSection id={gridUi.id} index={i} estimatedHeight={428}>
+					{#each gridsUi.grids as gridUi}
+						<VirtualSection id={gridUi.id} estimatedHeight={428}>
 							<!-- Sticky grid config bar that sticks directly below the file controls -->
 							<!-- 64px = file controls height -->
 							<div class="sticky z-40 bg-white dark:bg-[#1D232A]" style="top: 64px;">

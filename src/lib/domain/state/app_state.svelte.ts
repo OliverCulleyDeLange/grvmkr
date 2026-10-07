@@ -363,7 +363,7 @@ export class AppStateStore {
 
 	// Filters chatty events, and logs
 	private logEvent(event: AppEvent) {
-		console.log('Event:', event?.event, event);
+		if (event.event === ProblemEvent.DebugLog) console.debug(event.msg);
 	}
 
 	// Sets the hit matching `key` on all currently selected cells.

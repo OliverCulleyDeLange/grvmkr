@@ -18,14 +18,14 @@ export class AudioManager {
 	}
 
 	isHitInitialised(hit: InstrumentHit): boolean {
-		let player = this.hits.get(hit.hitId);
+		const player = this.hits.get(hit.hitId);
 		return player != undefined && player.isLoaded();
 	}
 
 	async ensureAllAudioInitialised(hits: HitTypeWithId[]) {
 		this.ensureAudioContext();
-		for (let hit of hits) {
-			let audioPlayer = this.hits.get(hit.id);
+		for (const hit of hits) {
+			const audioPlayer = this.hits.get(hit.id);
 			if (!audioPlayer) {
 				await this.initialiseHit(hit);
 			} else {
@@ -40,43 +40,44 @@ export class AudioManager {
 	async initialiseHit(hit: HitTypeWithId, volume: number = defaultVolume) {
 		this.ensureAudioContext();
 		try {
-			let audioFileName = hit.audioFileName;
+			const audioFileName = hit.audioFileName;
 			// Loading audio can fail if the sample isn't found
-			let fileUrl = await this.audioDb.loadAudioFileUrl(audioFileName);
-			let player = new AudioPlayer(fileUrl);
+			const fileUrl = await this.audioDb.loadAudioFileUrl(audioFileName);
+			const player = new AudioPlayer(fileUrl);
 			await player.loadAudio(this.audioContext!);
 			const pending = this.pendingVolumes.get(hit.id);
 			player.setVolume(pending ?? volume);
 			this.pendingVolumes.delete(hit.id);
 			this.hits.set(hit.id, player);
-		} catch (e: any) {
-			if (e == 'loadAudio: onsuccess but no result') {
-				this.onEvent({
-					event: ProblemEvent.MissingSampleAudio,
-					hit: hit
-				});
+		} catch (e: unknown) {
+			this.onEvent({
+				event: ProblemEvent.MissingSampleAudio,
+				hit
+			});
+			if (e === 'loadAudio: onsuccess but no result') {
 				hit.audioFileName = '';
 			}
 		}
 	}
 
-	playHit(hit: InstrumentHit) {
+	playHit(hit: InstrumentHit, delayMs = 0) {
 		if (hit.hitId == undefined) return;
-		let player = this.hits.get(hit.hitId);
+		const player = this.hits.get(hit.hitId);
 		if (player) {
-			player.play();
+			player.play(delayMs);
 		} else {
 			console.error(`Can't play ${hit.hitId}, as no player. ExistingPlayers: `, this.hits);
 		}
 	}
 
 	removeHit(hitId: HitId) {
+		this.hits.get(hitId)?.dispose();
 		this.hits.delete(hitId);
 		this.pendingVolumes.delete(hitId);
 	}
 
 	setVolume(hit: HitTypeWithId, volume: number) {
-		let player = this.hits.get(hit.id);
+		const player = this.hits.get(hit.id);
 		if (player) {
 			player.setVolume(volume);
 		} else {
@@ -85,14 +86,22 @@ export class AudioManager {
 		}
 	}
 
+	stopAll() {
+		this.hits.forEach((player) => player.stopAll());
+	}
+
 	reset() {
+		this.hits.forEach((player) => player.dispose());
 		this.hits.clear();
 		this.pendingVolumes.clear();
 	}
 
 	private ensureAudioContext() {
 		if (!this.audioContext) {
-			const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+			const AudioCtx =
+				window.AudioContext ||
+				(window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+			if (!AudioCtx) throw new Error('Web Audio is not supported by this browser');
 			this.audioContext = new AudioCtx();
 		}
 	}

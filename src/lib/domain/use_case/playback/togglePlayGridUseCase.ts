@@ -1,10 +1,4 @@
-import type {
-	GridId,
-	Grid,
-	GridRepositoryI,
-	InstrumentRepositoryI,
-	PlaybackControllerI
-} from '$lib';
+import type { GridId, GridRepositoryI, InstrumentRepositoryI, PlaybackControllerI } from '$lib';
 
 // Loops a single grid
 export async function togglePlayGridUseCase(
@@ -16,7 +10,7 @@ export async function togglePlayGridUseCase(
 	await instrumentRepo.ensureInstrumentsInitialised();
 	const gridToPlay = gridRepo.getGrid(gridId);
 	if (gridToPlay) {
-		player.togglePlayback(gridToPlay, 0, (grid: Grid) => {
+		player.togglePlayback(gridToPlay, 0, () => {
 			// Nothing to do anymore
 		});
 	}

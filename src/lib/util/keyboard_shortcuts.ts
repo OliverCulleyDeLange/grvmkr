@@ -16,30 +16,39 @@ export function registerAppKeyboardShortcuts(onEvent: (event: UiEvents) => void)
 	}
 
 	function isInputTarget(target: EventTarget | null): boolean {
-		return target instanceof HTMLElement && ['INPUT', 'TEXTAREA'].includes(target.tagName);
+		return (
+			target instanceof HTMLElement &&
+			(['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+				target.isContentEditable ||
+				target.closest('[contenteditable]:not([contenteditable="false"])') !== null)
+		);
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
-		if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-			onEvent({ event: UiEvent.Copy });
-		}
-		if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
-			onEvent({ event: UiEvent.Paste });
-		}
 		if (
-			event.code === 'Space' &&
+			(event.ctrlKey || event.metaKey) &&
+			event.key.toLowerCase() === 'c' &&
 			!isInputTarget(event.target)
 		) {
+			event.preventDefault();
+			onEvent({ event: UiEvent.Copy });
+		}
+		if (
+			(event.ctrlKey || event.metaKey) &&
+			event.key.toLowerCase() === 'v' &&
+			!isInputTarget(event.target)
+		) {
+			event.preventDefault();
+			onEvent({ event: UiEvent.Paste });
+		}
+		if (event.code === 'Space' && !isInputTarget(event.target)) {
 			event.preventDefault();
 			onEvent({ event: UiEvent.PlayPause });
 		}
 
 		// Delete / Backspace clears hits on the currently selected cells.
 		// Ignored in input fields so text editing still works normally.
-		if (
-			(event.key === 'Delete' || event.key === 'Backspace') &&
-			!isInputTarget(event.target)
-		) {
+		if ((event.key === 'Delete' || event.key === 'Backspace') && !isInputTarget(event.target)) {
 			event.preventDefault();
 			onEvent({ event: UiEvent.ClearHits });
 			return;

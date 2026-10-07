@@ -9,7 +9,6 @@ import type {
 	GridRowDto,
 	InstrumentHit,
 	InstrumentHitDto,
-	InstrumentStore,
 	InstrumentWithId
 } from '$lib';
 
@@ -47,7 +46,7 @@ export function rowFromDto(gridRowDto: GridRowDto, instrument: InstrumentWithId)
 }
 
 export function mapGridCellDtoToGridCell(divisionDto: GridCellDto): GridCell {
-	let cell: GridCell = {
+	const cell: GridCell = {
 		hits: divisionDto.hits.map((hit) => mapInstrumentHitDtoToInstrumentHit(hit)),
 		cells_occupied: divisionDto.cells_occupied
 	};

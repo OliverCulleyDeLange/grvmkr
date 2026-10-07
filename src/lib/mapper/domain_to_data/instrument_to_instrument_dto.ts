@@ -1,7 +1,7 @@
 import type { HitDto, HitTypeWithId, InstrumentDto, InstrumentWithId } from '$lib';
 
 export function mapHitTypeToHitDto(hitType: HitTypeWithId): HitDto {
-	let dto: HitDto = {
+	const dto: HitDto = {
 		id: hitType.id,
 		key: hitType.key,
 		description: hitType.description,

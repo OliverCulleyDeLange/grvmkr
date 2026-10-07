@@ -4,6 +4,18 @@ import {
 	type GridRepositoryI,
 	type InstrumentRepositoryI
 } from '$lib';
+import type { GridId, HitTypeWithId, InstrumentWithId } from '$lib';
+
+type CellToolsInput = {
+	kind: 'single' | 'multi';
+	gridId: GridId;
+	instrument: InstrumentWithId;
+	hits: HitTypeWithId[];
+	cellsOccupied: number;
+	isFirstCell: boolean;
+	isLastCell: boolean;
+	cellsCopied: boolean;
+};
 
 export class CellToolsStore implements CellToolsRepositoryI {
 	private defaultCellTools: CellTools = {
@@ -44,8 +56,7 @@ export class CellToolsStore implements CellToolsRepositoryI {
 					cellsOccupied,
 					isFirstCell: locator.cell == 0,
 					isLastCell: gridCols ? locator.cell == gridCols - cellsOccupied : false,
-					cellsCopied: this.cellsCopied,
-					cellsSelected
+					cellsCopied: this.cellsCopied
 				});
 				if (JSON.stringify(this.cellTools) !== JSON.stringify(newCellTools)) {
 					this.cellTools = newCellTools;
@@ -66,9 +77,8 @@ export class CellToolsStore implements CellToolsRepositoryI {
 		cellsOccupied,
 		isFirstCell,
 		isLastCell,
-		cellsCopied,
-		cellsSelected
-	}: any): CellTools {
+		cellsCopied
+	}: CellToolsInput): CellTools {
 		if (kind === 'multi') {
 			return {
 				kind: 'multi',

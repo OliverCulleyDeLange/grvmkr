@@ -1,14 +1,12 @@
 import {
 	calculateMsPerBeatDivision,
 	generateGridId,
-	InstrumentStore,
 	type Grid,
 	type GridCell,
 	type GridRow,
 	type InstrumentId,
 	type InstrumentWithId,
 	type SavedGridCellV3,
-	type SavedGridV3,
 	type SavedGridV5
 } from '$lib';
 
@@ -17,11 +15,11 @@ export function mapSavedGridV5ToGrid(
 	savedGrid: SavedGridV5,
 	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
-	let newRows: GridRow[] = savedGrid.rows
+	const newRows: GridRow[] = savedGrid.rows
 		.map((savedRow, i) => {
-			let instrument = instruments.get(savedRow.instrument_id);
+			const instrument = instruments.get(savedRow.instrument_id);
 			if (instrument) {
-				let gridRow: GridRow = {
+				const gridRow: GridRow = {
 					instrument: instrument,
 					cells: savedRow.cells.map((savedCell) => mapSavedCellToGridCell(savedCell))
 				};
@@ -36,7 +34,7 @@ export function mapSavedGridV5ToGrid(
 		})
 		.filter((r) => r != null);
 
-	let grid: Grid = {
+	const grid: Grid = {
 		// We regenerate grid IDs to ensure uniqueness, because people can export multiple files from the same working file
 		id: generateGridId(),
 		index: savedGrid.index,
@@ -61,7 +59,7 @@ export function mapSavedGridV5ToGrid(
 }
 
 function mapSavedCellToGridCell(savedCell: SavedGridCellV3): GridCell {
-	let gridCell: GridCell = {
+	const gridCell: GridCell = {
 		cells_occupied: savedCell.cells_occupied,
 		hits: savedCell.hits.map((hit) => {
 			return {

@@ -4,7 +4,7 @@ import { isNumber } from '$lib/util/types';
 export class AudioPlayer {
 	public url: string;
 	private audioBuffer: AudioBuffer | null = null;
-	private sourceNode: AudioBufferSourceNode | null = null;
+	private activeSources = new Set<AudioBufferSourceNode>();
 	private gainNode: GainNode | null = null;
 	private audioContext: AudioContext | null = null;
 
@@ -21,12 +21,14 @@ export class AudioPlayer {
 		this.audioContext = audioContext;
 		try {
 			const response = await fetch(this.url);
+			if (!response.ok) throw new Error(`Failed to fetch audio: HTTP ${response.status}`);
 			const arrayBuffer = await response.arrayBuffer();
 			this.audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 			this.gainNode = audioContext.createGain();
 			this.gainNode.gain.value = defaultVolume;
-		} catch (error) {
-			console.error('Error loading audio:', error);
+			this.gainNode.connect(audioContext.destination);
+		} finally {
+			if (this.url.startsWith('blob:')) URL.revokeObjectURL(this.url);
 		}
 	}
 
@@ -34,32 +36,52 @@ export class AudioPlayer {
 		return this.audioBuffer != null && this.audioContext != null;
 	}
 
-	play(): void {
+	play(delayMs = 0): void {
 		if (this.audioBuffer && this.audioContext) {
-			this.sourceNode = this.audioContext.createBufferSource();
-			this.sourceNode.buffer = this.audioBuffer;
+			const sourceNode = this.audioContext.createBufferSource();
+			sourceNode.buffer = this.audioBuffer;
 			if (this.gainNode) {
-				this.sourceNode.connect(this.gainNode);
-				this.gainNode.connect(this.audioContext.destination);
+				sourceNode.connect(this.gainNode);
 			} else {
 				console.error(`No Gain control`);
-				this.sourceNode.connect(this.audioContext.destination);
+				sourceNode.connect(this.audioContext.destination);
 			}
-			this.sourceNode.start();
+			this.activeSources.add(sourceNode);
+			sourceNode.onended = () => {
+				sourceNode.disconnect();
+				this.activeSources.delete(sourceNode);
+			};
+			sourceNode.start(this.audioContext.currentTime + Math.max(0, delayMs) / 1000);
 		} else {
 			console.error(`Audio not loaded yet for ${this.url}`);
 		}
 	}
 
 	stop(): void {
-		if (this.sourceNode) {
-			this.sourceNode.stop();
-		}
+		this.stopAll();
 	}
 
 	setVolume(volume: number): void {
 		if (this.gainNode && isNumber(volume)) {
 			this.gainNode.gain.setValueAtTime(volume, this.audioContext!.currentTime);
 		}
+	}
+
+	dispose(): void {
+		this.stopAll();
+		this.gainNode?.disconnect();
+	}
+
+	stopAll(): void {
+		for (const source of this.activeSources) {
+			source.onended = null;
+			try {
+				source.stop();
+			} catch {
+				// A source may already have ended.
+			}
+			source.disconnect();
+		}
+		this.activeSources.clear();
 	}
 }

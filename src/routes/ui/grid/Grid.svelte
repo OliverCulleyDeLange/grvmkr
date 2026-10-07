@@ -28,13 +28,11 @@
 
 	// Selection state
 	let selecting: boolean = false;
-	let selectionStart: CellLocator | null = null;
 	let selectionEnd: CellLocator | null = null;
 
 	function onPointerDown(locator: CellLocator, shiftKey: boolean) {
 		selecting = true;
 		selectionEnd = locator;
-		selectionStart = locator;
 		onEvent({
 			event: GridEvent.StartCellSelection,
 			locator: locator,

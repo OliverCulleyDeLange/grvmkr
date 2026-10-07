@@ -1,4 +1,3 @@
-
 export interface PlaybackDebugMetrics {
 	lastBeatTime: number;
 	delta: number;

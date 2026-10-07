@@ -15,15 +15,13 @@ export function mapSavedGridV2ToGrid(
 	gridIndex: number,
 	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
-	let newRows: GridRow[] = savedGrid.rows
+	const newRows: GridRow[] = savedGrid.rows
 		.map((row, i) => {
-			let instrument = instruments.get(row.instrument_id);
+			const instrument = instruments.get(row.instrument_id);
 			if (instrument) {
-				let gridRow: GridRow = {
+				const gridRow: GridRow = {
 					instrument: instrument,
-					cells: row.hits.map((hit, i) =>
-						mapSavedInstrumentHitV1ToGridCell(hit, i, savedGrid.config)
-					)
+					cells: row.hits.map((hit) => mapSavedInstrumentHitV1ToGridCell(hit))
 				};
 				return gridRow;
 			} else {
@@ -35,7 +33,7 @@ export function mapSavedGridV2ToGrid(
 			}
 		})
 		.filter((r) => r != null);
-	let grid: Grid = {
+	const grid: Grid = {
 		id: generateGridId(),
 		index: gridIndex,
 		config: {

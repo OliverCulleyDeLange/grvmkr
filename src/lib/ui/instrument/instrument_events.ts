@@ -1,4 +1,4 @@
-import type { HitId, HitTypeWithId, InstrumentHit, InstrumentId } from '$lib';
+import type { HitId, InstrumentHit, InstrumentId } from '$lib';
 
 // Instrument UI Events
 export type InstrumentEvents =

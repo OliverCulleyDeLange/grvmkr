@@ -9,7 +9,7 @@ export function buildDefaultGrid(
 	instruments: Map<InstrumentId, InstrumentWithId>,
 	index: number
 ): Grid {
-	let grid: Grid = {
+	const grid: Grid = {
 		id: generateGridId(),
 		index: index,
 		config: {
@@ -47,7 +47,7 @@ export function defaultGridRow(
 ): GridRow {
 	return {
 		instrument,
-		cells: Array.from({ length: bars * beats * divisions }, (_, i) => {
+		cells: Array.from({ length: bars * beats * divisions }, () => {
 			return {
 				hits: [],
 				cells_occupied: 1,

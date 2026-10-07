@@ -1,11 +1,4 @@
-import type {
-	SavedGridConfigV2,
-	SavedGridRowV3,
-	SavedGridV3,
-	SavedHitV1,
-	SavedInstrumentV4,
-	SaveFile
-} from '$lib';
+import type { SavedGridRowV3, SavedInstrumentV4, SaveFile } from '$lib';
 
 // Don't change anything in here.
 // If things change, create a V6 and confirm backwards compatibility with V5 to V1 files.

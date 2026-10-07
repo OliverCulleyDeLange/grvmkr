@@ -3,9 +3,6 @@ import {
 	type GridCell,
 	type Grid,
 	type GridRow,
-	type InstrumentStore,
-	type SavedGridConfigV1,
-	type SavedGridRowV1,
 	type SavedGridV1,
 	type SavedInstrumentHitV1,
 	generateGridId,
@@ -19,15 +16,13 @@ export function mapSavedGridV1ToGrid(
 	gridIndex: number,
 	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
-	let newRows: GridRow[] = savedGrid.rows
+	const newRows: GridRow[] = savedGrid.rows
 		.map((row, i) => {
-			let instrument = instruments.get(row.instrument_id);
+			const instrument = instruments.get(row.instrument_id);
 			if (instrument) {
-				let gridRow: GridRow = {
+				const gridRow: GridRow = {
 					instrument: instrument,
-					cells: row.hits.map((hit, i) =>
-						mapSavedInstrumentHitV1ToGridCell(hit, i, savedGrid.config)
-					)
+					cells: row.hits.map((hit) => mapSavedInstrumentHitV1ToGridCell(hit))
 				};
 				return gridRow;
 			} else {
@@ -39,7 +34,7 @@ export function mapSavedGridV1ToGrid(
 			}
 		})
 		.filter((r) => r != null);
-	let grid: Grid = {
+	const grid: Grid = {
 		id: generateGridId(),
 		index: gridIndex,
 		config: {
@@ -62,19 +57,15 @@ export function mapSavedGridV1ToGrid(
 	return grid;
 }
 
-export function mapSavedInstrumentHitV1ToGridCell(
-	savedHit: SavedInstrumentHitV1,
-	hitIndex: number,
-	config: SavedGridConfigV1
-): GridCell {
-	let hit =
+export function mapSavedInstrumentHitV1ToGridCell(savedHit: SavedInstrumentHitV1): GridCell {
+	const hit =
 		savedHit.hit_id && savedHit.instrument_id
 			? {
 					hitId: savedHit.hit_id,
 					instrumentId: savedHit.instrument_id
 				}
 			: undefined;
-	let beatDivision: GridCell = {
+	const beatDivision: GridCell = {
 		cells_occupied: 1, // V1 doesn't support merging
 		hits: hit ? [hit] : []
 	};

@@ -31,6 +31,7 @@ export class GridStore implements GridRepositoryI {
 	private selectedCellSet: Set<string> = new SvelteSet();
 	private selectionStartCell: CellLocator | null = $state(null);
 	private copiedCells: GridCell[] = [];
+	private gridSaveQueues = new Map<GridId, Promise<void>>();
 	// When we move or duplicate a grid, we should scroll to the grids new position
 	public shouldScrollToGridSectionId: GridSectionId | null = $state(null);
 
@@ -43,7 +44,7 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	getGridsFrom(gridId: GridId): Grid[] {
-		const grid = this.getGrid(gridId)
+		const grid = this.getGrid(gridId);
 		if (!grid) return [];
 		return this.getGridsFromGridOnwards(grid);
 	}
@@ -104,7 +105,7 @@ export class GridStore implements GridRepositoryI {
 	): Promise<SvelteMap<GridId, Grid>> {
 		try {
 			this.grids.clear();
-			let grids = Array.from(gridMap.values());
+			const grids = Array.from(gridMap.values());
 			if (grids.length == 0) {
 				console.log('No grids to initialise, adding default grid');
 				await this.addDefaultGrid(instruments);
@@ -113,36 +114,48 @@ export class GridStore implements GridRepositoryI {
 					await this.addGrid(grid, false);
 				}
 			}
-		} catch (e: any) {
+		} catch (e: unknown) {
 			console.error('Error initialising grids:', e);
 			this.onEvent({
 				event: ProblemEvent.DatabaseError,
 				doingWhat: 'initialising grids',
-				error: e.target.error
+				error: e instanceof Error ? e.message : String(e)
 			});
 		}
 		return this.grids;
 	}
 
 	setCurrentlySelectedCellHits(hits: InstrumentHit[]) {
+		const changedGridIds = new Set<GridId>();
 		this.currentlySelectedCells.forEach((locator) => {
-			if (this.currentlySelectedCells) {
-				this.updateGridCell(locator, (cell) => {
-					cell.hits = hits;
-				});
-			}
+			this.updateGridCell(
+				locator,
+				(cell) => {
+					cell.hits = hits.map((hit) => ({ ...hit }));
+					changedGridIds.add(locator.grid);
+				},
+				false
+			);
 		});
+		this.persistGrids(changedGridIds);
 	}
 
 	// Clears hits from every currently selected cell. Returns the number of cells cleared.
 	clearCurrentlySelectedCellHits(): number {
 		let cleared = 0;
+		const changedGridIds = new Set<GridId>();
 		this.currentlySelectedCells.forEach((locator) => {
-			this.updateGridCell(locator, (cell) => {
-				cell.hits = [];
-			});
+			this.updateGridCell(
+				locator,
+				(cell) => {
+					cell.hits = [];
+					changedGridIds.add(locator.grid);
+				},
+				false
+			);
 			cleared++;
 		});
+		this.persistGrids(changedGridIds);
 		return cleared;
 	}
 
@@ -153,22 +166,27 @@ export class GridStore implements GridRepositoryI {
 	 */
 	setCurrentlySelectedCellHitsByKey(key: string): InstrumentHit[] {
 		const applied: InstrumentHit[] = [];
+		const changedGridIds = new Set<GridId>();
 		this.currentlySelectedCells.forEach((locator) => {
 			const row = this.grids.get(locator.grid)?.rows[locator.row];
 			if (!row) return;
-			const matchingHit = Array.from(row.instrument.hitTypes.values()).find(
-				(h) => h.key === key
-			);
+			const matchingHit = Array.from(row.instrument.hitTypes.values()).find((h) => h.key === key);
 			if (!matchingHit) return;
 			const instrumentHit: InstrumentHit = {
 				instrumentId: row.instrument.id,
 				hitId: matchingHit.id
 			};
-			this.updateGridCell(locator, (cell) => {
-				cell.hits = [instrumentHit];
-			});
+			this.updateGridCell(
+				locator,
+				(cell) => {
+					cell.hits = [instrumentHit];
+					changedGridIds.add(locator.grid);
+				},
+				false
+			);
 			applied.push(instrumentHit);
 		});
+		this.persistGrids(changedGridIds);
 		return applied;
 	}
 
@@ -209,9 +227,14 @@ export class GridStore implements GridRepositoryI {
 	copyCurrentlySelectedCells() {
 		this.copiedCells = [];
 		this.currentlySelectedCells.forEach((locator) => {
-			let cell = this.getCell(locator);
+			const cell = this.getCell(locator);
 			if (cell) {
-				this.copiedCells.push(cell);
+				// Clipboard entries must be values, not live references. Otherwise an
+				// overlapping paste mutates entries that have not been pasted yet.
+				this.copiedCells.push({
+					cells_occupied: cell.cells_occupied,
+					hits: cell.hits.map((hit) => ({ ...hit }))
+				});
 			}
 		});
 		console.log('Copied cells', this.copiedCells);
@@ -224,7 +247,7 @@ export class GridStore implements GridRepositoryI {
 		// Find the instrument for the currently selected cell[0]
 		const firstSelectedCell = this.currentlySelectedCells[0];
 		if (!firstSelectedCell) return;
-		let instrumentForPaste = this.grids.get(firstSelectedCell.grid)?.rows[firstSelectedCell.row]
+		const instrumentForPaste = this.grids.get(firstSelectedCell.grid)?.rows[firstSelectedCell.row]
 			.instrument;
 		if (instrumentForPaste == undefined) {
 			console.error(
@@ -233,7 +256,8 @@ export class GridStore implements GridRepositoryI {
 			);
 			return;
 		}
-		let pastableHitTypes = [...instrumentForPaste.hitTypes.values()];
+		const pastableHitTypes = [...instrumentForPaste.hitTypes.values()];
+		if (pastableHitTypes.length === 0) return;
 		console.log(
 			'Pasting cells',
 			this.copiedCells,
@@ -245,39 +269,49 @@ export class GridStore implements GridRepositoryI {
 
 		// For each copiedCell, start at firstSelectedCell and paste the copied cell moving right
 		this.copiedCells.forEach((copiedCell, index) => {
-			let instrumentFromCopiedCell: InstrumentWithId | undefined = instruments.get(
+			const instrumentFromCopiedCell: InstrumentWithId | undefined = instruments.get(
 				copiedCell.hits[0]?.instrumentId
 			);
 
-			let locator = { ...firstSelectedCell, cell: firstSelectedCell.cell + index };
-			this.updateGridCell(locator, (cell) => {
-				// If we're pasting a merged cell, we need to update the cells to the right to occupy 0 cells
-				if (copiedCell.cells_occupied > 1) {
-					// Update the next cells_occupied cells to occupy 0 cells
-					for (let i = 1; i < copiedCell.cells_occupied; i++) {
-						this.updateGridCell({ ...locator, cell: locator.cell + i }, (cell) => {
-							cell.cells_occupied = 0;
-						});
-					}
+			const locator = { ...firstSelectedCell, cell: firstSelectedCell.cell + index };
+			this.updateGridCell(
+				locator,
+				(cell) => {
+					// If we're pasting a merged cell, we need to update the cells to the right to occupy 0 cells
+					if (copiedCell.cells_occupied > 1) {
+						// Update the next cells_occupied cells to occupy 0 cells
+						for (let i = 1; i < copiedCell.cells_occupied; i++) {
+							this.updateGridCell(
+								{ ...locator, cell: locator.cell + i },
+								(cell) => {
+									cell.cells_occupied = 0;
+								},
+								false
+							);
+						}
 
-					cell.cells_occupied = copiedCell.cells_occupied;
-				}
-				// Map the copied cell hits to the new instrument
-				cell.hits = copiedCell.hits.map((copiedInstrumentHit) => {
-					// Find the hit in 'pastableHitTypes' with the same key as 'instrumentForCopy' and set on newHit
-					let copiedHit: HitTypeWithId | undefined = instrumentFromCopiedCell?.hitTypes.get(
-						copiedInstrumentHit.hitId
-					);
-					let newInstrumentHit: HitTypeWithId | undefined = pastableHitTypes.find(
-						(pastableHits) => pastableHits.key == copiedHit?.key
-					);
-					// Default to the first hit if we can't find a matching hit
-					const newInstrumentHitId =
-						newInstrumentHit?.id ?? [...instrumentForPaste.hitTypes.values()][0].id;
-					return { hitId: newInstrumentHitId, instrumentId: instrumentForPaste.id };
-				});
-			});
+						cell.cells_occupied = copiedCell.cells_occupied;
+					}
+					// Map the copied cell hits to the new instrument
+					cell.hits = copiedCell.hits.map((copiedInstrumentHit) => {
+						// Find the hit in 'pastableHitTypes' with the same key as 'instrumentForCopy' and set on newHit
+						const copiedHit: HitTypeWithId | undefined = instrumentFromCopiedCell?.hitTypes.get(
+							copiedInstrumentHit.hitId
+						);
+						const newInstrumentHit: HitTypeWithId | undefined = pastableHitTypes.find(
+							(pastableHits) => pastableHits.key == copiedHit?.key
+						);
+						// Default to the first hit if we can't find a matching hit
+						const newInstrumentHitId =
+							newInstrumentHit?.id ?? [...instrumentForPaste.hitTypes.values()][0].id;
+						return { hitId: newInstrumentHitId, instrumentId: instrumentForPaste.id };
+					});
+				},
+				false
+			);
 		});
+		const grid = this.grids.get(firstSelectedCell.grid);
+		if (grid) void this.trySaveGrid(grid);
 	}
 
 	// Combined all actions to be complete when a cell is clicked:
@@ -297,18 +331,18 @@ export class GridStore implements GridRepositoryI {
 
 	// Toggle the hit in the cell
 	toggleGridHit(locator: CellLocator) {
-		let row = this.grids.get(locator.grid)?.rows[locator.row];
+		const row = this.grids.get(locator.grid)?.rows[locator.row];
 		if (row) {
-			let cell = this.getCell(locator);
+			const cell = this.getCell(locator);
 			if (cell == undefined) return;
-			let nextHit = this.nextHit(row, cell?.hits[0]?.hitId);
+			const nextHit = this.nextHit(row, cell?.hits[0]?.hitId);
 			let nextHits: InstrumentHit[];
 			if (nextHit == undefined) {
 				nextHits = [];
 			} else if (cell.hits.length == 0) {
 				nextHits = [nextHit];
 			} else {
-				nextHits = cell.hits.map((h) => nextHit);
+				nextHits = cell.hits.map(() => nextHit);
 			}
 			this.updateGridCell(locator, (cell) => {
 				cell.hits = nextHits;
@@ -327,14 +361,15 @@ export class GridStore implements GridRepositoryI {
 	// Clicking a cell cycles through all the available hit types
 	// TODO Would maybe be better to use right clicking or long pressing or something
 	nextHit(row: GridRow, hitId: HitId | undefined): InstrumentHit | undefined {
-		let allInstrumentHits = Array.from(row.instrument.hitTypes.values());
-		let instrumentHit = {
+		const allInstrumentHits = Array.from(row.instrument.hitTypes.values());
+		if (allInstrumentHits.length === 0) return undefined;
+		const instrumentHit = {
 			instrumentId: row.instrument.id,
 			hitId: allInstrumentHits[0].id
 		};
 
 		if (hitId == undefined) return instrumentHit;
-		let currentIndex = allInstrumentHits.findIndex((hit) => {
+		const currentIndex = allInstrumentHits.findIndex((hit) => {
 			return hit.id == hitId;
 		});
 		if (currentIndex + 1 >= allInstrumentHits.length) {
@@ -355,11 +390,10 @@ export class GridStore implements GridRepositoryI {
 				// Trim cell array
 				row.cells.length = expectedCells;
 			} else {
-				const emptyCell: GridCell = {
-					hits: [],
-					cells_occupied: 1
-				};
-				const newCells: GridCell[] = new Array(expectedCells - currentCellCount).fill(emptyCell);
+				const newCells: GridCell[] = Array.from(
+					{ length: expectedCells - currentCellCount },
+					() => ({ hits: [], cells_occupied: 1 })
+				);
 				row.cells.push(...newCells);
 			}
 		});
@@ -375,8 +409,8 @@ export class GridStore implements GridRepositoryI {
 		this.updateGrid(locator.grid, (grid) => {
 			console.log(`Unmerging cell`, $state.snapshot(locator.cell));
 
-			let row = grid.rows[locator.row];
-			let cell = row.cells[locator.cell];
+			const row = grid.rows[locator.row];
+			const cell = row.cells[locator.cell];
 
 			// If the cell is not merged, do nothing
 			if (cell.cells_occupied <= 1) {
@@ -393,8 +427,8 @@ export class GridStore implements GridRepositoryI {
 				}
 			}
 
-			let mergedCell = row.cells[startIndex];
-			let originalSize = mergedCell.cells_occupied;
+			const mergedCell = row.cells[startIndex];
+			const originalSize = mergedCell.cells_occupied;
 
 			console.log('Splitting cell at index', startIndex, 'which spans', originalSize, 'cells');
 
@@ -467,7 +501,7 @@ export class GridStore implements GridRepositoryI {
 	async syncInstruments(instruments: Map<InstrumentId, InstrumentWithId>) {
 		await this.updateGrids((grid) => {
 			// First remove all rows where the instrument is removed
-			let filteredRows = grid.rows.filter((row) => {
+			const filteredRows = grid.rows.filter((row) => {
 				return instruments.has(row.instrument.id);
 			});
 			// Now replace existing instruments in case hits have changed
@@ -477,7 +511,7 @@ export class GridStore implements GridRepositoryI {
 			// Now add missing instrument row, assuming only one can be added at a time
 			if (filteredRows.length < instruments.size) {
 				// Assuming instrument always added to end of list
-				let instrument = [...instruments.values()].pop();
+				const instrument = [...instruments.values()].pop();
 				if (instrument) {
 					filteredRows.push(
 						defaultGridRow(
@@ -495,14 +529,14 @@ export class GridStore implements GridRepositoryI {
 
 	async addDefaultGrid(instruments: Map<InstrumentId, InstrumentWithId>) {
 		const index = this.getNextGridIndex();
-		let grid: Grid = buildDefaultGrid(instruments, index);
+		const grid: Grid = buildDefaultGrid(instruments, index);
 		this.addGrid(grid);
 	}
 
 	async duplicateGrid(id: GridId) {
-		let gridToDuplicate = this.grids.get(id);
+		const gridToDuplicate = this.grids.get(id);
 		if (gridToDuplicate) {
-			let newGrid = $state.snapshot(gridToDuplicate);
+			const newGrid = $state.snapshot(gridToDuplicate);
 			newGrid.index = this.getNextGridIndex();
 			newGrid.id = generateGridId();
 			newGrid.config.name = newGrid.config.name + ' (copy)';
@@ -512,7 +546,7 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	getCell(locator: CellLocator): GridCell | undefined {
-		let grid = this.grids.get(locator.grid);
+		const grid = this.grids.get(locator.grid);
 		return grid ? grid.rows[locator.row]?.cells[locator.cell] : undefined;
 	}
 
@@ -521,13 +555,13 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	getNextGridIndex(): number {
-		let indexes = [...this.grids.values()].map((grid) => grid.index).filter((i) => i >= 0);
+		const indexes = [...this.grids.values()].map((grid) => grid.index).filter((i) => i >= 0);
 		return Math.max(...indexes, -1) + 1;
 	}
 
 	// Makes the grid reactive, and sets it in state and the DB
 	async addGrid(grid: Grid, persist: boolean = true) {
-		let reactiveGrid = $state(grid);
+		const reactiveGrid = $state(grid);
 		this.grids.set(reactiveGrid.id, reactiveGrid);
 		if (persist) {
 			await this.trySaveGrid(grid);
@@ -584,7 +618,7 @@ export class GridStore implements GridRepositoryI {
 
 	// Updates grid in state and DB
 	async updateGrid(id: GridId, withGrid: (grid: Grid) => void, persist: boolean = true) {
-		let grid = this.grids.get(id);
+		const grid = this.grids.get(id);
 		if (grid) {
 			withGrid(grid);
 			if (persist) await this.trySaveGrid(grid);
@@ -602,7 +636,7 @@ export class GridStore implements GridRepositoryI {
 		this.updateGrid(
 			locator.grid,
 			(grid) => {
-				let cell = grid.rows[locator.row].cells[locator.cell];
+				const cell = grid.rows[locator.row].cells[locator.cell];
 				if (cell) {
 					withGridCell(cell);
 				} else {
@@ -614,15 +648,30 @@ export class GridStore implements GridRepositoryI {
 	}
 
 	async trySaveGrid(grid: Grid) {
-		await this.gridRepository.saveGrid(grid).catch((e) => {
-			console.error('Error saving grid', e, grid);
-			let error = e.target.error;
-			this.onEvent({
-				event: ProblemEvent.DatabaseError,
-				doingWhat: 'saving grid to database',
-				error
+		const previousSave = this.gridSaveQueues.get(grid.id) ?? Promise.resolve();
+		const nextSave = previousSave
+			.then(() => this.gridRepository.saveGrid(grid))
+			.catch((e) => {
+				console.error('Error saving grid', e, grid);
+				const error = e?.target?.error ?? e;
+				this.onEvent({
+					event: ProblemEvent.DatabaseError,
+					doingWhat: 'saving grid to database',
+					error
+				});
 			});
-		});
+		this.gridSaveQueues.set(grid.id, nextSave);
+		await nextSave;
+		if (this.gridSaveQueues.get(grid.id) === nextSave) {
+			this.gridSaveQueues.delete(grid.id);
+		}
+	}
+
+	private persistGrids(gridIds: Set<GridId>) {
+		for (const gridId of gridIds) {
+			const grid = this.grids.get(gridId);
+			if (grid) void this.trySaveGrid(grid);
+		}
 	}
 
 	async replaceGrids(grids: Grid[], persist: boolean) {
@@ -642,12 +691,12 @@ export class GridStore implements GridRepositoryI {
 
 	// TODO Could probably merge the logic with moveInstrument
 	async moveGrid(direction: 'up' | 'down', gridId: GridId) {
-		let movingGrid = this.grids.get(gridId);
+		const movingGrid = this.grids.get(gridId);
 		if (!movingGrid) {
 			console.warn(`Couldn't move grid ${direction} as no grid with id found`, gridId);
 			return;
 		}
-		let movingIndex = movingGrid.index;
+		const movingIndex = movingGrid.index;
 
 		let swappingIndex;
 		if (direction === 'down') {
@@ -658,7 +707,7 @@ export class GridStore implements GridRepositoryI {
 			console.error(`Unexpected code path`);
 			return;
 		}
-		let swappingGrid = [...this.grids.values()].find((i) => i.index == swappingIndex);
+		const swappingGrid = [...this.grids.values()].find((i) => i.index == swappingIndex);
 		if (!swappingGrid) {
 			console.warn(
 				`Couldn't move grid ${direction} as no grid with index ${swappingIndex} found in grids`,
@@ -672,7 +721,7 @@ export class GridStore implements GridRepositoryI {
 		await this.updateGrid(swappingGrid.id, (i) => {
 			i.index = movingIndex;
 		});
-			this.scrollToGrid(movingGrid.id);
+		this.scrollToGrid(movingGrid.id);
 	}
 
 	async reset() {

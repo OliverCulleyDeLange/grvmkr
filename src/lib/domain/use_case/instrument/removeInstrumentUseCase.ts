@@ -17,5 +17,5 @@ export async function removeInstrumentUseCase(
 	await instrumentStore.removeInstrument(instrumentId);
 	// After removing from the instrument store and db,
 	// Ensure instrument changes are synced to grid, file and cell tools
-	syncInstruments(fileStore, gridStore, instrumentStore, cellToolsStore);
+	await syncInstruments(fileStore, gridStore, instrumentStore, cellToolsStore);
 }

@@ -61,24 +61,18 @@ export class AudioDb {
 			const transaction = db.transaction(SAMPLE_STORE, 'readwrite');
 			const store = transaction.objectStore(SAMPLE_STORE);
 			const request = store.clear();
-			request.onsuccess = () => {
-				if (request.result) {
-					resolve(true);
-				} else {
-					resolve(false);
-				}
-			};
-			request.onerror = () => resolve(false);
+			request.onsuccess = () => resolve();
+			request.onerror = () => resolve();
 		});
 	}
 
-	private onDb(
+	private onDb<T>(
 		doStuff: (
 			db: IDBDatabase,
-			resolve: (val: unknown) => void,
-			reject: (reason?: any) => void
-		) => any
-	): Promise<any> {
+			resolve: (val: T | PromiseLike<T>) => void,
+			reject: (reason?: unknown) => void
+		) => void
+	): Promise<T> {
 		return new Promise((resolve, reject) => {
 			const request = indexedDB.open(AUDIO_DB_NAME, AUDIO_DB_VERSION);
 
@@ -95,8 +89,14 @@ export class AudioDb {
 
 			request.onsuccess = (event: Event) => {
 				const db = (event.target as IDBOpenDBRequest).result;
-				doStuff(db, resolve, reject);
+				try {
+					doStuff(db, resolve, reject);
+				} catch (error) {
+					reject(error);
+				}
 			};
+			request.onerror = () => reject(request.error);
+			request.onblocked = () => reject(new Error(`Opening ${AUDIO_DB_NAME} was blocked`));
 		});
 	}
 }

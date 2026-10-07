@@ -9,26 +9,24 @@ import { vi } from 'vitest';
  * Call this at the start of your test.
  */
 export function mockGrvFileFetch() {
-	globalThis.fetch = vi.fn(async (input: any, init?: any) => {
-		if (typeof input === 'string' && input.endsWith('example.grv')) {
+	globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+		const inputString =
+			typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+		if (inputString.endsWith('example.grv')) {
 			const filePath = path.resolve(process.cwd(), 'static/example.grv');
-			console.log('[mockGrvFileFetch] Intercepted fetch for:', input);
-			console.log('[mockGrvFileFetch] example.grv filepath:', filePath);
 			const buffer = fs.readFileSync(filePath);
-			console.log('[mockGrvFileFetch] Read buffer length:', buffer.length);
 			// Pass the Buffer directly to Response (not as a Blob)
 			const response = new Response(buffer, {
 				status: 200,
 				headers: { 'Content-Type': 'application/zip' }
 			});
-			console.log('[mockGrvFileFetch] Returning Response:', response);
 			return response;
 		}
 		// Handle audio file fetches (.mp3, .wav)
-		if (typeof input === 'string' && (input.endsWith('.mp3') || input.endsWith('.wav'))) {
-			const ext = input.endsWith('.mp3') ? 'mp3' : 'wav';
+		if (inputString.endsWith('.mp3') || inputString.endsWith('.wav')) {
+			const ext = inputString.endsWith('.mp3') ? 'mp3' : 'wav';
 			const mime = ext === 'mp3' ? 'audio/mpeg' : 'audio/wav';
-			const audioPath = path.resolve(process.cwd(), 'static', input.replace(/^\.?\/?/, ''));
+			const audioPath = path.resolve(process.cwd(), 'static', inputString.replace(/^\.?\/?/, ''));
 			let response;
 			try {
 				const audioBuffer = fs.readFileSync(audioPath);
@@ -36,32 +34,24 @@ export function mockGrvFileFetch() {
 					status: 200,
 					headers: { 'Content-Type': mime }
 				});
-				console.log(
-					`[mockGrvFileFetch] Served real audio file: ${audioPath}, size: ${audioBuffer.length}`
-				);
-			} catch (e) {
+			} catch {
 				response = new Response(new Uint8Array(), {
 					status: 200,
 					headers: { 'Content-Type': mime }
 				});
-				console.warn(
-					`[mockGrvFileFetch] Audio file not found, serving empty response: ${audioPath}`
-				);
 			}
 			return response;
 		}
 		// Handle blob: URLs (jsdom fake blob audio URLs)
-		if (typeof input === 'string' && input.startsWith('blob:')) {
+		if (inputString.startsWith('blob:')) {
 			// Return a dummy audio file (empty buffer with audio/mpeg)
 			const mime = 'audio/mpeg';
 			const response = new Response(new Uint8Array(), {
 				status: 200,
 				headers: { 'Content-Type': mime }
 			});
-			console.log('[mockGrvFileFetch] Served dummy audio for blob URL:', input);
 			return response;
 		}
-		console.warn('[mockGrvFileFetch] Unhandled fetch:', input);
-		return Promise.reject(new Error('Unhandled fetch: ' + input));
+		return Promise.reject(new Error('Unhandled fetch: ' + inputString));
 	});
 }

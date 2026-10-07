@@ -7,10 +7,7 @@ import type { Grid, InstrumentWithId } from '$lib';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
-function makeInstrument(
-	id: string,
-	hits: { id: string; key: string }[]
-): InstrumentWithId {
+function makeInstrument(id: string, hits: { id: string; key: string }[]): InstrumentWithId {
 	return {
 		id,
 		name: 'Test Instrument',
@@ -306,6 +303,63 @@ describe('GridStore.clearCurrentlySelectedCellHits', () => {
 		const cleared = store.clearCurrentlySelectedCellHits();
 
 		expect(cleared).toBe(1);
+		expect(store.getCell({ grid: 'grid-1', row: 0, cell: 0 })?.hits).toEqual([]);
+	});
+});
+
+describe('GridStore editing regressions', () => {
+	it('creates independent cells when a grid is expanded', async () => {
+		const store = new GridStore(() => {});
+		const instrument = makeInstrument('inst-1', [{ id: 'hit-x', key: 'X' }]);
+		await store.addGrid(makeGrid('grid-1', instrument, 2), false);
+
+		store.updateBars('grid-1', 2);
+		store.updateGridCell(
+			{ grid: 'grid-1', row: 0, cell: 2 },
+			(cell) => (cell.hits = [{ instrumentId: 'inst-1', hitId: 'hit-x' }]),
+			false
+		);
+
+		expect(store.getCell({ grid: 'grid-1', row: 0, cell: 2 })?.hits).toHaveLength(1);
+		expect(store.getCell({ grid: 'grid-1', row: 0, cell: 3 })?.hits).toEqual([]);
+	});
+
+	it('preserves later clipboard entries during an overlapping paste', async () => {
+		const store = new GridStore(() => {});
+		const instrument = makeInstrument('inst-1', [
+			{ id: 'hit-x', key: 'X' },
+			{ id: 'hit-m', key: 'm' }
+		]);
+		await store.addGrid(makeGrid('grid-1', instrument, 4), false);
+		store.updateGridCell(
+			{ grid: 'grid-1', row: 0, cell: 0 },
+			(cell) => (cell.hits = [{ instrumentId: 'inst-1', hitId: 'hit-x' }]),
+			false
+		);
+		store.updateGridCell(
+			{ grid: 'grid-1', row: 0, cell: 1 },
+			(cell) => (cell.hits = [{ instrumentId: 'inst-1', hitId: 'hit-m' }]),
+			false
+		);
+		store.setCurrentlySelectedCells([
+			{ grid: 'grid-1', row: 0, cell: 0 },
+			{ grid: 'grid-1', row: 0, cell: 1 }
+		]);
+		store.copyCurrentlySelectedCells();
+		store.setCurrentlySelectedCells([{ grid: 'grid-1', row: 0, cell: 1 }]);
+
+		store.pasteCells(new Map([[instrument.id, instrument]]));
+
+		expect(store.getCell({ grid: 'grid-1', row: 0, cell: 1 })?.hits[0]?.hitId).toBe('hit-x');
+		expect(store.getCell({ grid: 'grid-1', row: 0, cell: 2 })?.hits[0]?.hitId).toBe('hit-m');
+	});
+
+	it('does not throw when an instrument has no hits', async () => {
+		const store = new GridStore(() => {});
+		const instrument = makeInstrument('inst-1', []);
+		await store.addGrid(makeGrid('grid-1', instrument, 2), false);
+
+		expect(() => store.toggleGridHit({ grid: 'grid-1', row: 0, cell: 0 })).not.toThrow();
 		expect(store.getCell({ grid: 'grid-1', row: 0, cell: 0 })?.hits).toEqual([]);
 	});
 });

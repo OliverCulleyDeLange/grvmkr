@@ -41,11 +41,12 @@ globalThis.AudioContext = vi.fn().mockImplementation(() => {
 		createGain: vi.fn().mockReturnValue(gainNode),
 		destination: {},
 		currentTime: 0,
-		decodeAudioData: vi.fn((arrayBuffer: ArrayBuffer, cb: (buffer: any) => void) => cb && cb({}))
+		decodeAudioData: vi.fn().mockResolvedValue({} as AudioBuffer)
 	};
 });
 // Patch for legacy webkitAudioContext in jsdom
-(globalThis as any).webkitAudioContext = globalThis.AudioContext;
+(globalThis as typeof globalThis & { webkitAudioContext: typeof AudioContext }).webkitAudioContext =
+	globalThis.AudioContext;
 
 // Patch for jsdom: mock URL.createObjectURL if not present
 if (!globalThis.URL.createObjectURL) {
@@ -63,7 +64,7 @@ class WorkerStub {
 	removeEventListener = vi.fn();
 	dispatchEvent = vi.fn();
 }
-(globalThis as any).Worker = WorkerStub;
+globalThis.Worker = WorkerStub as unknown as typeof Worker;
 
 // jsdom has no IntersectionObserver. Stub one that immediately reports visible
 // so the grid virtualization code measures and renders content under test.
@@ -82,6 +83,7 @@ class IntersectionObserverStub {
 	rootMargin = '';
 	thresholds: ReadonlyArray<number> = [];
 }
-(globalThis as any).IntersectionObserver = IntersectionObserverStub;
+globalThis.IntersectionObserver =
+	IntersectionObserverStub as unknown as typeof IntersectionObserver;
 
 // add more mocks here if you need them

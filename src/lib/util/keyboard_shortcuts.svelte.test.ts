@@ -132,6 +132,25 @@ describe('registerAppKeyboardShortcuts – TypeHitKey buffering', () => {
 		expect(onEvent).toHaveBeenCalledWith({ event: UiEvent.Paste });
 	});
 
+	it('leaves Ctrl+C to a focused input', () => {
+		const input = document.createElement('input');
+		document.body.appendChild(input);
+		input.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', ctrlKey: true, bubbles: true }));
+		expect(onEvent).not.toHaveBeenCalledWith({ event: UiEvent.Copy });
+		input.remove();
+	});
+
+	it('leaves Ctrl+V to editable content', () => {
+		const editable = document.createElement('div');
+		editable.setAttribute('contenteditable', 'true');
+		document.body.appendChild(editable);
+		editable.dispatchEvent(
+			new KeyboardEvent('keydown', { key: 'v', ctrlKey: true, bubbles: true })
+		);
+		expect(onEvent).not.toHaveBeenCalledWith({ event: UiEvent.Paste });
+		editable.remove();
+	});
+
 	it('does not dispatch TypeHitKey for non-printable keys like Escape', () => {
 		keydown('Escape');
 		vi.advanceTimersByTime(HIT_KEY_WINDOW_MS);

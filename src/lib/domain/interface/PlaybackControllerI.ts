@@ -10,8 +10,8 @@ export interface PlaybackControllerI {
 	restartInterval(): void;
 	debugMetrics: PlaybackDebugMetrics;
 	togglePlayback(
-		grid: Grid, 
-		loops: number, 
+		grid: Grid,
+		loops: number,
 		onComplete?: (grid: Grid) => void,
 		onSectionChange?: (gridId: GridId, sectionIndex: number) => void,
 		screenWidth?: number

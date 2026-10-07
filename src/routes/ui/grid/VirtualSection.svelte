@@ -5,18 +5,15 @@
 	let {
 		estimatedHeight = 1,
 		id,
-		index,
 		children
 	}: {
 		estimatedHeight?: number;
 		id?: string;
-		index: number;
 		children: Snippet;
 	} = $props();
 
 	let containerElement: HTMLDivElement;
 	let isVisible = $state(false);
-	let isMeasuring = $state(true);
 	let hasMeasured = $state(false);
 	let gridSectionData: Array<{ id: string; height: number }> = $state([]);
 	let gridConfigData: { height: number } | null = $state(null);
@@ -87,7 +84,6 @@
 
 						gridSectionData = sectionData;
 						hasMeasured = true;
-						isMeasuring = false;
 
 						// Restore original visibility state
 						isVisible = wasVisible;

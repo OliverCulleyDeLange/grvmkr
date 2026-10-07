@@ -16,8 +16,8 @@ export type SelectedCellToolsBase = {
 export type CellToolsForSingleCellSelection = SelectedCellToolsBase & {
 	kind: 'single';
 	cellsOccupied: number;
-	isFirstCell: Boolean;
-	isLastCell: Boolean;
+	isFirstCell: boolean;
+	isLastCell: boolean;
 };
 
 export type CellToolsForMultiCellSelection = SelectedCellToolsBase & {

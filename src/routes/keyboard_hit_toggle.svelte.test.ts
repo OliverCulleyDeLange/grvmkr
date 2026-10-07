@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@testing-library/svelte';
+import { cleanup, screen, waitFor } from '@testing-library/svelte';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { GrvMkrPage } from './__testutils__/GrvMkrPage';
 import { mockGrvFileFetch } from './__testutils__/mockGrvFetch';

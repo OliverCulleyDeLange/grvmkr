@@ -1,6 +1,6 @@
 import type { HitDto, HitDtoId } from '$lib';
 import { getDataDb } from './data_db';
-import { DATA_DB_NAME, INSTRUMENT_HIT_STORE } from './db_config';
+import { INSTRUMENT_HIT_STORE } from './db_config';
 
 // ChatGPT Generated :)
 export class HitTable {

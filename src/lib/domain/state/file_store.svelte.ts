@@ -21,6 +21,7 @@ export class FileStore implements FileRepositoryI {
 	private onEvent: OnEvent;
 	private fileRepository: FileRepository = new FileRepository();
 	private gridRepository: GridRepository = new GridRepository();
+	private fileSaveQueue: Promise<void> = Promise.resolve();
 
 	// Working file
 	public file: GrvMkrFile = $state(defaultFile());
@@ -46,7 +47,7 @@ export class FileStore implements FileRepositoryI {
 	// Get or create the working file in the db and state
 	async initialiseWorkingFile(): Promise<GrvMkrFile> {
 		try {
-			let workingFileFromDb = await this.fileRepository.getWorkingFile();
+			const workingFileFromDb = await this.fileRepository.getWorkingFile();
 			if (workingFileFromDb) {
 				this.file = workingFileFromDb;
 				console.log('Initialised file from DB', workingFileFromDb);
@@ -55,12 +56,12 @@ export class FileStore implements FileRepositoryI {
 				await this.saveWorkingFileInStateAndDB(this.file);
 			}
 			return this.file;
-		} catch (e: any) {
+		} catch (e: unknown) {
 			console.error('Error getting file', e);
 			this.onEvent({
 				event: ProblemEvent.DatabaseError,
 				doingWhat: 'initialising file name',
-				error: e.target.error
+				error: e instanceof Error ? e.message : String(e)
 			});
 			return Promise.reject(e);
 		}
@@ -85,25 +86,32 @@ export class FileStore implements FileRepositoryI {
 	}
 
 	async deleteGroove(id: GrvMkrFileId): Promise<void> {
+		if (id === this.file.id) return;
 		// delete grids from the file
 		const file = await this.fileRepository.getFile(id);
+		const otherFiles = (await this.fileRepository.getAllFiles()).filter(
+			(candidate) => candidate.id !== id
+		);
+		const referencedGridIds = new Set(
+			otherFiles.flatMap((candidate) => Array.from(candidate.grids.keys()))
+		);
 		if (file?.grids) {
-			for (const [id, grid] of file.grids) {
-				this.gridRepository.deleteGrid(id);
+			for (const gridId of file.grids.keys()) {
+				if (!referencedGridIds.has(gridId)) await this.gridRepository.deleteGrid(gridId);
 			}
 		}
-		this.fileRepository.deleteFile(id);
-		this.updateAllFiles();
+		await this.fileRepository.deleteFile(id);
+		await this.updateAllFiles();
 	}
 
 	async setGrids(grids: Map<GridId, Grid>) {
 		this.file.grids = grids;
-		this.trySaveFile();
+		await this.trySaveFile();
 	}
 
 	async setInstruments(instruments: Map<string, InstrumentWithId>) {
 		this.file.instruments = instruments;
-		this.trySaveFile();
+		await this.trySaveFile();
 	}
 
 	setInstrumentVolume(instrumentId: string, volume: number) {
@@ -111,7 +119,7 @@ export class FileStore implements FileRepositoryI {
 			this.file.instrumentVolumes = {};
 		}
 		this.file.instrumentVolumes[instrumentId] = volume;
-		this.trySaveFile();
+		void this.trySaveFile();
 	}
 
 	getInstrumentVolume(instrumentId: string): number {
@@ -138,11 +146,13 @@ export class FileStore implements FileRepositoryI {
 	}
 
 	async trySaveFile(file: GrvMkrFile = this.file) {
+		const save = this.fileSaveQueue.then(() => this.fileRepository.saveFile(file));
+		this.fileSaveQueue = save.catch(() => undefined);
 		try {
-			await this.fileRepository.saveFile(file);
-		} catch (e: any) {
+			await save;
+		} catch (e: unknown) {
 			console.error(`Error saving file. Error: [${e}]`, this.file);
-			const error = e?.target?.error ?? e;
+			const error = e instanceof Error ? e.message : String(e);
 			this.onEvent({
 				event: ProblemEvent.DatabaseError,
 				doingWhat: 'saving file to database',

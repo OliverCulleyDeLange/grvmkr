@@ -41,4 +41,3 @@
 		<label for="fileName" class="absolute left-2 top-1 text-[8px] text-gray-600"> File name </label>
 	</div>
 </div>
-

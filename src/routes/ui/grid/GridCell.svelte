@@ -23,6 +23,7 @@
 <button
 	id={`gridcell-${ui.locator.grid}-${ui.locator.row}-${ui.locator.cell}`}
 	data-testid={`gridcell-${ui.locator.grid}-${ui.locator.row}-${ui.locator.cell}`}
+	aria-label={`Grid row ${ui.locator.row + 1}, cell ${ui.locator.cell + 1}${ui.content ? `: ${ui.content}` : ': empty'}`}
 	onclick={handleClick}
 	onpointerdown={(event: PointerEvent) => {
 		event.preventDefault();

@@ -1,7 +1,6 @@
 import {
 	calculateMsPerBeatDivision,
 	generateGridId,
-	InstrumentStore,
 	type Grid,
 	type GridCell,
 	type GridRow,
@@ -17,11 +16,11 @@ export function mapSavedGridV3ToGrid(
 	gridIndex: number,
 	instruments: Map<InstrumentId, InstrumentWithId>
 ): Grid {
-	let newRows: GridRow[] = savedGrid.rows
+	const newRows: GridRow[] = savedGrid.rows
 		.map((savedRow, i) => {
-			let instrument = instruments.get(savedRow.instrument_id);
+			const instrument = instruments.get(savedRow.instrument_id);
 			if (instrument) {
-				let gridRow: GridRow = {
+				const gridRow: GridRow = {
 					instrument: instrument,
 					cells: savedRow.cells.map((savedCell) => mapSavedCellToGridCell(savedCell))
 				};
@@ -36,7 +35,7 @@ export function mapSavedGridV3ToGrid(
 		})
 		.filter((r) => r != null);
 
-	let grid: Grid = {
+	const grid: Grid = {
 		id: generateGridId(),
 		index: gridIndex,
 		config: {
@@ -60,7 +59,7 @@ export function mapSavedGridV3ToGrid(
 }
 
 function mapSavedCellToGridCell(savedCell: SavedGridCellV3): GridCell {
-	let gridCell: GridCell = {
+	const gridCell: GridCell = {
 		cells_occupied: savedCell.cells_occupied,
 		hits: savedCell.hits.map((hit) => {
 			return {

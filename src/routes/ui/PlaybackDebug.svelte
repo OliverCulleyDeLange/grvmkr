@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { PlaybackControllerI } from '$lib';
-	const { 
-        playbackStore
-     } = $props<{ playbackStore: PlaybackControllerI }>();
+	const { playbackStore } = $props<{ playbackStore: PlaybackControllerI }>();
 
 	const metrics = playbackStore.debugMetrics;
 	const deltaClass = $derived(Math.abs(metrics.delta - metrics.expected) > 3 ? 'text-red-400' : '');
 </script>
 
-<div class="fixed bottom-2 right-2 bg-black bg-opacity-80 text-white p-3 rounded shadow-lg z-50 text-xs font-mono max-w-xs">
+<div
+	class="fixed bottom-2 right-2 z-50 max-w-xs rounded bg-black bg-opacity-80 p-3 font-mono text-xs text-white shadow-lg"
+>
 	<div><b>Playback Debug</b></div>
 	<div>Δ (ms): <span class={deltaClass}>{metrics.delta.toFixed(2)}</span></div>
 	<div>Expected (ms): {metrics.expected}</div>
@@ -21,4 +21,3 @@
 	<div>Cell: {metrics.position.cell} / {metrics.position.gridCells}</div>
 	<div>PlayingCell: {metrics.position.playingCell}</div>
 </div>
-

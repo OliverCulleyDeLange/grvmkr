@@ -2,3 +2,7 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Local agent/editor state and backup files are not project source.
+.sc/
+*.orig
