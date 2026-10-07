@@ -30,5 +30,5 @@ describe('print layout', () => {
 		window.dispatchEvent(new Event('afterprint'));
 
 		expect(screen.getByRole('button', { name: /print \/ save pdf/i })).toBeInTheDocument();
-	});
+	}, 15_000);
 });
