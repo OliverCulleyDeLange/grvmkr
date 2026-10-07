@@ -1,15 +1,9 @@
 <script lang="ts">
-	import {
-		AppStateStore,
-		GridEvent,
-		HelpEvent,
-		themeStore,
-		UiEvent
-	} from '$lib';
+	import { AppStateStore, GridEvent, HelpEvent, themeStore, UiEvent } from '$lib';
 	import type { AppEvent } from '$lib/domain/event';
 	import { registerAppKeyboardShortcuts } from '$lib/util/keyboard_shortcuts';
 	import '$lib/util/polyfills';
-	import { onMount } from 'svelte';
+	import { flushSync, onMount } from 'svelte';
 	import Grid from './ui/grid/Grid.svelte';
 	import GridConfig from './ui/grid/GridConfig.svelte';
 	import VirtualSection from './ui/grid/VirtualSection.svelte';
@@ -46,12 +40,17 @@
 
 		// Listen for print events
 		const beforePrint = () => {
-			isPrintMode = true;
-			console.log('Entering print mode');
+			// Printing snapshots the DOM immediately after this event. Flush the
+			// alternate layout synchronously so the browser cannot capture the
+			// virtualised web UI instead.
+			flushSync(() => {
+				isPrintMode = true;
+			});
 		};
 		const afterPrint = () => {
-			isPrintMode = false;
-			console.log('Exiting print mode');
+			flushSync(() => {
+				isPrintMode = false;
+			});
 		};
 
 		window.addEventListener('beforeprint', beforePrint);
@@ -205,7 +204,7 @@
 		<h1 class="mb-8 text-4xl">{appStateStore.fileStore.file.name}</h1>
 
 		{#if appStateStore.instrumentStore != undefined}
-			<div class="flex flex-col">
+			<div class="flex flex-col gap-8">
 				{#each gridsUi.grids as gridUi}
 					<div class="break-inside-avoid">
 						<GridConfig
