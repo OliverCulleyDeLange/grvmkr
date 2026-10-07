@@ -49,13 +49,6 @@
 		onChange(volume, undefined);
 	}
 
-	function handleVolumeKeyDown(event: KeyboardEvent) {
-		if (!['ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp'].includes(event.key)) return;
-		event.preventDefault();
-		const delta = event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 0.05 : -0.05;
-		onChange(clamp(model.volume + delta, 0, 1), undefined);
-	}
-
 	$: fillWidth = volumeSliderWidth * model.volume;
 	$: fillHeight = volumeSliderHeight * model.volume;
 </script>
@@ -79,13 +72,6 @@
 	<div
 		class="flex cursor-ew-resize touch-none flex-row gap-2 text-xs text-gray-500"
 		onpointerdown={(e) => handlePointerDownForVolume(e)}
-		onkeydown={handleVolumeKeyDown}
-		role="slider"
-		tabindex="0"
-		aria-label="Instrument volume"
-		aria-valuemin="0"
-		aria-valuemax="100"
-		aria-valuenow={Math.round(model.volume * 100)}
 	>
 		<svg
 			width={volumeSliderWidth}

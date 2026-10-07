@@ -44,7 +44,7 @@
 				'Play File plays every grid in order, using each grid’s repetitions.',
 				'Edit while playing to hear changes immediately.',
 				'Each grid has its own BPM.',
-				'Mute, solo, and volume control each instrument. Use arrow keys to adjust focused volume.'
+				'Mute, solo, and volume control each instrument.'
 			]
 		},
 		{
